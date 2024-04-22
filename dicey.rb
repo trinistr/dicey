@@ -13,6 +13,16 @@
 class AbstractDie
   attr_reader :sides_list, :sides_num, :enum
 
+  class << self
+    # Get a text representation of a list of dice.
+    #
+    # @param dice [Enumerable<AbstractDie>]
+    # @return [String]
+    def describe(dice)
+      dice.join(';')
+    end
+  end
+
   # @param sides_list [Enumerable<Object>]
   def initialize(sides_list)
     @sides_list = sides_list.dup.freeze
@@ -212,10 +222,55 @@ class RegularFrequenciesCalculator < FrequenciesCalculator
   end
 end
 
-return unless $PROGRAM_NAME == __FILE__
+# Base formatter for outputting lists of key-value pairs separated by newlines.
+# @abstract
+class KeyValueFormatter
+  # @param hash [Hash{Integer => Integer}]
+  # @param _description [String] ignored
+  # @return [String]
+  def call(hash, _description = nil)
+    hash.each_with_object(String.new) do |(key, value), output|
+      output << "#{key}#{self.class::SEPARATOR}#{value}\n"
+    end
+  end
+end
 
-require 'tempfile'
-require 'optparse'
+# Formats a hash as list of key => value pairs, similar to a Ruby Hash.
+class ListFormatter < KeyValueFormatter
+  SEPARATOR = ' => '
+end
+
+# Formats a hash as a text file suitable for consumption by Gnuplot.
+class GnuplotFormatter < KeyValueFormatter
+  SEPARATOR = ' '
+end
+
+# Base formatter for outputting in formats which can be converted from a Hash directly.
+# Can add an optional description into the result.
+# @abstract
+class HashFormatter
+  # @param hash [Hash{Integer => Integer}]
+  # @param description [String] text to add to result as an extra key
+  # @return [String]
+  def call(hash, description = nil)
+    output = {}
+    output['description'] = description if description
+    output['results'] = hash
+    output.public_send(self.class::METHOD)
+  end
+end
+
+# Formats a hash as a YAML document under `results` key, with optional `description` key.
+class YAMLFormatter < HashFormatter
+  METHOD = :to_yaml
+end
+
+# Formats a hash as a JSON document under `results` key, with optional `description` key.
+class JSONFormatter < HashFormatter
+  METHOD = :to_json
+end
+
+return unless $PROGRAM_NAME == __FILE__
 
 # A simple testing faculty for dealing with diceyness.
 class TestRunner
@@ -283,7 +338,7 @@ class TestRunner
   # Print results of running all tests.
   def full_report(results)
     results.each do |dice, test_result|
-      print "#{dice.join(';')}:\n"
+      print "#{AbstractDie.describe(dice)}:\n"
       test_result.each do |calculator, result|
         print "  #{calculator.class}: "
         puts RESULT_TEXT[result]
@@ -294,39 +349,58 @@ end
 
 # List of calculators to use, ordered by efficiency.
 calculators = [RegularFrequenciesCalculator.new, GenericFrequenciesCalculator.new]
+# Formatters which can be used for output.
+formatters = { 'list' => ListFormatter, 'gnuplot' => GnuplotFormatter,
+               'yaml' => YAMLFormatter, 'json' => JSONFormatter }
+
+# Parse options and stuff.
+require 'optparse'
 
 option_parser = OptionParser.new do |parser|
   parser.banner = "Usage: #{Process.argv0} <number of sides> [<number of sides> ...]"
-  parser.on_tail('-h', '--help', 'Show this help') do
+  parser.on_tail('-h', '--help', 'Show this help and exit.') do
     puts parser
     exit
   end
-  parser.on('--test [REPORT_STYLE]', %w[full quiet], 'Validate that calculators give expected results.',
-            'REPORT_STYLE can be either `full` (default) or `quiet`.') do |report_style|
+  parser.on('--test [REPORT_STYLE]', %w[full quiet], 'Check predefined calculation cases and exit.',
+            'REPORT_STYLE can be: `full` or `quiet` (no output).', '`full` is default.') do |report_style|
     exit TestRunner.new.call(calculators, report_style&.to_sym || :full)
   end
+  parser.on('-f', '--format FORMAT', formatters, 'Select output format for results.',
+            "FORMAT can be: #{formatters.keys.map { "`#{_1}`" }.join(', ')}.", '`list` is default.')
 end
-options = {}
+options = { format: ListFormatter }
 arguments = option_parser.parse!(into: options)
 
-# Actually run the calculations!
+# Require libraries only when needed, to cut on run time.
+if options[:format] == YAMLFormatter
+  require 'yaml'
+elsif options[:format] == JSONFormatter
+  require 'json'
+end
 
+# Actually run the calculations!
 dice = arguments.map { RegularDie.new(_1.to_i) }
 frequencies = calculators.find { _1.valid_for?(dice) }.call(dice)
 
-sides_list = dice.map(&:sides_num).join(',')
-Tempfile.create do |file|
-  frequencies.each_pair { |k, v| file << "#{k} #{v}\n" }
-  file.flush
-  Process.wait(
-    Process.spawn(
-      'gnuplot',
-      '-e', 'set term png medium size 1000 600',
-      '-e', %(set output "#{sides_list}-sided dice.png"),
-      '-e', 'set boxwidth 0.9 relative',
-      '-e', 'set style fill solid 0.5',
-      '-e', %{plot [][0:] "#{file.path}" using 1:2:xticlabels(1) with boxes title "#{sides_list}-sided dice",}\
-        " '' using 1:2:2 with labels notitle"
-    )
-  )
-end
+# Format and output the result.
+output = options[:format].new.call(frequencies, AbstractDie.describe(dice))
+puts output
+
+# TODO: move this code to a separate script.
+# sides_list = dice.map(&:sides_num).join(',')
+# Tempfile.create do |file|
+#   frequencies.each_pair { |k, v| file << "#{k} #{v}\n" }
+#   file.flush
+#   Process.wait(
+#     Process.spawn(
+#       'gnuplot',
+#       '-e', 'set term png medium size 1000 600',
+#       '-e', %(set output "#{sides_list}-sided dice.png"),
+#       '-e', 'set boxwidth 0.9 relative',
+#       '-e', 'set style fill solid 0.5',
+#       '-e', %{plot [][0:] "#{file.path}" using 1:2:xticlabels(1) with boxes title "#{sides_list}-sided dice",}\
+#         " '' using 1:2:2 with labels notitle"
+#     )
+#   )
+# end
