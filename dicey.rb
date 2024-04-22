@@ -7,6 +7,7 @@
 
 # Usage: dicey.rb 4 4 4 # calculate frequencies for three 4-sided dice
 # Usage: dicey.rb 3 6 # calculate frequencies for a pair of 3-sided and 6-sided dice
+# Usage: ruby -r './dicey' -e 'puts Dicey::RegularDie.new(5).roll' # roll a D5
 
 # A library for rolling dice.
 module Dicey
@@ -51,7 +52,7 @@ module Dicey
     #
     # @return [Object] rolled side
     def roll
-      rand(0...sides_num).times { next }
+      rand(0...sides_num).times { self.next }
       @enum.peek
     end
 
