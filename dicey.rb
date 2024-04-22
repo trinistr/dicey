@@ -223,13 +223,15 @@ class RegularFrequenciesCalculator < FrequenciesCalculator
 end
 
 # Base formatter for outputting lists of key-value pairs separated by newlines.
+# Can add an optional description into the result.
 # @abstract
 class KeyValueFormatter
   # @param hash [Hash{Integer => Integer}]
-  # @param _description [String] ignored
+  # @param description [String] text to add as a comment.
   # @return [String]
-  def call(hash, _description = nil)
-    hash.each_with_object(String.new) do |(key, value), output|
+  def call(hash, description = nil)
+    initial_string = description ? "# #{description}\n" : String.new
+    hash.each_with_object(initial_string) do |(key, value), output|
       output << "#{key}#{self.class::SEPARATOR}#{value}\n"
     end
   end
@@ -386,21 +388,3 @@ frequencies = calculators.find { _1.valid_for?(dice) }.call(dice)
 # Format and output the result.
 output = options[:format].new.call(frequencies, AbstractDie.describe(dice))
 puts output
-
-# TODO: move this code to a separate script.
-# sides_list = dice.map(&:sides_num).join(',')
-# Tempfile.create do |file|
-#   frequencies.each_pair { |k, v| file << "#{k} #{v}\n" }
-#   file.flush
-#   Process.wait(
-#     Process.spawn(
-#       'gnuplot',
-#       '-e', 'set term png medium size 1000 600',
-#       '-e', %(set output "#{sides_list}-sided dice.png"),
-#       '-e', 'set boxwidth 0.9 relative',
-#       '-e', 'set style fill solid 0.5',
-#       '-e', %{plot [][0:] "#{file.path}" using 1:2:xticlabels(1) with boxes title "#{sides_list}-sided dice",}\
-#         " '' using 1:2:2 with labels notitle"
-#     )
-#   )
-# end
