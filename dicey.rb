@@ -395,7 +395,11 @@ formatters = {
 require 'optparse'
 
 option_parser = OptionParser.new do |parser|
-  parser.banner = "Usage: #{Process.argv0} [options] <number of sides> [<number of sides> ...]"
+  parser.banner = <<~TEXT
+    Usage: #{parser.program_name} [options] <number of sides> [<number of sides> ...]
+           #{parser.program_name} --test [full|quiet]
+    All option names and arguments can be abbreviated if abbreviation is unambigious.
+  TEXT
   parser.version = Dicey::VERSION
   parser.on('-r', '--result TYPE', result_types,
             'Select result type for output.',
@@ -407,6 +411,14 @@ option_parser = OptionParser.new do |parser|
             'Check predefined calculation cases and exit.',
             'REPORT_STYLE can be: `full` or `quiet`.', '`full` is default.') do |report_style|
     exit Dicey::SumFrequencyCalculators::TestRunner.new.call(calculators, report_style&.to_sym || :full)
+  end
+  parser.on_tail('-h', '--help', 'Show this help and exit.') do
+    puts parser.help
+    exit
+  end
+  parser.on_tail('-v', '--version', 'Show program version and exit.') do
+    puts parser.ver
+    exit
   end
 end
 options = { format: Dicey::OutputFormatters::ListFormatter, result: :frequencies }
