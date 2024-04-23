@@ -9,8 +9,10 @@
 # Usage: dicey.rb 3 6 # calculate frequencies for a pair of 3-sided and 6-sided dice
 # Usage: ruby -r './dicey' -e 'puts Dicey::RegularDie.new(5).roll' # roll a D5
 
-# A library for rolling dice.
+# A library for rolling dice and calculating roll frequencies.
 module Dicey
+  VERSION = '0.6.1'
+
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
   class AbstractDie
@@ -364,8 +366,10 @@ module Dicey
 end
 
 # List of calculators to use, ordered by efficiency.
-calculators = [Dicey::SumFrequencyCalculators::RegularFrequenciesCalculator.new,
-               Dicey::SumFrequencyCalculators::GenericFrequenciesCalculator.new]
+calculators = [
+  Dicey::SumFrequencyCalculators::RegularFrequenciesCalculator.new,
+  Dicey::SumFrequencyCalculators::GenericFrequenciesCalculator.new
+]
 # Formatters which can be used for output.
 formatters = {
   'list' => Dicey::OutputFormatters::ListFormatter, 'gnuplot' => Dicey::OutputFormatters::GnuplotFormatter,
@@ -376,11 +380,8 @@ formatters = {
 require 'optparse'
 
 option_parser = OptionParser.new do |parser|
-  parser.banner = "Usage: #{Process.argv0} <number of sides> [<number of sides> ...]"
-  parser.on_tail('-h', '--help', 'Show this help and exit.') do
-    puts parser
-    exit
-  end
+  parser.banner = "Usage: #{Process.argv0} [options] <number of sides> [<number of sides> ...]"
+  parser.version = Dicey::VERSION
   parser.on('--test [REPORT_STYLE]', %w[full quiet], 'Check predefined calculation cases and exit.',
             'REPORT_STYLE can be: `full` or `quiet` (no output).', '`full` is default.') do |report_style|
     exit Dicey::TestRunner.new.call(calculators, report_style&.to_sym || :full)
