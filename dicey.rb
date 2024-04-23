@@ -384,7 +384,7 @@ calculators = [
   Dicey::SumFrequencyCalculators::GenericFrequenciesCalculator.new
 ]
 # Allowed result types.
-result_types = Dicey::SumFrequencyCalculators::BaseCalculator.to_h { [_1.to_s, _1.to_sym] }
+result_types = Dicey::SumFrequencyCalculators::BaseCalculator::RESULT_TYPES.to_h { [_1.to_s, _1.to_sym] }
 # Formatters which can be used for output.
 formatters = {
   'list' => Dicey::OutputFormatters::ListFormatter, 'gnuplot' => Dicey::OutputFormatters::GnuplotFormatter,
@@ -433,7 +433,8 @@ end
 
 # Actually run the calculations!
 dice = arguments.map { Dicey::RegularDie.new(_1.to_i) }
-frequencies = calculators.find { _1.valid_for?(dice) }.call(dice, result: options[:result])
+frequencies = calculators.find { _1.valid_for?(dice) }&.call(dice, result: options[:result])
+raise "no calculator could handle these dice!" unless frequencies
 
 # Format and output the result.
 output = options[:format].new.call(frequencies, Dicey::AbstractDie.describe(dice))
