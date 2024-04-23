@@ -11,7 +11,7 @@
 
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
-  VERSION = '0.6.1'
+  VERSION = '0.7.0'
 
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
@@ -94,13 +94,24 @@ module Dicey
     # Base frequencies calculator.
     # @abstract
     class BaseCalculator
+      RESULT_TYPES = %i[frequencies probabilities].freeze
+
       # @param dice [Enumerable<AbstractDie>]
+      # @param result [:frequencies, :probabilities]
       # @return [Hash{Integer => Integer}] frequencies of each sum
       # @raise [RuntimeError] if dice list is invalid for the calculator
-      def call(dice)
+      def call(dice, result: :frequencies)
         raise "#{self.class} can not handle these dice!" unless valid_for?(dice)
+        raise "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
 
-        calculate(dice)
+        frequencies = calculate(dice)
+        case result
+        when :frequencies
+          frequencies
+        when :probabilities
+          total = frequencies.values.sum
+          frequencies.transform_values { _1.fdiv(total) }
+        end
       end
 
       # Whether this calculator can be used for the list of dice.
@@ -372,6 +383,8 @@ calculators = [
   Dicey::SumFrequencyCalculators::RegularFrequenciesCalculator.new,
   Dicey::SumFrequencyCalculators::GenericFrequenciesCalculator.new
 ]
+# Allowed result types.
+result_types = Dicey::SumFrequencyCalculators::BaseCalculator.to_h { [_1.to_s, _1.to_sym] }
 # Formatters which can be used for output.
 formatters = {
   'list' => Dicey::OutputFormatters::ListFormatter, 'gnuplot' => Dicey::OutputFormatters::GnuplotFormatter,
@@ -384,14 +397,19 @@ require 'optparse'
 option_parser = OptionParser.new do |parser|
   parser.banner = "Usage: #{Process.argv0} [options] <number of sides> [<number of sides> ...]"
   parser.version = Dicey::VERSION
-  parser.on('--test [REPORT_STYLE]', %w[full quiet], 'Check predefined calculation cases and exit.',
-            'REPORT_STYLE can be: `full` or `quiet` (no output).', '`full` is default.') do |report_style|
+  parser.on('-r', '--result TYPE', result_types,
+            'Select result type for output.',
+            "TYPE can be: #{result_types.keys.map { "`#{_1}`" }.join(', ')}.", '`frequencies` is default.')
+  parser.on('-f', '--format FORMAT', formatters,
+            'Select output format for results.',
+            "FORMAT can be: #{formatters.keys.map { "`#{_1}`" }.join(', ')}.", '`list` is default.')
+  parser.on('--test [REPORT_STYLE]', %w[full quiet],
+            'Check predefined calculation cases and exit.',
+            'REPORT_STYLE can be: `full` or `quiet`.', '`full` is default.') do |report_style|
     exit Dicey::SumFrequencyCalculators::TestRunner.new.call(calculators, report_style&.to_sym || :full)
   end
-  parser.on('-f', '--format FORMAT', formatters, 'Select output format for results.',
-            "FORMAT can be: #{formatters.keys.map { "`#{_1}`" }.join(', ')}.", '`list` is default.')
 end
-options = { format: Dicey::OutputFormatters::ListFormatter }
+options = { format: Dicey::OutputFormatters::ListFormatter, result: :frequencies }
 arguments = option_parser.parse!(into: options)
 
 # Require libraries only when needed, to cut on run time.
@@ -403,7 +421,7 @@ end
 
 # Actually run the calculations!
 dice = arguments.map { Dicey::RegularDie.new(_1.to_i) }
-frequencies = calculators.find { _1.valid_for?(dice) }.call(dice)
+frequencies = calculators.find { _1.valid_for?(dice) }.call(dice, result: options[:result])
 
 # Format and output the result.
 output = options[:format].new.call(frequencies, Dicey::AbstractDie.describe(dice))
