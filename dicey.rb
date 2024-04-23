@@ -289,76 +289,78 @@ end
 return unless $PROGRAM_NAME == __FILE__
 
 module Dicey
-  # A simple testing facility for dealing with diceyness.
-  class TestRunner
-    # These are manually calculated frequencies,
-    # with test cases for pretty much all variations of what this program can handle.
-    TEST_DATA = [
-      [[1], { 1 => 1 }],
-      [[10], { 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1, 7 => 1, 8 => 1, 9 => 1, 10 => 1 }],
-      [[2, 2], { 2 => 1, 3 => 2, 4 => 1 }],
-      [[3, 3], { 2 => 1, 3 => 2, 4 => 3, 5 => 2, 6 => 1 }],
-      [[4, 4], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 3, 7 => 2, 8 => 1 }],
-      [[2, 2, 2], { 3 => 1, 4 => 3, 5 => 3, 6 => 1 }],
-      [[3, 3, 3], { 3 => 1, 4 => 3, 5 => 6, 6 => 7, 7 => 6, 8 => 3, 9 => 1 }],
-      [[2, 2, 2, 2], { 4 => 1, 5 => 4, 6 => 6, 7 => 4, 8 => 1 }],
-      [[1, 2, 3], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
-      [[3, 2, 1], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
-      [[4, 6], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 4, 7 => 4, 8 => 3, 9 => 2, 10 => 1 }],
-      [[[3, 17, 21]], { 3 => 1, 17 => 1, 21 => 1 }],
-      [[[3, 3, 3, 3, 3, 5, 5, 5]], { 3 => 5, 5 => 3 }],
-      [[[1, 4, 6], [1, 4, 6]], { 2 => 1, 5 => 2, 7 => 2, 8 => 1, 10 => 2, 12 => 1 }],
-      [[[3, 4, 3], [1, 3, 2]], { 4 => 2, 5 => 3, 6 => 3, 7 => 1 }]
-    ].freeze
+  module SumFrequencyCalculators
+    # A simple testing facility for dealing with diceyness.
+    class TestRunner
+      # These are manually calculated frequencies,
+      # with test cases for pretty much all variations of what this program can handle.
+      TEST_DATA = [
+        [[1], { 1 => 1 }],
+        [[10], { 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1, 7 => 1, 8 => 1, 9 => 1, 10 => 1 }],
+        [[2, 2], { 2 => 1, 3 => 2, 4 => 1 }],
+        [[3, 3], { 2 => 1, 3 => 2, 4 => 3, 5 => 2, 6 => 1 }],
+        [[4, 4], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 3, 7 => 2, 8 => 1 }],
+        [[2, 2, 2], { 3 => 1, 4 => 3, 5 => 3, 6 => 1 }],
+        [[3, 3, 3], { 3 => 1, 4 => 3, 5 => 6, 6 => 7, 7 => 6, 8 => 3, 9 => 1 }],
+        [[2, 2, 2, 2], { 4 => 1, 5 => 4, 6 => 6, 7 => 4, 8 => 1 }],
+        [[1, 2, 3], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
+        [[3, 2, 1], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
+        [[4, 6], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 4, 7 => 4, 8 => 3, 9 => 2, 10 => 1 }],
+        [[[3, 17, 21]], { 3 => 1, 17 => 1, 21 => 1 }],
+        [[[3, 3, 3, 3, 3, 5, 5, 5]], { 3 => 5, 5 => 3 }],
+        [[[1, 4, 6], [1, 4, 6]], { 2 => 1, 5 => 2, 7 => 2, 8 => 1, 10 => 2, 12 => 1 }],
+        [[[3, 4, 3], [1, 3, 2]], { 4 => 2, 5 => 3, 6 => 3, 7 => 1 }]
+      ].freeze
 
-    # Strings for displaying test results.
-    RESULT_TEXT = { pass: '✔', fail: '✘ <- failure!', skip: '☂' }.freeze
+      # Strings for displaying test results.
+      RESULT_TEXT = { pass: '✔', fail: '✘ <- failure!', skip: '☂' }.freeze
 
-    # Check all tests defined in {TEST_DATA}.
-    #
-    # @param calculators [Array<FrequenciesCalculator>]
-    # @param report_style [:full, :quiet]
-    # @return [Boolean] whether there are no failing tests
-    def call(calculators, report_style)
-      results = TEST_DATA.to_h { |test| run_test(test, calculators) }
-      full_report(results) if report_style == :full
-      results.values.none? { |test_result| test_result.values.any? { _1 == :fail } }
-    end
-
-    private
-
-    # @param test [Array(Array<Integer, Array<Integer>>, Hash{Integer => Integer})]
-    #   pair of a dice list definition and expected results
-    # @return [Array(Array<AbstractDie>, Hash{FrequenciesCalculator => :pass, :fail, :skip})]
-    #   result of running the test in a format suitable for +#to_h+
-    def run_test(test, calculators)
-      dice = build_dice(test.first)
-      test_result = calculators.each_with_object({}) do |calculator, hash|
-        hash[calculator] =
-          if calculator.valid_for?(dice)
-            calculator.call(dice) == test.last ? :pass : :fail
-          else
-            :skip
-          end
+      # Check all tests defined in {TEST_DATA}.
+      #
+      # @param calculators [Array<FrequenciesCalculator>]
+      # @param report_style [:full, :quiet]
+      # @return [Boolean] whether there are no failing tests
+      def call(calculators, report_style)
+        results = TEST_DATA.to_h { |test| run_test(test, calculators) }
+        full_report(results) if report_style == :full
+        results.values.none? { |test_result| test_result.values.any? { _1 == :fail } }
       end
-      [dice, test_result]
-    end
 
-    # Build a list of {AbstractDie} objects from a plain definition.
-    #
-    # @param definition [Array<Integer, Array<Integer>>]
-    # @return [Array<AbstractDie>]
-    def build_dice(definition)
-      definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : AbstractDie.new(_1) }
-    end
+      private
 
-    # Print results of running all tests.
-    def full_report(results)
-      results.each do |dice, test_result|
-        print "#{AbstractDie.describe(dice)}:\n"
-        test_result.each do |calculator, result|
-          print "  #{calculator.class}: "
-          puts RESULT_TEXT[result]
+      # @param test [Array(Array<Integer, Array<Integer>>, Hash{Integer => Integer})]
+      #   pair of a dice list definition and expected results
+      # @return [Array(Array<AbstractDie>, Hash{FrequenciesCalculator => :pass, :fail, :skip})]
+      #   result of running the test in a format suitable for +#to_h+
+      def run_test(test, calculators)
+        dice = build_dice(test.first)
+        test_result = calculators.each_with_object({}) do |calculator, hash|
+          hash[calculator] =
+            if calculator.valid_for?(dice)
+              calculator.call(dice) == test.last ? :pass : :fail
+            else
+              :skip
+            end
+        end
+        [dice, test_result]
+      end
+
+      # Build a list of {AbstractDie} objects from a plain definition.
+      #
+      # @param definition [Array<Integer, Array<Integer>>]
+      # @return [Array<AbstractDie>]
+      def build_dice(definition)
+        definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : AbstractDie.new(_1) }
+      end
+
+      # Print results of running all tests.
+      def full_report(results)
+        results.each do |dice, test_result|
+          print "#{AbstractDie.describe(dice)}:\n"
+          test_result.each do |calculator, result|
+            print "  #{calculator.class}: "
+            puts RESULT_TEXT[result]
+          end
         end
       end
     end
@@ -384,7 +386,7 @@ option_parser = OptionParser.new do |parser|
   parser.version = Dicey::VERSION
   parser.on('--test [REPORT_STYLE]', %w[full quiet], 'Check predefined calculation cases and exit.',
             'REPORT_STYLE can be: `full` or `quiet` (no output).', '`full` is default.') do |report_style|
-    exit Dicey::TestRunner.new.call(calculators, report_style&.to_sym || :full)
+    exit Dicey::SumFrequencyCalculators::TestRunner.new.call(calculators, report_style&.to_sym || :full)
   end
   parser.on('-f', '--format FORMAT', formatters, 'Select output format for results.',
             "FORMAT can be: #{formatters.keys.map { "`#{_1}`" }.join(', ')}.", '`list` is default.')
