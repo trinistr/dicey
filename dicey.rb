@@ -12,6 +12,9 @@
 module Dicey
   VERSION = '0.7.0'
 
+  # General error for Dicey.
+  class DiceError < StandardError; end
+
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
   class AbstractDie
@@ -84,6 +87,42 @@ module Dicey
 
     def to_s
       sides_num <= D6.size ? D6[sides_num - 1] : "[#{sides_num}]"
+    end
+  end
+
+  # Helper class to define die definitions and automatically select the best one.
+  class DieFoundry
+    MOLDS = {
+      # Positive integer goes into the RegularDie mold.
+      ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
+      # List of numbers goes into the AbstractDie mold.
+      ->(d) { /\A\d+(?:,\d+)*\z/.match?(d) } => :weirdly_shaped_mold,
+      # Anything else is spilled on the floor.
+      ->(*) { true } => :broken_mold
+    }.freeze
+
+    # Cast a die definition into a mold to make a die.
+    #
+    # @param definition [String] die shape, refer to {MOLDS} for possible variants
+    # @return [AbstractDie, RegularDie]
+    # @raise [DiceError] if no mold fits the definition
+    def cast(definition)
+      _shape, mold = MOLDS.find { |shape, _mold| shape.call(definition) }
+      send(mold, definition)
+    end
+
+    private
+
+    def regular_mold(definition)
+      RegularDie.new(definition.to_i)
+    end
+
+    def weirdly_shaped_mold(definition)
+      AbstractDie.new(definition.split(',').map(&:to_i))
+    end
+
+    def broken_mold(definition)
+      raise DiceError, "can not cast die from `#{definition}`!"
     end
   end
 end
@@ -422,6 +461,7 @@ option_parser = OptionParser.new do |parser|
 end
 options = { format: Dicey::OutputFormatters::ListFormatter, result: :frequencies }
 arguments = option_parser.parse!(into: options)
+raise Dicey::DiceError, "no dice!" if arguments.empty?
 
 # Require libraries only when needed, to cut on run time.
 if options[:format] == Dicey::OutputFormatters::YAMLFormatter
@@ -430,8 +470,11 @@ elsif options[:format] == Dicey::OutputFormatters::JSONFormatter
   require 'json'
 end
 
+# Make dice from the provided definitions.
+foundry = Dicey::DieFoundry.new
+dice = arguments.map { |definition| foundry.cast(definition) }
+
 # Actually run the calculations!
-dice = arguments.map { Dicey::RegularDie.new(_1.to_i) }
 frequencies = calculators.find { _1.valid_for?(dice) }&.call(dice, result: options[:result])
 raise "no calculator could handle these dice!" unless frequencies
 
