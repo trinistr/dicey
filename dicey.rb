@@ -96,7 +96,8 @@ module Dicey
       # Positive integer goes into the RegularDie mold.
       ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
       # List of numbers goes into the AbstractDie mold.
-      ->(d) { /\A\d+(?:,\d+)*\z/.match?(d) } => :weirdly_shaped_mold,
+      ->(d) { /\A-?\d+(?:,-?\d+)*\z/.match?(d) } => :weirdly_shaped_mold,
+      ->(d) { /\A-?\d+(?:\.\d+)(?:,-?\d+(?:\.\d+))*\z/.match?(d) } => :weirdly_precise_mold,
       # Anything else is spilled on the floor.
       ->(*) { true } => :broken_mold
     }.freeze
@@ -121,6 +122,10 @@ module Dicey
       AbstractDie.new(definition.split(',').map(&:to_i))
     end
 
+    def weirdly_precise_mold(definition)
+      AbstractDie.new(definition.split(',').map(&:to_f))
+    end
+
     def broken_mold(definition)
       raise DiceError, "can not cast die from `#{definition}`!"
     end
@@ -142,7 +147,7 @@ module Dicey
         raise "#{self.class} can not handle these dice!" unless valid_for?(dice)
         raise "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
 
-        frequencies = calculate(dice)
+        frequencies = calculate(dice).sort.to_h
         case result
         when :frequencies
           frequencies
@@ -182,7 +187,7 @@ module Dicey
       private
 
       def validate(dice)
-        dice.all? { |die| die.sides_list.all? { _1.is_a?(Integer) } }
+        dice.all? { |die| die.sides_list.all? { _1.is_a?(Numeric) } }
       end
 
       def calculate(dice)
@@ -358,7 +363,11 @@ module Dicey
         [[[3, 17, 21]], { 3 => 1, 17 => 1, 21 => 1 }],
         [[[3, 3, 3, 3, 3, 5, 5, 5]], { 3 => 5, 5 => 3 }],
         [[[1, 4, 6], [1, 4, 6]], { 2 => 1, 5 => 2, 7 => 2, 8 => 1, 10 => 2, 12 => 1 }],
-        [[[3, 4, 3], [1, 3, 2]], { 4 => 2, 5 => 3, 6 => 3, 7 => 1 }]
+        [[[3, 4, 3], [1, 3, 2]], { 4 => 2, 5 => 3, 6 => 3, 7 => 1 }],
+        [[[0, 0], [0, 0, 0], [0], [0, 0, 0, 0]], { 0 => 24 }],
+        [[[-0.5, 0.5, 1], 6],
+         { 0.5 => 1, 1.5 => 2, 2 => 1, 2.5 => 2, 3 => 1, 3.5 => 2, 4 => 1,
+           4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }]
       ].freeze
 
       # Strings for displaying test results.
@@ -461,7 +470,7 @@ option_parser = OptionParser.new do |parser|
 end
 options = { format: Dicey::OutputFormatters::ListFormatter, result: :frequencies }
 arguments = option_parser.parse!(into: options)
-raise Dicey::DiceError, "no dice!" if arguments.empty?
+raise Dicey::DiceError, 'no dice!' if arguments.empty?
 
 # Require libraries only when needed, to cut on run time.
 if options[:format] == Dicey::OutputFormatters::YAMLFormatter
@@ -476,7 +485,7 @@ dice = arguments.map { |definition| foundry.cast(definition) }
 
 # Actually run the calculations!
 frequencies = calculators.find { _1.valid_for?(dice) }&.call(dice, result: options[:result])
-raise "no calculator could handle these dice!" unless frequencies
+raise 'no calculator could handle these dice!' unless frequencies
 
 # Format and output the result.
 output = options[:format].new.call(frequencies, Dicey::AbstractDie.describe(dice))
