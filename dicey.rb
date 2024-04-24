@@ -7,10 +7,11 @@
 
 # Usage: dicey.rb 4 4 4 # calculate frequencies for three 4-sided dice
 # Usage: dicey.rb 3 6 # calculate frequencies for a pair of 3-sided and 6-sided dice
+# Usage: dicey.rb 1,3,5,7 2,4,6,8 # calculate frequencies for a pair of odd and even 4-sided dice
 
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
-  VERSION = '0.7.0'
+  VERSION = '0.8.0'
 
   # General error for Dicey.
   class DiceError < StandardError; end
