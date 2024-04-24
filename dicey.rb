@@ -184,7 +184,7 @@ module Dicey
     # Calculator for a collection of dice using complete iteration (slow).
     #
     # Able to handle {AbstractDie} lists with numeric sides.
-    class GenericFrequenciesCalculator < BaseCalculator
+    class CompleteIterationCalculator < BaseCalculator
       private
 
       def validate(dice)
@@ -229,7 +229,7 @@ module Dicey
     end
 
     # Calculator for {RegularDie} lists with equal number of sides (fast).
-    class RegularFrequenciesCalculator < BaseCalculator
+    class LinearCalculator < BaseCalculator
       private
 
       def validate(dice)
@@ -428,8 +428,8 @@ end
 
 # List of calculators to use, ordered by efficiency.
 calculators = [
-  Dicey::SumFrequencyCalculators::RegularFrequenciesCalculator.new,
-  Dicey::SumFrequencyCalculators::GenericFrequenciesCalculator.new
+  Dicey::SumFrequencyCalculators::LinearCalculator.new,
+  Dicey::SumFrequencyCalculators::CompleteIterationCalculator.new
 ]
 # Allowed result types.
 result_types = Dicey::SumFrequencyCalculators::BaseCalculator::RESULT_TYPES.to_h { [_1.to_s, _1.to_sym] }
