@@ -14,7 +14,7 @@ module Dicey
   VERSION = '0.8.0'
 
   # General error for Dicey.
-  class DiceError < StandardError; end
+  class DiceyError < StandardError; end
 
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
@@ -107,7 +107,7 @@ module Dicey
     #
     # @param definition [String] die shape, refer to {MOLDS} for possible variants
     # @return [AbstractDie, RegularDie]
-    # @raise [DiceError] if no mold fits the definition
+    # @raise [DiceyError] if no mold fits the definition
     def cast(definition)
       _shape, mold = MOLDS.find { |shape, _mold| shape.call(definition) }
       send(mold, definition)
@@ -128,7 +128,7 @@ module Dicey
     end
 
     def broken_mold(definition)
-      raise DiceError, "can not cast die from `#{definition}`!"
+      raise DiceyError, "can not cast die from `#{definition}`!"
     end
   end
 end
@@ -142,25 +142,20 @@ module Dicey
 
       # @param dice [Enumerable<AbstractDie>]
       # @param result [:frequencies, :probabilities]
-      # @return [Hash{Integer => Integer}] frequencies of each sum
+      # @return [Hash{Numeric => Numeric}] frequencies of each sum
       # @raise [RuntimeError] if dice list is invalid for the calculator
       def call(dice, result: :frequencies)
         raise "#{self.class} can not handle these dice!" unless valid_for?(dice)
         raise "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
 
         frequencies = calculate(dice).sort.to_h
-        case result
-        when :frequencies
-          frequencies
-        when :probabilities
-          total = frequencies.values.sum
-          frequencies.transform_values { _1.fdiv(total) }
-        end
+        verify_result(frequencies, dice)
+        transform_result(frequencies, result)
       end
 
       # Whether this calculator can be used for the list of dice.
       #
-      # @param dice [Enumerable<RegularDie>]
+      # @param dice [Enumerable<AbstractDie>]
       # @return [Boolean]
       def valid_for?(dice)
         dice.is_a?(Enumerable) && dice.all? { _1.is_a?(AbstractDie) } && validate(dice)
@@ -179,12 +174,42 @@ module Dicey
       def calculate(dice)
         raise NotImplementedError
       end
+
+      # Check that resulting frequencies actually add up to what they are supposed to be.
+      #
+      # @param frequencies [Hash{Numeric => Integer}]
+      # @param dice [Enumerable<AbstractDie>]
+      # @return [void]
+      # @raise [DiceyError] if result is wrong
+      def verify_result(frequencies, dice)
+        valid = frequencies.values.sum == dice.map(&:sides_num).reduce(:*)
+        raise DiceyError, 'calculator returned invalid results!' unless valid
+      end
+
+      # Transform calculated frequencies to requested result_type, if needed.
+      #
+      # @param frequencies [Hash{Numeric => Integer}]
+      # @param result_type [Symbol] one of {RESULT_TYPES}
+      # @return [Hash{Numeric => Numeric}]
+      def transform_result(frequencies, result_type)
+        case result_type
+        when :frequencies
+          frequencies
+        when :probabilities
+          total = frequencies.values.sum
+          frequencies.transform_values { _1.fdiv(total) }
+        end
+      end
     end
 
-    # Calculator for a collection of dice using complete iteration (slow).
+    # Calculator for a collection of dice using complete iteration (very slow).
     #
-    # Able to handle {AbstractDie} lists with numeric sides.
-    class CompleteIterationCalculator < BaseCalculator
+    # Able to handle {AbstractDie} lists with arbitrary numeric sides.
+    class CompleteIteration < BaseCalculator
+      def complexity(dice)
+        dice.reduce(1) { |r, die| r * die.sides_num }
+      end
+
       private
 
       def validate(dice)
@@ -228,8 +253,12 @@ module Dicey
       end
     end
 
-    # Calculator for {RegularDie} lists with equal number of sides (fast).
-    class LinearCalculator < BaseCalculator
+    # Calculator for {RegularDie} lists with equal number of positive integer sides (fast).
+    #
+    # Based on extension of Pascal's triangle for a higher number of coefficients.
+    # @see https://en.wikipedia.org/wiki/Pascal%27s_triangle
+    # @see https://en.wikipedia.org/wiki/Trinomial_triangle
+    class MultinomialCoefficients < BaseCalculator
       private
 
       def validate(dice)
@@ -252,8 +281,6 @@ module Dicey
       # @param sides [Integer] must be positive
       # @param throw_away_garbage [Boolean] whether to discard unused coefficients (debug option)
       # @return [Array<Integer>]
-      # @see https://en.wikipedia.org/wiki/Pascal%27s_triangle
-      # @see https://en.wikipedia.org/wiki/Trinomial_triangle
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
         # This builds a triangular matrix where each first element is a 1.
         # Each element is a sum of `m` elements in the previous row with indices less or equal to its,
@@ -355,51 +382,52 @@ module Dicey
         [[2, 2], { 2 => 1, 3 => 2, 4 => 1 }],
         [[3, 3], { 2 => 1, 3 => 2, 4 => 3, 5 => 2, 6 => 1 }],
         [[4, 4], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 3, 7 => 2, 8 => 1 }],
+        [[9, 9],
+         { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 5, 7 => 6, 8 => 7, 9 => 8, 10 => 9,
+           11 => 8, 12 => 7, 13 => 6, 14 => 5, 15 => 4, 16 => 3, 17 => 2, 18 => 1 }],
         [[2, 2, 2], { 3 => 1, 4 => 3, 5 => 3, 6 => 1 }],
         [[3, 3, 3], { 3 => 1, 4 => 3, 5 => 6, 6 => 7, 7 => 6, 8 => 3, 9 => 1 }],
         [[2, 2, 2, 2], { 4 => 1, 5 => 4, 6 => 6, 7 => 4, 8 => 1 }],
         [[1, 2, 3], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
         [[3, 2, 1], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
+        [[[0], 1], { 1 => 1 }],
         [[4, 6], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 4, 7 => 4, 8 => 3, 9 => 2, 10 => 1 }],
         [[[3, 17, 21]], { 3 => 1, 17 => 1, 21 => 1 }],
         [[[3, 3, 3, 3, 3, 5, 5, 5]], { 3 => 5, 5 => 3 }],
         [[[1, 4, 6], [1, 4, 6]], { 2 => 1, 5 => 2, 7 => 2, 8 => 1, 10 => 2, 12 => 1 }],
         [[[3, 4, 3], [1, 3, 2]], { 4 => 2, 5 => 3, 6 => 3, 7 => 1 }],
         [[[0, 0], [0, 0, 0], [0], [0, 0, 0, 0]], { 0 => 24 }],
+        [[[0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], { 0 => 12 }],
         [[[-0.5, 0.5, 1], 6],
          { 0.5 => 1, 1.5 => 2, 2 => 1, 2.5 => 2, 3 => 1, 3.5 => 2, 4 => 1,
            4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }]
       ].freeze
 
       # Strings for displaying test results.
-      RESULT_TEXT = { pass: '✔', fail: '✘ <- failure!', skip: '☂' }.freeze
+      RESULT_TEXT = { pass: '✔', fail: '✘ 🠐 failure!', skip: '☂', crash: '⛐ 🠐 crash!' }.freeze
+      FAILURE_RESULTS = %i[fail crash].freeze
 
       # Check all tests defined in {TEST_DATA}.
       #
-      # @param calculators [Array<FrequenciesCalculator>]
+      # @param calculators [Array<BaseCalculator>]
       # @param report_style [:full, :quiet]
       # @return [Boolean] whether there are no failing tests
       def call(calculators, report_style)
         results = TEST_DATA.to_h { |test| run_test(test, calculators) }
         full_report(results) if report_style == :full
-        results.values.none? { |test_result| test_result.values.any? { _1 == :fail } }
+        results.values.none? { |test_result| test_result.values.any? { FAILURE_RESULTS.include?(_1) } }
       end
 
       private
 
-      # @param test [Array(Array<Integer, Array<Integer>>, Hash{Integer => Integer})]
+      # @param test [Array(Array<Integer, Array<Numeric>>, Hash{Numeric => Integer})]
       #   pair of a dice list definition and expected results
-      # @return [Array(Array<AbstractDie>, Hash{FrequenciesCalculator => :pass, :fail, :skip})]
+      # @return [Array(Array<AbstractDie>, Hash{BaseCalculator => :pass, :fail, :skip, :crash})]
       #   result of running the test in a format suitable for +#to_h+
       def run_test(test, calculators)
         dice = build_dice(test.first)
         test_result = calculators.each_with_object({}) do |calculator, hash|
-          hash[calculator] =
-            if calculator.valid_for?(dice)
-              calculator.call(dice) == test.last ? :pass : :fail
-            else
-              :skip
-            end
+          hash[calculator] = run_test_on_calculator(calculator, dice, test.last)
         end
         [dice, test_result]
       end
@@ -410,6 +438,17 @@ module Dicey
       # @return [Array<AbstractDie>]
       def build_dice(definition)
         definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : AbstractDie.new(_1) }
+      end
+
+      # Determine test result for the selected calculator.
+      def run_test_on_calculator(calculator, dice, expectation)
+        if calculator.valid_for?(dice)
+          calculator.call(dice) == expectation ? :pass : :fail
+        else
+          :skip
+        end
+      rescue StandardError
+        :crash
       end
 
       # Print results of running all tests.
@@ -441,7 +480,6 @@ formatters = {
 
 # Parse options and stuff.
 require 'optparse'
-
 option_parser = OptionParser.new do |parser|
   parser.banner = <<~TEXT
     Usage: #{parser.program_name} [options] <number of sides> [<number of sides> ...]
@@ -471,7 +509,7 @@ option_parser = OptionParser.new do |parser|
 end
 options = { format: Dicey::OutputFormatters::ListFormatter, result: :frequencies }
 arguments = option_parser.parse!(into: options)
-raise Dicey::DiceError, 'no dice!' if arguments.empty?
+raise Dicey::DiceyError, 'no dice!' if arguments.empty?
 
 # Require libraries only when needed, to cut on run time.
 if options[:format] == Dicey::OutputFormatters::YAMLFormatter
