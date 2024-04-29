@@ -11,7 +11,7 @@
 
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
-  VERSION = '0.9.0'
+  VERSION = '0.10.0'
 
   # General error for Dicey.
   class DiceyError < StandardError; end
@@ -281,7 +281,9 @@ module Dicey
       end
     end
 
-    # Calculator for {AbstractDie} lists with non-negative integer sides (fast).
+    # Calculator for lists of dice with non-negative integer sides (fast).
+    #
+    # Example dice: (1,2,3,4), (0,1,5,6), (5,4,5,4,5).
     #
     # Based on Kronecker substitution method for polynomial multiplication.
     # @see https://en.wikipedia.org/wiki/Kronecker_substitution
@@ -334,7 +336,7 @@ module Dicey
         end
       end
 
-      # Extract coefficients from the product of polynomial values,
+      # Unpack coefficients from the product of polynomial values,
       # building resulting polynomial.
       #
       # @param product [Integer]
@@ -352,7 +354,9 @@ module Dicey
       end
     end
 
-    # Calculator for {RegularDie} lists with equal number of positive integer sides (fast).
+    # Calculator for multiple equal dice with sides forming an arithmetic sequence (fast).
+    #
+    # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).
     #
     # Based on extension of Pascal's triangle for a higher number of coefficients.
     # @see https://en.wikipedia.org/wiki/Pascal%27s_triangle
@@ -361,23 +365,35 @@ module Dicey
       private
 
       def validate(dice)
-        number_of_sides = dice.first.sides_num
-        dice.all? { _1.is_a?(RegularDie) && _1.sides_num == number_of_sides }
+        first_die = dice.first
+        return false unless first_die.sides_list.all? { _1.is_a?(Numeric) }
+        return false unless dice.all? { _1 == first_die }
+        return true if first_die.sides_num == 1
+
+        check_for_arithemetic_sequence(first_die.sides_list)
+      end
+
+      def check_for_arithemetic_sequence(sides_list)
+        increment = sides_list[1] - sides_list[0]
+        return false if increment.zero?
+
+        sides_list.each_cons(2) { return false if _1 + increment != _2 }
       end
 
       def calculate(dice)
-        number_of_sides = dice.first.sides_num
-        min = dice.size
-        max = dice.size * number_of_sides
-        frequencies = multinomial_coefficients(dice.size, number_of_sides)
-        (min..max).to_a.zip(frequencies).to_h
+        first_die = dice.first
+        number_of_sides = first_die.sides_num
+        number_of_dice = dice.size
+
+        frequencies = multinomial_coefficients(number_of_dice, number_of_sides)
+        result_sums_list(first_die.sides_list, number_of_dice).zip(frequencies).to_h
       end
 
       # Calculate coefficients for a multinomial of the form
       # <tt>(x^1 +...+ x^m)^n</tt>, where +m+ is the number of sides and +n+ is the number of dice.
       #
-      # @param dice [Integer] must be positive
-      # @param sides [Integer] must be positive
+      # @param dice [Integer] number of dice, must be positive
+      # @param sides [Integer] number of sides, must be positive
       # @param throw_away_garbage [Boolean] whether to discard unused coefficients (debug option)
       # @return [Array<Integer>]
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
@@ -408,6 +424,21 @@ module Dicey
           window_range = ((col_index - window_size).clamp(0..)..col_index)
           window_range.sum { |i| previous_row.fetch(i, 0) }
         end
+      end
+
+      # Get sequence of sums which correspond to calculated frequencies.
+      #
+      # @param sides_list [Enumerable<Numeric>]
+      # @param number_of_dice [Integer]
+      # @return [Array<Numeric>]
+      def result_sums_list(sides_list, number_of_dice)
+        first = number_of_dice * sides_list.first
+        last = number_of_dice * sides_list.last
+        return [first] if first == last
+
+        increment = sides_list[1] - sides_list[0]
+        # require "debug"; binding.break
+        Enumerator.produce(first) { _1 + increment }.take_while { (_1 < last) == (first < last) || _1 == last }
       end
     end
   end
@@ -499,7 +530,10 @@ module Dicey
         [[[0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], { 0 => 12 }],
         [[[-0.5, 0.5, 1], 6],
          { 0.5 => 1, 1.5 => 2, 2 => 1, 2.5 => 2, 3 => 1, 3.5 => 2, 4 => 1,
-           4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }]
+           4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }],
+        [[[-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75]],
+         { -0.75 => 1, -0.5 => 3, -0.25 => 6, 0.0 => 10, 0.25 => 15, 0.5 => 18, 0.75 => 19,
+           1.0 => 18, 1.25 => 15, 1.5 => 10, 1.75 => 6, 2.0 => 3, 2.25 => 1 }]
       ].freeze
 
       # Strings for displaying test results.
