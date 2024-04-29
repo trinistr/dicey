@@ -44,7 +44,10 @@ module Dicey
     end
 
     # @param sides_list [Enumerable<Object>]
+    # @raise [DiceyError] if sides_list is empty
     def initialize(sides_list)
+      raise DiceyError, 'dice must have at least one side!' if sides_list.empty?
+
       @sides_list = sides_list.is_a?(Array) ? sides_list.dup.freeze : sides_list.to_a.freeze
       @sides_num = @sides_list.size
 
@@ -170,10 +173,12 @@ module Dicey
       # @param dice [Enumerable<AbstractDie>]
       # @param result [:frequencies, :probabilities]
       # @return [Hash{Numeric => Numeric}] frequencies of each sum
-      # @raise [RuntimeError] if dice list is invalid for the calculator
+      # @raise [DiceyError] if dice list is invalid for the calculator
+      # @raise [DiceyError] if `result` is invalid
+      # @raise [DiceyError] if calculator returned obviously wrong results
       def call(dice, result: :frequencies)
-        raise "#{self.class} can not handle these dice!" unless valid_for?(dice)
-        raise "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
+        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
+        raise DiceyError, "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
 
         frequencies = calculate(dice).sort.to_h
         verify_result(frequencies, dice)
@@ -233,10 +238,6 @@ module Dicey
     #
     # Able to handle {AbstractDie} lists with arbitrary numeric sides.
     class CompleteIteration < BaseCalculator
-      def complexity(dice)
-        dice.reduce(1) { |r, die| r * die.sides_num }
-      end
-
       private
 
       def validate(dice)
@@ -540,11 +541,9 @@ module Dicey
 
       # Determine test result for the selected calculator.
       def run_test_on_calculator(calculator, dice, expectation)
-        if calculator.valid_for?(dice)
-          calculator.call(dice) == expectation ? :pass : :fail
-        else
-          :skip
-        end
+        return :skip unless calculator.valid_for?(dice)
+
+        calculator.call(dice) == expectation ? :pass : :fail
       rescue StandardError
         :crash
       end
@@ -623,7 +622,7 @@ dice = arguments.map { |definition| foundry.cast(definition) }
 
 # Actually run the calculations!
 frequencies = calculators.find { _1.valid_for?(dice) }&.call(dice, result: options[:result])
-raise 'no calculator could handle these dice!' unless frequencies
+raise Dicey::DiceyError, 'no calculator could handle these dice!' unless frequencies
 
 # Format and output the result.
 output = options[:format].new.call(frequencies, Dicey::AbstractDie.describe(dice))
