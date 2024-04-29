@@ -122,8 +122,9 @@ module Dicey
       # Positive integer goes into the RegularDie mold.
       ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
       # List of numbers goes into the AbstractDie mold.
-      ->(d) { /\A-?\d+(?:,-?\d+)*\z/.match?(d) } => :weirdly_shaped_mold,
-      ->(d) { /\A-?\d+(?:\.\d+)(?:,-?\d+(?:\.\d+))*\z/.match?(d) } => :weirdly_precise_mold,
+      ->(d) { /\A-?\d++(?:,-?\d++)*\z/.match?(d) } => :weirdly_shaped_mold,
+      # Real numbers require arbitrary precision arithmetic, which is not enabled by default.
+      ->(d) { /\A-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*\z/.match?(d) } => :weirdly_precise_mold,
       # Anything else is spilled on the floor.
       ->(*) { true } => :broken_mold
     }.freeze
@@ -149,7 +150,8 @@ module Dicey
     end
 
     def weirdly_precise_mold(definition)
-      AbstractDie.new(definition.split(',').map(&:to_f))
+      require 'bigdecimal'
+      AbstractDie.new(definition.split(',').map { BigDecimal(_1) })
     end
 
     def broken_mold(definition)
@@ -208,7 +210,7 @@ module Dicey
       # @raise [DiceyError] if result is wrong
       def verify_result(frequencies, dice)
         valid = frequencies.values.sum == dice.map(&:sides_num).reduce(:*)
-        raise DiceyError, 'calculator returned invalid results!' unless valid
+        raise DiceyError, "calculator #{self.class} returned invalid results!" unless valid
       end
 
       # Transform calculated frequencies to requested result_type, if needed.
