@@ -21,19 +21,31 @@ module Dicey
   class AbstractDie
     attr_reader :sides_list, :sides_num, :enum
 
-    class << self
-      # Get a text representation of a list of dice.
-      #
-      # @param dice [Enumerable<AbstractDie>]
-      # @return [String]
-      def describe(dice)
-        dice.join(';')
-      end
+    @random = Random.new
+
+    # Get a random value using a private instance of Random.
+    # @see Random#rand
+    def self.rand(...)
+      @random.rand(...)
+    end
+
+    # Reset internal randomizer using a new seed.
+    # @see Random.new
+    def self.srand(...)
+      @random = Random.new(...)
+    end
+
+    # Get a text representation of a list of dice.
+    #
+    # @param dice [Enumerable<AbstractDie>]
+    # @return [String]
+    def self.describe(dice)
+      dice.join(';')
     end
 
     # @param sides_list [Enumerable<Object>]
     def initialize(sides_list)
-      @sides_list = sides_list.dup.freeze
+      @sides_list = sides_list.is_a?(Array) ? sides_list.dup.freeze : sides_list.to_a.freeze
       @sides_num = @sides_list.size
 
       sides_enum = @sides_list.to_enum
@@ -45,24 +57,39 @@ module Dicey
       end
     end
 
+    # Get current side of the die.
+    # @return [Object] current side
+    def current
+      @enum.peek
+    end
+
     # Get next side of the die, advancing internal enumerator state.
     # Wraps from last to first side.
-    #
     # @return [Object] next side
     def next
       @enum.next
     end
 
     # Advance internal enumerator state by a random number using {#next}.
-    #
     # @return [Object] rolled side
     def roll
-      rand(0...sides_num).times { self.next }
-      @enum.peek
+      self.class.rand(0...sides_num).times { self.next }
+      current
     end
 
     def to_s
       "(#{sides_list.join(',')})"
+    end
+
+    # Determine if this die and the other one have the same list of sides.
+    # Be aware that differently ordered sides are not considered equal.
+    #
+    # @param other [AbstractDie, Object]
+    # @return [Boolean]
+    def ==(other)
+      return false unless other.is_a?(AbstractDie)
+
+      sides_list == other.sides_list
     end
   end
 
@@ -70,15 +97,13 @@ module Dicey
   class RegularDie < AbstractDie
     D6 = '⚀⚁⚂⚃⚄⚅'
 
-    class << self
-      # Create a list of regular dice with the same number of sides.
-      #
-      # @param dice [Integer]
-      # @param sides [Integer]
-      # @return [Array<RegularDie>]
-      def create_dice(dice, sides)
-        (1..dice).map { new(sides) }
-      end
+    # Create a list of regular dice with the same number of sides.
+    #
+    # @param dice [Integer]
+    # @param sides [Integer]
+    # @return [Array<RegularDie>]
+    def self.create_dice(dice, sides)
+      (1..dice).map { new(sides) }
     end
 
     # @param sides [Integer]
