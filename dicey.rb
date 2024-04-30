@@ -11,7 +11,7 @@
 
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
-  VERSION = '0.10.0'
+  VERSION = '0.10.1'
 
   # General error for Dicey.
   class DiceyError < StandardError; end
@@ -46,9 +46,9 @@ module Dicey
     # @param sides_list [Enumerable<Object>]
     # @raise [DiceyError] if sides_list is empty
     def initialize(sides_list)
-      raise DiceyError, 'dice must have at least one side!' if sides_list.empty?
-
       @sides_list = sides_list.is_a?(Array) ? sides_list.dup.freeze : sides_list.to_a.freeze
+      raise DiceyError, 'dice must have at least one side!' if @sides_list.empty?
+
       @sides_num = @sides_list.size
 
       sides_enum = @sides_list.to_enum
@@ -177,8 +177,8 @@ module Dicey
       # @raise [DiceyError] if `result` is invalid
       # @raise [DiceyError] if calculator returned obviously wrong results
       def call(dice, result: :frequencies)
-        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
         raise DiceyError, "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
+        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
         frequencies = calculate(dice).sort.to_h
         verify_result(frequencies, dice)
