@@ -125,12 +125,14 @@ module Dicey
       # Positive integer goes into the RegularDie mold.
       ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
       # List of numbers goes into the AbstractDie mold.
-      ->(d) { /\A-?\d++(?:,-?\d++)*\z/.match?(d) } => :weirdly_shaped_mold,
+      ->(d) { /\A\(?-?\d++(?:,-?\d++)*\)?\z/.match?(d) } => :weirdly_shaped_mold,
       # Real numbers require arbitrary precision arithmetic, which is not enabled by default.
-      ->(d) { /\A-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*\z/.match?(d) } => :weirdly_precise_mold,
+      ->(d) { /\A\(?-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*+\)?\z/.match?(d) } => :weirdly_precise_mold,
       # Anything else is spilled on the floor.
       ->(*) { true } => :broken_mold
     }.freeze
+
+    BRACKET_STRIPPER = /\A\(?(.+)\)?\z/.freeze
 
     # Cast a die definition into a mold to make a die.
     #
@@ -149,11 +151,13 @@ module Dicey
     end
 
     def weirdly_shaped_mold(definition)
+      definition = definition.match(BRACKET_STRIPPER)[1]
       AbstractDie.new(definition.split(',').map(&:to_i))
     end
 
     def weirdly_precise_mold(definition)
       require 'bigdecimal'
+      definition = definition.match(BRACKET_STRIPPER)[1]
       AbstractDie.new(definition.split(',').map { BigDecimal(_1) })
     end
 
