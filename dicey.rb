@@ -184,8 +184,9 @@ module Dicey
         raise DiceyError, "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
-        frequencies = calculate(dice).sort.to_h
+        frequencies = calculate(dice)
         verify_result(frequencies, dice)
+        frequencies = sort_result(frequencies)
         transform_result(frequencies, result)
       end
 
@@ -220,6 +221,15 @@ module Dicey
       def verify_result(frequencies, dice)
         valid = frequencies.values.sum == dice.map(&:sides_num).reduce(:*)
         raise DiceyError, "calculator #{self.class} returned invalid results!" unless valid
+      end
+
+      # Depending on the order of sides, result may not be in an ascending order,
+      # so it's best to fix that for presentation (if possible).
+      def sort_result(frequencies)
+        frequencies.sort.to_h
+      rescue
+        # Probably Complex numbers got into the mix, leave as is.
+        frequencies
       end
 
       # Transform calculated frequencies to requested result_type, if needed.
