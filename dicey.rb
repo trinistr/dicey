@@ -1,9 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# A little program to calculate frequencies (tallies) of each possible result
-# for a throw of a given collection of dice, drawing result with `gnuplot`.
-# Using dice with exactly equal number of sides is significantly faster.
+# A program to calculate frequencies (or probabilities) of each possible result
+# for a throw of a given collection of dice.
 
 # Usage: dicey.rb 4 4 4 # calculate frequencies for three 4-sided dice
 # Usage: dicey.rb 3 6 # calculate frequencies for a pair of 3-sided and 6-sided dice
@@ -44,7 +43,7 @@ module Dicey
     end
 
     # @param sides_list [Enumerable<Object>]
-    # @raise [DiceyError] if sides_list is empty
+    # @raise [DiceyError] if +sides_list+ is empty
     def initialize(sides_list)
       @sides_list = sides_list.is_a?(Array) ? sides_list.dup.freeze : sides_list.to_a.freeze
       raise DiceyError, 'dice must have at least one side!' if @sides_list.empty?
@@ -80,6 +79,7 @@ module Dicey
       current
     end
 
+    # @return [String]
     def to_s
       "(#{sides_list.join(',')})"
     end
@@ -96,8 +96,21 @@ module Dicey
     end
   end
 
+  # A die which only has numeric sides, with no shenanigans.
+  class NumericDie < AbstractDie
+    # @param sides_list [Enumerable<Numeric>]
+    # @raise [DiceyError] if +sides_list+ contains non-numerical values or is empty
+    def initialize(sides_list)
+      sides_list.each do |value|
+        raise DiceyError, "`#{value}` is not a number!" unless value.is_a?(Numeric)
+      end
+      super
+    end
+  end
+
   # Regular die, which has N sides with numbers from 1 to N.
-  class RegularDie < AbstractDie
+  class RegularDie < NumericDie
+    # Characters to use for small dice.
     D6 = '⚀⚁⚂⚃⚄⚅'
 
     # Create a list of regular dice with the same number of sides.
@@ -114,6 +127,9 @@ module Dicey
       super((1..sides))
     end
 
+    # Dice with 1–6 sides are displayed with a single character.
+    # More than that, and we get into the square bracket territory.
+    # @return [String]
     def to_s
       sides_num <= D6.size ? D6[sides_num - 1] : "[#{sides_num}]"
     end
@@ -121,10 +137,11 @@ module Dicey
 
   # Helper class to define die definitions and automatically select the best one.
   class DieFoundry
+    # Possible molds for the dice. They are matched in the order as written.
     MOLDS = {
       # Positive integer goes into the RegularDie mold.
       ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
-      # List of numbers goes into the AbstractDie mold.
+      # List of numbers goes into the NumericDie mold.
       ->(d) { /\A\(?-?\d++(?:,-?\d++)*\)?\z/.match?(d) } => :weirdly_shaped_mold,
       # Real numbers require arbitrary precision arithmetic, which is not enabled by default.
       ->(d) { /\A\(?-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*+\)?\z/.match?(d) } => :weirdly_precise_mold,
@@ -132,12 +149,13 @@ module Dicey
       ->(*) { true } => :broken_mold
     }.freeze
 
+    # Regexp for removing brackets from lists.
     BRACKET_STRIPPER = /\A\(?(.+)\)?\z/.freeze
 
     # Cast a die definition into a mold to make a die.
     #
     # @param definition [String] die shape, refer to {MOLDS} for possible variants
-    # @return [AbstractDie, RegularDie]
+    # @return [NumericDie, RegularDie]
     # @raise [DiceyError] if no mold fits the definition
     def cast(definition)
       _shape, mold = MOLDS.find { |shape, _mold| shape.call(definition) }
@@ -152,13 +170,13 @@ module Dicey
 
     def weirdly_shaped_mold(definition)
       definition = definition.match(BRACKET_STRIPPER)[1]
-      AbstractDie.new(definition.split(',').map(&:to_i))
+      NumericDie.new(definition.split(',').map(&:to_i))
     end
 
     def weirdly_precise_mold(definition)
       require 'bigdecimal'
       definition = definition.match(BRACKET_STRIPPER)[1]
-      AbstractDie.new(definition.split(',').map { BigDecimal(_1) })
+      NumericDie.new(definition.split(',').map { BigDecimal(_1) })
     end
 
     def broken_mold(definition)
@@ -168,17 +186,19 @@ module Dicey
 end
 
 module Dicey
+  # All the calculators to calculate dice rolls for different collections of dice.
   module SumFrequencyCalculators
     # Base frequencies calculator.
     # @abstract
     class BaseCalculator
+      # Possible values for +result+ argument in {#call}.
       RESULT_TYPES = %i[frequencies probabilities].freeze
 
       # @param dice [Enumerable<AbstractDie>]
       # @param result [:frequencies, :probabilities]
       # @return [Hash{Numeric => Numeric}] frequencies of each sum
       # @raise [DiceyError] if dice list is invalid for the calculator
-      # @raise [DiceyError] if `result` is invalid
+      # @raise [DiceyError] if +result+ is invalid
       # @raise [DiceyError] if calculator returned obviously wrong results
       def call(dice, result: :frequencies)
         raise DiceyError, "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
@@ -248,23 +268,21 @@ module Dicey
       end
     end
 
-    # Calculator for a collection of dice using complete iteration (very slow).
-    #
-    # Able to handle {AbstractDie} lists with arbitrary numeric sides.
-    class CompleteIteration < BaseCalculator
+    # Calculator for a collection of {NumericDie} using exhaustive search (very slow).
+    class BruteForce < BaseCalculator
       private
 
-      def validate(dice)
-        dice.all? { |die| die.sides_list.all? { _1.is_a?(Numeric) } }
-      end
+      # def validate(dice)
+      #   dice.all? { |die| die.is_a?(NumericDie) }
+      # end
 
       def calculate(dice)
-        combine_dice_enumerators(dice).map(&:sum).tally
+        combine_dice_enumerators(dice).map { _1.reduce(:+) }.tally
       end
 
       # Get an enumerator which goes through all possible permutations of dice sides.
       #
-      # @param dice [Enumerable<AbstractDie>]
+      # @param dice [Enumerable<NumericDie>]
       # @return [Enumerator<Array>]
       def combine_dice_enumerators(dice)
         sides_num_list = dice.map(&:sides_num)
@@ -283,6 +301,11 @@ module Dicey
       # then getting next side for second die, resetting first die, and so on.
       # This is analogous to incrementing by 1 in a positional system
       # where each position is a die.
+      #
+      # @param dice [Enumerable<NumericDie>]
+      # @param remaining_iterations [Array<Integer>]
+      # @param current_values [Array<Numeric>]
+      # @return [void]
       def iterate_dice(dice, remaining_iterations, current_values)
         dice.each_with_index do |die, i|
           value = die.next
@@ -320,7 +343,7 @@ module Dicey
       # Turn dice into hashes where keys are side values and values are numbers of those sides,
       # representing corresponding polynomials where side values are powers and numbers are coefficients.
       #
-      # @param dice [Enumerable<AbstractDie>]
+      # @param dice [Enumerable<NumericDie>]
       # @return [Array<Hash{Integer => Integer}>]
       def build_polynomials(dice)
         dice.map { _1.sides_list.tally }
@@ -339,7 +362,7 @@ module Dicey
         1 << coefficient_magnitude
       end
 
-      # Get values of polynomials if `evaluation_point` is substituted for the variable.
+      # Get values of polynomials if +evaluation_point+ is substituted for the variable.
       #
       # @param polynomials [Array<Hash{Integer => Integer}>]
       # @param evaluation_point [Integer]
@@ -380,14 +403,16 @@ module Dicey
 
       def validate(dice)
         first_die = dice.first
-        return false unless first_die.sides_list.all? { _1.is_a?(Numeric) }
+        return false unless first_die.is_a?(NumericDie)
         return false unless dice.all? { _1 == first_die }
         return true if first_die.sides_num == 1
 
-        check_for_arithemetic_sequence(first_die.sides_list)
+        arithmetic_sequence?(first_die.sides_list)
       end
 
-      def check_for_arithemetic_sequence(sides_list)
+      # @param sides_enum [Array<Numeric>]
+      # @return [false, Array<Numeric>]
+      def arithmetic_sequence?(sides_list)
         increment = sides_list[1] - sides_list[0]
         return false if increment.zero?
 
@@ -412,7 +437,7 @@ module Dicey
       # @return [Array<Integer>]
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
         # This builds a triangular matrix where each first element is a 1.
-        # Each element is a sum of `m` elements in the previous row with indices less or equal to its,
+        # Each element is a sum of +m+ elements in the previous row with indices less or equal to its,
         # with out-of-bounds indices corresponding to 0s.
         # Example for m=3:
         # 1
@@ -431,6 +456,10 @@ module Dicey
         coefficients.last
       end
 
+      # @param row_index [Integer]
+      # @param window_size [Integer]
+      # @param previous_row [Array<Integer>]
+      # @return [Array<Integer>]
       def next_row_of_coefficients(row_index, window_size, previous_row)
         length = row_index * window_size + 1
         (0..length).map do |col_index|
@@ -459,6 +488,7 @@ module Dicey
 end
 
 module Dicey
+  # Formatters to output results, to be used with --format.
   module OutputFormatters
     # Base formatter for outputting lists of key-value pairs separated by newlines.
     # Can add an optional description into the result.
@@ -500,12 +530,12 @@ module Dicey
       end
     end
 
-    # Formats a hash as a YAML document under `results` key, with optional `description` key.
+    # Formats a hash as a YAML document under +results+ key, with optional +description+ key.
     class YAMLFormatter < HashFormatter
       METHOD = :to_yaml
     end
 
-    # Formats a hash as a JSON document under `results` key, with optional `description` key.
+    # Formats a hash as a JSON document under +results+ key, with optional +description+ key.
     class JSONFormatter < HashFormatter
       METHOD = :to_json
     end
@@ -547,11 +577,16 @@ module Dicey
            4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }],
         [[[-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75]],
          { -0.75 => 1, -0.5 => 3, -0.25 => 6, 0.0 => 10, 0.25 => 15, 0.5 => 18, 0.75 => 19,
-           1.0 => 18, 1.25 => 15, 1.5 => 10, 1.75 => 6, 2.0 => 3, 2.25 => 1 }]
+           1.0 => 18, 1.25 => 15, 1.5 => 10, 1.75 => 6, 2.0 => 3, 2.25 => 1 }],
+        [[[1.i, 2.i, 3.i], [1, 2, 3]],
+          { Complex(1, 1) => 1, Complex(2, 1) => 1, Complex(3, 1) => 1,
+            Complex(1, 2) => 1, Complex(2, 2) => 1, Complex(3, 2) => 1,
+            Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1}]
       ].freeze
 
       # Strings for displaying test results.
       RESULT_TEXT = { pass: '✔', fail: '✘ 🠐 failure!', skip: '☂', crash: '⛐ 🠐 crash!' }.freeze
+      # Which test results are considered failures.
       FAILURE_RESULTS = %i[fail crash].freeze
 
       # Check all tests defined in {TEST_DATA}.
@@ -569,7 +604,7 @@ module Dicey
 
       # @param test [Array(Array<Integer, Array<Numeric>>, Hash{Numeric => Integer})]
       #   pair of a dice list definition and expected results
-      # @return [Array(Array<AbstractDie>, Hash{BaseCalculator => :pass, :fail, :skip, :crash})]
+      # @return [Array(Array<NumericDie>, Hash{BaseCalculator => :pass, :fail, :skip, :crash})]
       #   result of running the test in a format suitable for +#to_h+
       def run_test(test, calculators)
         dice = build_dice(test.first)
@@ -579,12 +614,12 @@ module Dicey
         [dice, test_result]
       end
 
-      # Build a list of {AbstractDie} objects from a plain definition.
+      # Build a list of {NumericDie} objects from a plain definition.
       #
       # @param definition [Array<Integer, Array<Integer>>]
-      # @return [Array<AbstractDie>]
+      # @return [Array<NumericDie>]
       def build_dice(definition)
-        definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : AbstractDie.new(_1) }
+        definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : NumericDie.new(_1) }
       end
 
       # Determine test result for the selected calculator.
@@ -612,9 +647,9 @@ end
 
 # List of calculators to use, ordered by efficiency.
 calculators = [
-  Dicey::SumFrequencyCalculators::MultinomialCoefficients.new,
   Dicey::SumFrequencyCalculators::KroneckerSubstitution.new,
-  Dicey::SumFrequencyCalculators::CompleteIteration.new
+  Dicey::SumFrequencyCalculators::MultinomialCoefficients.new,
+  Dicey::SumFrequencyCalculators::BruteForce.new
 ]
 # Allowed result types.
 result_types = Dicey::SumFrequencyCalculators::BaseCalculator::RESULT_TYPES.to_h { [_1.to_s, _1.to_sym] }
@@ -628,7 +663,7 @@ formatters = {
 require 'optparse'
 option_parser = OptionParser.new do |parser|
   parser.banner = <<~TEXT
-    Usage: #{parser.program_name} [options] <number of sides> [<number of sides> ...]
+    Usage: #{parser.program_name} [options] <die> [<die> ...]
            #{parser.program_name} --test [full|quiet]
     All option names and arguments can be abbreviated if abbreviation is unambigious.
   TEXT
