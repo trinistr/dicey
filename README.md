@@ -11,7 +11,7 @@ The best way is probably to clone this repo to receive future updates:
 ```sh
 git clone https://github.com/trinistr/dicey.git
 ```
-Alternatively, just download `dicey.rb` (and `gnuplot-for-dicey.rb` if you need it).
+Alternatively, just download `dicey` (and `gnuplot-for-dicey` if you need it).
 That's it.
 
 ### Requirements
@@ -19,7 +19,7 @@ Dicey is developed on Ruby 3.1, but should work fine on 2.7, 3.0, 3.1, 3.2 and 3
 There are no dependencies aside from default gems and common usage will not even load them.
 
 ## No installation
-1. Copy the contents of `dicey.rb`.
+1. Copy the contents of `dicey`.
 2. Head over to https://www.onlinegdb.com/online_ruby_interpreter.
 3. Delete example script and paste previosuly copied code.
 4. Type what you need in the "Command line arguments:" box.
@@ -31,10 +31,10 @@ trying to run Dicey by executing `puts RUBY_VERSION` (see Requirements above).
 
 ## Usage
 
-Following examples assume that `dicey.rb` (or `gnuplot-for-dicey.rb`) is executable
-and is in `$PATH`. You can also just run everything with `ruby dicey.rb` instead.
+Following examples assume that `dicey` (or `gnuplot-for-dicey`) is executable
+and is in `$PATH`. You can also just run everything with `ruby dicey` instead.
 
-💡 *Run `dicey.rb --help` to get a list of all possible options.*
+💡 *Run `dicey --help` to get a list of all possible options.*
 
 ### Example 1
 Let's start with something simple.
@@ -42,7 +42,7 @@ Imagine that your Bard character has Vicious Mockery cantrip with 2d4 damage,
 and you would like to know the distribution of possible damage rolls.
 Run Dicey with two 4s as arguments:
 ```sh
-dicey.rb 4 4
+dicey 4 4
 ```
 It should output the following:
 ```sh
@@ -62,7 +62,7 @@ As can be seen, 5 is the most common result with 4 possible different rolls.
 
 If probability is preferred, there is an option for that:
 ```sh
-dicey.rb 4 4 --result probabilities # or -r p for short
+dicey 4 4 --result probabilities # or -r p for short
 # ⚃;⚃
 2 => 0.0625
 3 => 0.125
@@ -78,7 +78,7 @@ This shows that 5 will probably be rolled a quarter of the time.
 During your quest to end all ends you find a cool Burning Sword which deals
 1d8 slashing damage and 2d4 fire damage on attack. Run Dicey with these dice:
 ```sh
-dicey.rb 8 4 4
+dicey 8 4 4
 # [8];⚃;⚃
 3 => 1
 4 => 3
@@ -98,10 +98,10 @@ dicey.rb 8 4 4
 Results show that while the total range is 3–16, it is much more likely to roll
 numbers in the 6–13 range. That's pretty fire, huh?
 
-If you downloaded `gnuplot-for-dicey.rb` and have `gnuplot` installed, it is possible
+If you downloaded `gnuplot-for-dicey` and have `gnuplot` installed, it is possible
 to turn these results into a graph with a somewhat clunky command:
 ```sh
-dicey.rb 8 4 4 --format gnuplot | gnuplot-for-dicey.rb
+dicey 8 4 4 --format gnuplot | gnuplot-for-dicey
 # --format gnuplot can be abbreviated to -f g
 ```
 This will create a PNG image named `[8];⚃;⚃.png`:
@@ -118,7 +118,7 @@ Thankfully, you know just the program for the job.
 
 Having ran to a computer as fast as you can, you sic Dicey on the problem:
 ```sh
-dicey.rb 1,2,4 4
+dicey 1,2,4 4
 # (1,2,4);⚃
 2 => 1
 3 => 2
@@ -153,7 +153,7 @@ For a further discussion, it is important to understand which classes of dice ex
   (and how would that work anyway?).
 
 💡 *If your die starts with a negative number or only has a single natural side,
-brackets can be employed to force treating it as a sides list, e.g. `dicey.rb '(-1)'`
+brackets can be employed to force treating it as a sides list, e.g. `dicey '(-1)'`
 (quotation is required due to shell processing).*
 
 Dicey is in principle able to handle any numeric dice and some abstract dice
@@ -170,7 +170,7 @@ An algorithm based on fast polynomial multiplication.
 This is the default algorithm, used for most reasonable dice.
 
 - Limitations: only **natural** dice are allowed, including **regular** dice.
-- Example: `dicey.rb 5 3,4,1 '(0)'`
+- Example: `dicey 5 3,4,1 '(0)'`
 - Complexity: `O(m⋅n)`
 
 ### Multinomial coefficients
@@ -179,7 +179,7 @@ the coefficients of the result, though certain restrictions are lifted
 as they don't actually matter for the calculation.
 
 - Limitations: only equal **arithmetic** dice are allowed.
-- Example: `dicey.rb 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
+- Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
 - Complexity: `O(m⋅n²)`
 
 ### Brute force
@@ -189,5 +189,5 @@ allowing to work with completely nonsensical dice, including aforementioned
 dice with strings or complex numbers.
 
 - Limitations: objects on dice sides must implement `+` and all be addable together.
-- Example: `dicey.rb 5 1,0.1,2 1,-1,1,-1,0`
+- Example: `dicey 5 1,0.1,2 1,-1,1,-1,0`
 - Complexity: `O(mⁿ)`

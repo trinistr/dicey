@@ -3,7 +3,7 @@
 
 # Generate an image from dicey results.
 # Requires gnuplot to be installed and in PATH.
-# Usage: dicey.rb 6 6 6 -f gnuplot | gnuplot-for-dicey.rb
+# Usage: dicey 6 6 6 -f gnuplot | gnuplot-for-dicey
 
 require 'tempfile'
 
