@@ -142,7 +142,7 @@ Look no further than **roll** mode introduced in Dicey 0.12:
 ```sh
 dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
 # (0.5e0,0.15e1,0.25e1);⚃
-sum => 0.35e1 # You probably will get a different value here.
+roll => 0.35e1 # You probably will get a different value here.
 ```
 💡 *Roll mode is compatible with `--format`, but not `--result`.*
 

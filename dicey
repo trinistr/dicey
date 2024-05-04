@@ -730,7 +730,7 @@ module Dicey
       dice.each(&:roll)
 
       result = dice.sum(&:current)
-      format.call({ 'sum' => result }, AbstractDie.describe(dice))
+      format.call({ 'roll' => result }, AbstractDie.describe(dice))
     end
 
     private
