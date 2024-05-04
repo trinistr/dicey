@@ -134,8 +134,20 @@ to slightly dip in the middle. Good to know.
 
 💡 *A single integer argument N practically is a shorthand for listing every side from 1 to N.*
 
+### Example 4
+You have a sudden urge to roll dice while only having boring integer dice at home.
+Where to find *the cool* dice though?
+
+Look no further than **roll** mode introduced in Dicey 0.12:
+```sh
+dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
+# (0.5e0,0.15e1,0.25e1);⚃
+sum => 0.35e1 # You probably will get a different value here.
+```
+💡 *Roll mode is compatible with `--format`, but not `--result`.*
+
 ## Diving deeper
-For a further discussion, it is important to understand which classes of dice exist.
+For a further discussion of calculations, it is important to understand which classes of dice exist.
 - **Regular** die — a die with N sides with sequential integers from 1 to N,
   like a classic cubic D6, D20, or even a coin if you assume that it rolls 1 and 2.
   These are dice used for many tabletop games, including role-playing games.
