@@ -548,6 +548,8 @@ end
 return unless $PROGRAM_NAME == __FILE__
 
 module Dicey
+  class Roller; end
+
   module SumFrequencyCalculators
     class Runner; end
     class TestRunner; end
@@ -559,6 +561,8 @@ module Dicey
     class Options
       require 'optparse'
 
+      # Allowed modes (--mode) (only directly selectable).
+      MODES = %w[frequencies roll].freeze
       # Allowed result types (--result).
       RESULT_TYPES = %w[frequencies probabilities].freeze
       # Allowed output formats (--format).
@@ -566,7 +570,7 @@ module Dicey
 
       # Default values for initial values of the options.
       DEFAULT_OPTIONS = {
-        mode: 'roll_frequencies',
+        mode: 'frequencies',
         format: 'list',
         result: 'frequencies'
       }.freeze
@@ -604,12 +608,13 @@ module Dicey
       end
 
       def add_common_options
-        easy_option('-r', '--result RESULT_TYPE', RESULT_TYPES, 'Select type of result to calculate.')
+        easy_option('-m', '--mode MODE', MODES, 'What kind of action or calculation to perform.')
+        easy_option('-r', '--result RESULT_TYPE', RESULT_TYPES,
+                    'Select type of result to calculate (only for frequencies).')
         easy_option('-f', '--format FORMAT', FORMATS, 'Select output format for results.')
       end
 
       def add_test_options
-        # Maybe redefine this with easy_option?
         @parser.on_tail('--test [REPORT_STYLE]', %w[full quiet],
                         'Check predefined calculation cases and exit.',
                         'REPORT_STYLE can be: `full`, `quiet`.', '`full` is default.') do |report_style|
@@ -646,6 +651,7 @@ module Dicey
       SumFrequencyCalculators::BruteForce.new
     ].freeze
 
+    # How to transform option values from command-line arguments to internally significant objects.
     OPTION_TRANSFORMATIONS = {
       mode: ->(v) { v.to_sym },
       result: ->(v) { v.to_sym },
@@ -658,8 +664,9 @@ module Dicey
     # What to run for every mode.
     # Every runner must respond to `call(arguments, **options)` and return true, false or nil.
     RUNNERS = {
-      roll_frequencies: SumFrequencyCalculators::Runner,
-      test: SumFrequencyCalculators::TestRunner
+      roll: Roller.new,
+      frequencies: SumFrequencyCalculators::Runner.new,
+      test: SumFrequencyCalculators::TestRunner.new
     }.freeze
 
     # Run the program, blending everything together.
@@ -673,18 +680,36 @@ module Dicey
       options = options.to_h
       options.each_pair { |k, v| options[k] = OPTION_TRANSFORMATIONS[k][v] || v if OPTION_TRANSFORMATIONS[k] }
       options[:roll_calculators] = ROLL_FREQUENCY_CALCULATORS
-      return_value = RUNNERS[options.delete(:mode)].new.call(arguments, **options)
+      return_value = RUNNERS[options.delete(:mode)].call(arguments, **options)
       return_value.nil? ? true : return_value
+    end
+  end
+
+  # Let the dice roll!
+  class Roller
+    # @param arguments [Array<String>] die definitions
+    # @return [nil]
+    # @raise [DiceyError]
+    def call(arguments, **)
+      raise DiceyError, 'no dice!' if arguments.empty?
+
+      # Make dice from the provided definitions.
+      dice = arguments.map { |definition| die_foundry.cast(definition) }
+      dice.each(&:roll)
+
+      puts dice.sum(&:current)
+    end
+
+    private
+
+    def die_foundry
+      @die_foundry ||= DieFoundry.new
     end
   end
 
   module SumFrequencyCalculators
     # The defaultest runner which calculates roll frequencies from command-line dice.
     class Runner
-      def initialize
-        @die_foundry = DieFoundry.new
-      end
-
       # Transform die definitions to roll frequencies.
       #
       # @param arguments [Array<String>] die definitions
@@ -699,7 +724,7 @@ module Dicey
         require_optional_libraries(format)
 
         # Make dice from the provided definitions.
-        dice = arguments.map { |definition| @die_foundry.cast(definition) }
+        dice = arguments.map { |definition| die_foundry.cast(definition) }
 
         # Actually run the calculations!
         frequencies = roll_calculators.find { _1.valid_for?(dice) }&.call(dice, result_type: result)
@@ -719,9 +744,13 @@ module Dicey
           require 'json'
         end
       end
+
+      def die_foundry
+        @die_foundry ||= DieFoundry.new
+      end
     end
 
-    # A simple testing facility for dealing with diceyness.
+    # A simple testing facility for roll frequency calculators.
     class TestRunner
       # These are manually calculated frequencies,
       # with test cases for pretty much all variations of what this program can handle.
