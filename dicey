@@ -498,7 +498,7 @@ module Dicey
     # Can add an optional description into the result.
     # @abstract
     class KeyValueFormatter
-      # @param hash [Hash{Numeric => Numeric}]
+      # @param hash [Hash{Object => Object}]
       # @param description [String] text to add as a comment.
       # @return [String]
       def call(hash, description = nil)
@@ -523,14 +523,26 @@ module Dicey
     # Can add an optional description into the result.
     # @abstract
     class HashFormatter
-      # @param hash [Hash{Numeric => Numeric}]
+      # @param hash [Hash{Object => Object}]
       # @param description [String] text to add to result as an extra key
       # @return [String]
       def call(hash, description = nil)
+        hash = hash.transform_keys { to_primitive(_1) }
+        hash.transform_values! { to_primitive(_1) }
         output = {}
         output['description'] = description if description
         output['results'] = hash
         output.public_send(self.class::METHOD)
+      end
+
+      private
+
+      def to_primitive(value)
+        primitive?(value) ? value : value.to_s
+      end
+
+      def primitive?(value)
+        value.is_a?(Integer) || value.is_a?(Float) || value.is_a?(String)
       end
     end
 
