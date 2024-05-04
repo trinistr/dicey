@@ -195,19 +195,19 @@ module Dicey
       RESULT_TYPES = %i[frequencies probabilities].freeze
 
       # @param dice [Enumerable<AbstractDie>]
-      # @param result [:frequencies, :probabilities]
+      # @param result_type [:frequencies, :probabilities]
       # @return [Hash{Numeric => Numeric}] frequencies of each sum
       # @raise [DiceyError] if dice list is invalid for the calculator
-      # @raise [DiceyError] if +result+ is invalid
+      # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if calculator returned obviously wrong results
-      def call(dice, result: :frequencies)
-        raise DiceyError, "#{result} is not a valid result type!" unless RESULT_TYPES.include?(result)
+      def call(dice, result_type: :frequencies)
+        raise DiceyError, "#{result_type} is not a valid result type!" unless RESULT_TYPES.include?(result_type)
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
         frequencies = calculate(dice)
         verify_result(frequencies, dice)
         frequencies = sort_result(frequencies)
-        transform_result(frequencies, result)
+        transform_result(frequencies, result_type)
       end
 
       # Whether this calculator can be used for the list of dice.
@@ -494,7 +494,7 @@ module Dicey
     # Can add an optional description into the result.
     # @abstract
     class KeyValueFormatter
-      # @param hash [Hash{Integer => Integer}]
+      # @param hash [Hash{Numeric => Numeric}]
       # @param description [String] text to add as a comment.
       # @return [String]
       def call(hash, description = nil)
@@ -519,7 +519,7 @@ module Dicey
     # Can add an optional description into the result.
     # @abstract
     class HashFormatter
-      # @param hash [Hash{Integer => Integer}]
+      # @param hash [Hash{Numeric => Numeric}]
       # @param description [String] text to add to result as an extra key
       # @return [String]
       def call(hash, description = nil)
@@ -546,6 +546,178 @@ return unless $PROGRAM_NAME == __FILE__
 
 module Dicey
   module SumFrequencyCalculators
+    class Runner; end
+    class TestRunner; end
+  end
+
+  # Slice and dice everything in the Dicey module to produce a useful result.
+  class Blender
+    # Helper class for parsing command-line options and providing help.
+    class Options
+      require 'optparse'
+
+      # Allowed result types (--result).
+      RESULT_TYPES = %w[frequencies probabilities].freeze
+      # Allowed output formats (--format).
+      FORMATS = %w[list gnuplot json yaml].freeze
+
+      # Default values for initial values of the options.
+      DEFAULT_OPTIONS = {
+        mode: 'roll_frequencies',
+        format: 'list',
+        result: 'frequencies'
+      }.freeze
+
+      def initialize(initial_options = DEFAULT_OPTIONS.dup)
+        @options = initial_options
+        @parser = OptionParser.new
+        add_banner_and_version
+        add_common_options
+        add_test_options
+        add_other_options
+      end
+
+      def read(argv)
+        @parser.parse!(argv, into: @options)
+      end
+
+      def [](key)
+        @options[key]
+      end
+
+      def to_h
+        @options.dup
+      end
+
+      private
+
+      def add_banner_and_version
+        @parser.banner = <<~TEXT
+          Usage: #{@parser.program_name} [options] <die> [<die> ...]
+                 #{@parser.program_name} --test [full|quiet]
+          All option names and arguments can be abbreviated if abbreviation is unambiguous.
+        TEXT
+        @parser.version = Dicey::VERSION
+      end
+
+      def add_common_options
+        easy_option('-r', '--result RESULT_TYPE', RESULT_TYPES, 'Select type of result to calculate.')
+        easy_option('-f', '--format FORMAT', FORMATS, 'Select output format for results.')
+      end
+
+      def add_test_options
+        # Maybe redefine this with easy_option?
+        @parser.on_tail('--test [REPORT_STYLE]', %w[full quiet],
+                        'Check predefined calculation cases and exit.',
+                        'REPORT_STYLE can be: `full`, `quiet`.', '`full` is default.') do |report_style|
+          @options[:mode] = :test
+          @options[:report_style] = report_style&.to_sym || :full
+        end
+      end
+
+      def add_other_options
+        @parser.on_tail('-h', '--help', 'Show this help and exit.') do
+          puts @parser.help
+          exit
+        end
+        @parser.on_tail('-v', '--version', 'Show program version and exit.') do
+          puts @parser.ver
+          exit
+        end
+      end
+
+      def easy_option(short, long, values, description, &block)
+        values = values.keys if values.respond_to?(:keys)
+        option_name = long[/[a-z_]+/].to_sym
+        argument_name = long[/[A-Z_]+/]
+        listed_values = "#{argument_name} can be: #{values.map { "`#{_1}`" }.join(', ')}."
+        default_value = "`#{@options[option_name]}` is default." if @options[option_name]
+        @parser.on(*[short, long, values, description, listed_values, default_value].compact, &block)
+      end
+    end
+
+    # List of calculators to use, ordered by efficiency.
+    ROLL_FREQUENCY_CALCULATORS = [
+      SumFrequencyCalculators::KroneckerSubstitution.new,
+      SumFrequencyCalculators::MultinomialCoefficients.new,
+      SumFrequencyCalculators::BruteForce.new
+    ].freeze
+
+    OPTION_TRANSFORMATIONS = {
+      mode: ->(v) { v.to_sym },
+      result: ->(v) { v.to_sym },
+      format: {
+        'list' => OutputFormatters::ListFormatter, 'gnuplot' => OutputFormatters::GnuplotFormatter,
+        'yaml' => OutputFormatters::YAMLFormatter, 'json' => OutputFormatters::JSONFormatter
+      }.freeze
+    }.freeze
+
+    # What to run for every mode.
+    # Every runner must respond to `call(arguments, **options)` and return true, false or nil.
+    RUNNERS = {
+      roll_frequencies: SumFrequencyCalculators::Runner,
+      test: SumFrequencyCalculators::TestRunner
+    }.freeze
+
+    # Run the program, blending everything together.
+    #
+    # @option argv [Array<String>] arguments for the program
+    # @return [Boolea, Object]
+    # @raise [DiceyError] anything can happen
+    def call(argv = ARGV)
+      options = Options.new
+      arguments = options.read(argv)
+      options = options.to_h
+      options.each_pair { |k, v| options[k] = OPTION_TRANSFORMATIONS[k][v] || v if OPTION_TRANSFORMATIONS[k] }
+      options[:roll_calculators] = ROLL_FREQUENCY_CALCULATORS
+      return_value = RUNNERS[options.delete(:mode)].new.call(arguments, **options)
+      return_value.nil? ? true : return_value
+    end
+  end
+
+  module SumFrequencyCalculators
+    # The defaultest runner which calculates roll frequencies from command-line dice.
+    class Runner
+      def initialize
+        @die_foundry = DieFoundry.new
+      end
+
+      # Transform die definitions to roll frequencies.
+      #
+      # @param arguments [Array<String>] die definitions
+      # @param roll_calculators [Array<BaseCalculator>] list of calculators to use
+      # @param format [#call] formatter for output
+      # @param result [Symbol] result type selector
+      # @return [nil]
+      # @raise [DiceyError]
+      def call(arguments, roll_calculators:, format:, result:, **)
+        raise DiceyError, 'no dice!' if arguments.empty?
+
+        require_optional_libraries(format)
+
+        # Make dice from the provided definitions.
+        dice = arguments.map { |definition| @die_foundry.cast(definition) }
+
+        # Actually run the calculations!
+        frequencies = roll_calculators.find { _1.valid_for?(dice) }&.call(dice, result_type: result)
+        raise DiceyError, 'no calculator could handle these dice!' unless frequencies
+
+        print format.new.call(frequencies, AbstractDie.describe(dice))
+      end
+
+      private
+
+      # Require libraries only when needed, to cut on run time.
+      def require_optional_libraries(format)
+        case format
+        when OutputFormatters::YAMLFormatter
+          require 'yaml'
+        when OutputFormatters::JSONFormatter
+          require 'json'
+        end
+      end
+    end
+
     # A simple testing facility for dealing with diceyness.
     class TestRunner
       # These are manually calculated frequencies,
@@ -589,13 +761,13 @@ module Dicey
       # Which test results are considered failures.
       FAILURE_RESULTS = %i[fail crash].freeze
 
-      # Check all tests defined in {TEST_DATA}.
+      # Check all tests defined in {TEST_DATA} with every passed calculator.
       #
-      # @param calculators [Array<BaseCalculator>]
-      # @param report_style [:full, :quiet]
+      # @param roll_calculators [Array<BaseCalculator>]
+      # @param report_style [:full, :quiet] +:quiet+ style does not output any text
       # @return [Boolean] whether there are no failing tests
-      def call(calculators, report_style)
-        results = TEST_DATA.to_h { |test| run_test(test, calculators) }
+      def call(*, roll_calculators:, report_style:, **)
+        results = TEST_DATA.to_h { |test| run_test(test, roll_calculators) }
         full_report(results) if report_style == :full
         results.values.none? { |test_result| test_result.values.any? { FAILURE_RESULTS.include?(_1) } }
       end
@@ -643,125 +815,6 @@ module Dicey
       end
     end
   end
-
-  # Slice and dice everything in the Dicey module to produce a useful result.
-  class Blender
-    # Helper class for parsing command-line options and providing help.
-    class Options
-      require 'optparse'
-
-      # Allowed result types (--result).
-      RESULT_TYPES = %w[frequencies probabilities].freeze
-      # Allowed format types (--format).
-      FORMAT_TYPES = %w[list gnuplot json yaml].freeze
-
-      # Default values for initial values of the options.
-      DEFAULT_OPTIONS = {
-        mode: 'sum_frequency',
-        format: 'list',
-        result: 'frequencies'
-      }.freeze
-
-      def initialize(initial_options = DEFAULT_OPTIONS.dup)
-        @options = initial_options
-        @parser = OptionParser.new
-        add_banner_and_version
-        add_common_options
-        add_other_options
-      end
-
-      def read(argv)
-        @parser.parse!(argv, into: @options)
-      end
-
-      def [](key)
-        @options[key]
-      end
-
-      private
-
-      def add_banner_and_version
-        @parser.banner = <<~TEXT
-          Usage: #{@parser.program_name} [options] <die> [<die> ...]
-                 #{@parser.program_name} --test [full|quiet]
-          All option names and arguments can be abbreviated if abbreviation is unambigious.
-        TEXT
-        @parser.version = Dicey::VERSION
-      end
-
-      def add_common_options
-        @parser.on('-r', '--result TYPE', RESULT_TYPES,
-                   'Select result type for output.',
-                   "TYPE can be: #{RESULT_TYPES.map { "`#{_1}`" }.join(', ')}.",
-                   "`#{@options[:result]}` is default.")
-        @parser.on('-f', '--format FORMAT', FORMAT_TYPES,
-                   'Select output format for results.',
-                   "FORMAT can be: #{FORMAT_TYPES.map { "`#{_1}`" }.join(', ')}.",
-                   "`#{@options[:format]}` is default.")
-      end
-
-      def add_other_options # rubocop:disable Metrics/MethodLength
-        @parser.on_tail('--test [REPORT_STYLE]', %w[full quiet],
-                        'Check predefined calculation cases and exit.',
-                        'REPORT_STYLE can be: `full` or `quiet`.', '`full` is default.') do |report_style|
-          @options[:mode] = :test
-          @options[:result] = report_style.to_sym
-        end
-        @parser.on_tail('-h', '--help', 'Show this help and exit.') do
-          puts @parser.help
-          exit
-        end
-        @parser.on_tail('-v', '--version', 'Show program version and exit.') do
-          puts @parser.ver
-          exit
-        end
-      end
-    end
-
-    # List of calculators to use, ordered by efficiency.
-    CALCULATORS = [
-      Dicey::SumFrequencyCalculators::KroneckerSubstitution.new,
-      Dicey::SumFrequencyCalculators::MultinomialCoefficients.new,
-      Dicey::SumFrequencyCalculators::BruteForce.new
-    ].freeze
-    RESULT_TYPES = Dicey::SumFrequencyCalculators::BaseCalculator::RESULT_TYPES.to_h { [_1.to_s, _1.to_sym] }.freeze
-    FORMATTERS = {
-      'list' => Dicey::OutputFormatters::ListFormatter, 'gnuplot' => Dicey::OutputFormatters::GnuplotFormatter,
-      'yaml' => Dicey::OutputFormatters::YAMLFormatter, 'json' => Dicey::OutputFormatters::JSONFormatter
-    }.freeze
-
-    # Run the program, blending everything together.
-    def call(argv = ARGV)
-      options = Options.new
-      arguments = options.read(argv)
-      run_tests_only(options[:result]) if options[:mode] == :test
-      raise Dicey::DiceyError, 'no dice!' if arguments.empty?
-
-      # Require libraries only when needed, to cut on run time.
-      if options[:format] == Dicey::OutputFormatters::YAMLFormatter
-        require 'yaml'
-      elsif options[:format] == Dicey::OutputFormatters::JSONFormatter
-        require 'json'
-      end
-
-      # Make dice from the provided definitions.
-      foundry = Dicey::DieFoundry.new
-      dice = arguments.map { |definition| foundry.cast(definition) }
-
-      # Actually run the calculations!
-      frequencies = calculators.find { _1.valid_for?(dice) }&.call(dice, result: options[:result])
-      raise Dicey::DiceyError, 'no calculator could handle these dice!' unless frequencies
-
-      # Format the result for output.
-      options[:format].new.call(frequencies, Dicey::AbstractDie.describe(dice))
-    end
-
-    private
-
-    def run_tests_only(report_style)
-      exit SumFrequencyCalculators::TestRunner.new.call(CALCULATORS, report_style)
-    end
-  end
 end
 
-puts Dicey::Blender.new.call
+exit Dicey::Blender.new.call
