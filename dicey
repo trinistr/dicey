@@ -18,21 +18,24 @@ module Dicey
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
   class AbstractDie
-    attr_reader :sides_list, :sides_num, :enum
+    attr_reader :sides_list, :sides_num
 
-    @random = Random.new
+    # rubocop:disable Style/ClassVars
+    # Yes, class variable is actually useful here.
+    @@random = Random.new
 
     # Get a random value using a private instance of Random.
     # @see Random#rand
     def self.rand(...)
-      @random.rand(...)
+      @@random.rand(...)
     end
 
     # Reset internal randomizer using a new seed.
     # @see Random.new
     def self.srand(...)
-      @random = Random.new(...)
+      @@random = Random.new(...)
     end
+    # rubocop:enable Style/ClassVars
 
     # Get a text representation of a list of dice.
     #
