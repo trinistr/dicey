@@ -557,7 +557,7 @@ module Dicey
 
   # Slice and dice everything in the Dicey module to produce a useful result.
   class Blender
-    # Helper class for parsing command-line options and providing help.
+    # Helper class for parsing command-line options and generating help.
     class Options
       require 'optparse'
 
@@ -656,13 +656,13 @@ module Dicey
       mode: ->(v) { v.to_sym },
       result: ->(v) { v.to_sym },
       format: {
-        'list' => OutputFormatters::ListFormatter, 'gnuplot' => OutputFormatters::GnuplotFormatter,
-        'yaml' => OutputFormatters::YAMLFormatter, 'json' => OutputFormatters::JSONFormatter
+        'list' => OutputFormatters::ListFormatter.new, 'gnuplot' => OutputFormatters::GnuplotFormatter.new,
+        'yaml' => OutputFormatters::YAMLFormatter.new, 'json' => OutputFormatters::JSONFormatter.new
       }.freeze
     }.freeze
 
     # What to run for every mode.
-    # Every runner must respond to `call(arguments, **options)` and return true, false or nil.
+    # Every runner must respond to `call(arguments, **options)` and return true, false or String.
     RUNNERS = {
       roll: Roller.new,
       frequencies: SumFrequencyCalculators::Runner.new,
@@ -675,29 +675,49 @@ module Dicey
     # @return [Boolea, Object]
     # @raise [DiceyError] anything can happen
     def call(argv = ARGV)
+      options, arguments = get_options_and_arguments(argv)
+      require_optional_libraries(options)
+      options[:roll_calculators] = ROLL_FREQUENCY_CALCULATORS
+      return_value = RUNNERS[options.delete(:mode)].call(arguments, **options)
+      print return_value if return_value.is_a?(String)
+      !!return_value
+    end
+
+    private
+
+    def get_options_and_arguments(argv)
       options = Options.new
       arguments = options.read(argv)
       options = options.to_h
       options.each_pair { |k, v| options[k] = OPTION_TRANSFORMATIONS[k][v] || v if OPTION_TRANSFORMATIONS[k] }
-      options[:roll_calculators] = ROLL_FREQUENCY_CALCULATORS
-      return_value = RUNNERS[options.delete(:mode)].call(arguments, **options)
-      return_value.nil? ? true : return_value
+      [options, arguments]
+    end
+
+    # Require libraries only when needed, to cut on run time.
+    def require_optional_libraries(options)
+      case options[:format]
+      when OutputFormatters::YAMLFormatter
+        require 'yaml'
+      when OutputFormatters::JSONFormatter
+        require 'json'
+      end
     end
   end
 
   # Let the dice roll!
   class Roller
     # @param arguments [Array<String>] die definitions
+    # @param format [#call] formatter for output
     # @return [nil]
     # @raise [DiceyError]
-    def call(arguments, **)
+    def call(arguments, format:, **)
       raise DiceyError, 'no dice!' if arguments.empty?
 
-      # Make dice from the provided definitions.
       dice = arguments.map { |definition| die_foundry.cast(definition) }
       dice.each(&:roll)
 
-      puts dice.sum(&:current)
+      result = dice.sum(&:current)
+      format.call({ 'sum' => result }, AbstractDie.describe(dice))
     end
 
     private
@@ -721,29 +741,14 @@ module Dicey
       def call(arguments, roll_calculators:, format:, result:, **)
         raise DiceyError, 'no dice!' if arguments.empty?
 
-        require_optional_libraries(format)
-
-        # Make dice from the provided definitions.
         dice = arguments.map { |definition| die_foundry.cast(definition) }
-
-        # Actually run the calculations!
         frequencies = roll_calculators.find { _1.valid_for?(dice) }&.call(dice, result_type: result)
         raise DiceyError, 'no calculator could handle these dice!' unless frequencies
 
-        print format.new.call(frequencies, AbstractDie.describe(dice))
+        format.call(frequencies, AbstractDie.describe(dice))
       end
 
       private
-
-      # Require libraries only when needed, to cut on run time.
-      def require_optional_libraries(format)
-        case format
-        when OutputFormatters::YAMLFormatter
-          require 'yaml'
-        when OutputFormatters::JSONFormatter
-          require 'json'
-        end
-      end
 
       def die_foundry
         @die_foundry ||= DieFoundry.new
