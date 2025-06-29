@@ -7,6 +7,14 @@ In seriousness, this program produces total frequency (probability) distribution
 of all possible dice rolls for a given set of dice.
 Dice in such a set can be different or even have arbitrary numbers on the sides.
 
+## No installation
+
+Thanks to the efforts of Ruby developers, you can try Dicey online!
+1. Head over to https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3
+2. Make sure that "-main.rb" is open
+3. Input arguments between "ARGUMENTS" lines, separated by spaces.
+4. Click "Run code" below the editor.
+
 ## Installation
 
 The best way is probably to clone this repo to receive future updates:
@@ -20,14 +28,6 @@ That's it.
 
 Dicey is developed on Ruby 3.1, but should work fine on 2.7, 3.0, and later versions.
 There are no dependencies aside from default gems and common usage will not even load them.
-
-## No installation
-
-Thanks to the efforts of Ruby developers, you can try Dicey online!
-1. Head over to https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3
-2. Make sure that "-main.rb" is open
-3. Input arguments between "ARGUMENTS" lines, separated by spaces.
-4. Click "Run code" below the editor.
 
 ## Usage
 
