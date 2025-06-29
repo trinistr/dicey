@@ -1,4 +1,5 @@
 # Dicey
+
 The premier solution in total paradigm shift for resolving dicey problems
 of tomorrow, today, used by industry-leading professionals around the world!
 
@@ -7,6 +8,7 @@ of all possible dice rolls for a given set of dice.
 Dice in such a set can be different or even have arbitrary numbers on the sides.
 
 ## Installation
+
 The best way is probably to clone this repo to receive future updates:
 ```sh
 git clone https://github.com/trinistr/dicey.git
@@ -15,19 +17,17 @@ Alternatively, just download `dicey` (and `gnuplot-for-dicey` if you need it).
 That's it.
 
 ### Requirements
-Dicey is developed on Ruby 3.1, but should work fine on 2.7, 3.0, 3.1, 3.2 and 3.3.
+
+Dicey is developed on Ruby 3.1, but should work fine on 2.7, 3.0, and later versions.
 There are no dependencies aside from default gems and common usage will not even load them.
 
 ## No installation
-1. Copy the contents of `dicey`.
-2. Head over to https://www.onlinegdb.com/online_ruby_interpreter.
-3. Delete example script and paste previosuly copied code.
-4. Type what you need in the "Command line arguments:" box.
-5. Click "Run".
 
-This should also work with other online interpreters, but be aware that many
-of them run severely outdated version of Ruby. You can check before
-trying to run Dicey by executing `puts RUBY_VERSION` (see Requirements above).
+Thanks to the efforts of Ruby developers, you can try Dicey online!
+1. Head over to https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3
+2. Make sure that "-main.rb" is open
+3. Input arguments between "ARGUMENTS" lines, separated by spaces.
+4. Click "Run code" below the editor.
 
 ## Usage
 
@@ -37,6 +37,7 @@ and is in `$PATH`. You can also just run everything with `ruby dicey` instead.
 💡 *Run `dicey --help` to get a list of all possible options.*
 
 ### Example 1
+
 Let's start with something simple.
 Imagine that your Bard character has Vicious Mockery cantrip with 2d4 damage,
 and you would like to know the distribution of possible damage rolls.
@@ -75,6 +76,7 @@ dicey 4 4 --result probabilities # or -r p for short
 This shows that 5 will probably be rolled a quarter of the time.
 
 ### Example 2
+
 During your quest to end all ends you find a cool Burning Sword which deals
 1d8 slashing damage and 2d4 fire damage on attack. Run Dicey with these dice:
 ```sh
@@ -110,6 +112,7 @@ This will create a PNG image named `[8];⚃;⚃.png`:
 💡 *It is possible to output JSON or YAML with `--format json` and `--format yaml` respectively.*
 
 ### Example 3
+
 While walking home from work you decide to take a shortcut through a dark alleyway.
 Suddenly, you notice a die lying on the ground.
 Looking closer, it turns out to be a D4, but its 3 side was erased from reality.
@@ -135,6 +138,7 @@ to slightly dip in the middle. Good to know.
 💡 *A single integer argument N practically is a shorthand for listing every side from 1 to N.*
 
 ### Example 4
+
 You have a sudden urge to roll dice while only having boring integer dice at home.
 Where to find *the cool* dice though?
 
@@ -147,6 +151,7 @@ roll => 0.35e1 # You probably will get a different value here.
 💡 *Roll mode is compatible with `--format`, but not `--result`.*
 
 ## Diving deeper
+
 For a further discussion of calculations, it is important to understand which classes of dice exist.
 - **Regular** die — a die with N sides with sequential integers from 1 to N,
   like a classic cubic D6, D20, or even a coin if you assume that it rolls 1 and 2.
@@ -178,6 +183,7 @@ Currently, three algorithms are implemented, with different possibilities and tr
 and has not been rigorously proven.*
 
 ### Kronecker substitution
+
 An algorithm based on fast polynomial multiplication.
 This is the default algorithm, used for most reasonable dice.
 
@@ -186,6 +192,7 @@ This is the default algorithm, used for most reasonable dice.
 - Complexity: `O(m⋅n)`
 
 ### Multinomial coefficients
+
 This one is based on raising a univariate polynomial to a power and using
 the coefficients of the result, though certain restrictions are lifted
 as they don't actually matter for the calculation.
@@ -195,6 +202,7 @@ as they don't actually matter for the calculation.
 - Complexity: `O(m⋅n²)`
 
 ### Brute force
+
 This algorithm goes through every possible dice roll and adds results together.
 While quickly growing terrible in performace, it has the largest input space,
 allowing to work with completely nonsensical dice, including aforementioned
