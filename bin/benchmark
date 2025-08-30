@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Set up LOAD_PATH with Bundler
+require "bundler/setup"
+
+# Load supporting libraries
+require "fileutils"
+
+require "benchmark"
+require "benchmark/ips"
+require "stackprof"
+
+# Load this gem
+gem_name = File.basename(Dir["*.rb", base: "#{__dir__}/../lib"].first)
+require gem_name
+
+# Setup test data
+# ...
+
+# Run benchmark and generate reports
+FileUtils.mkdir_p("tmp")
+report_path = "tmp/benchmark #{Time.now.iso8601} " \
+              "(#{`ruby -v`.chomp}) " \
+              "(commit #{`git rev-parse HEAD`.chomp[0..7]}).json"
+StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
+  Benchmark.ips do |ips|
+    ips.report("true") { true }
+    ips.report("false") { false }
+
+    ips.json!(report_path)
+  end
+end
+puts "Report saved to #{report_path}"
+
+
+# Generate flamegraph to actually understand StackProf's report
+`stackprof tmp/stackprof.dump --d3-flamegraph > tmp/flamegraph.html`
+puts "Flamegraph saved to tmp/flamegraph.html"

@@ -1,0 +1,60 @@
+name: CI
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  schedule:
+  - cron: '53 4 * * TUE'
+jobs:
+  CRuby:
+    uses: ./.github/workflows/cruby.yaml
+  lint:
+    name: Rubocop
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_WITHOUT: 'development'
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Run Rubocop
+      run: bundle exec rubocop -f github
+  signatures:
+    name: RBS
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_WITHOUT: 'development'
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Run RBS
+      run: bundle exec rake rbs
+  coverage:
+    name: Coverage report for PR
+    if: ${{ github.event_name == 'pull_request' }}
+    needs: CRuby
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+    - name: Run RSpec
+      run: bundle exec rake spec
+    - name: Add code coverage comment
+      uses: romeovs/lcov-reporter-action@87a815f34ec27a5826abba44ce09bbc688da58fd
+      with:
+        lcov-file: ./coverage/lcov/object_forge.lcov
+        delete-old-comments: true
