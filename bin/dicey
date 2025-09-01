@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "dicey/cli"
+require_relative "../lib/dicey/cli"
 
 exit Dicey::CLI::Blender.new.call
