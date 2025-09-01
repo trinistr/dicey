@@ -14,7 +14,7 @@ module Dicey
 
       def calculate(dice)
         # TODO: Replace `combine_dice_enumerators` with `Enumerator.product`.
-        combine_dice_enumerators(dice).map { _1.reduce(:+) }.tally
+        combine_dice_enumerators(dice).map(&:sum).tally
       end
 
       # Get an enumerator which goes through all possible permutations of dice sides.

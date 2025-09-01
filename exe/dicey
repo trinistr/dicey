@@ -98,8 +98,8 @@ module Dicey
 
     # How to transform option values from command-line arguments to internally significant objects.
     OPTION_TRANSFORMATIONS = {
-      mode: ->(v) { v.to_sym },
-      result: ->(v) { v.to_sym },
+      mode: lambda(&:to_sym),
+      result: lambda(&:to_sym),
       format: {
         "list" => OutputFormatters::ListFormatter.new,
         "gnuplot" => OutputFormatters::GnuplotFormatter.new,
