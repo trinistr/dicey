@@ -1,0 +1,8 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # Default policy for official actions.
+        actions/*: ref-pin
+        # Allow Ruby's official setup action, as it is continuously updated with new versions.
+        ruby/setup-ruby: ref-pin

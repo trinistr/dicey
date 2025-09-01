@@ -1,0 +1,3 @@
+module Dicey
+  VERSION: String
+end
