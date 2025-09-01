@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.13.0...main](https://github.com/trinistr/dicey/compare/v0.13.0...main)
+
+## [v0.13.0] — 2025-09-01
+
 This update is me finally packaging **Dicey** in a gem format. There are no changes in functionality otherwise.
 
 > [!IMPORTANT]
@@ -17,7 +21,7 @@ This update is me finally packaging **Dicey** in a gem format. There are no chan
 - Rename `gnuplot-for-dicey` to `exe/dicey-to-gnuplot` (note the changed basename).
 - Split all classes into their own files with a proper directory structure.
 
-[Compare v0.12.1..main](https://github.com/trinistr/dicey/compare/v0.12.1...main)
+[Compare v0.12.1..main](https://github.com/trinistr/dicey/compare/v0.12.1...v0.13.0)
 
 ## [v0.12.1] — 2025-06-29
 
@@ -162,6 +166,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.13.0]: https://github.com/trinistr/dicey/tree/v0.13.0
 [v0.12.1]: https://github.com/trinistr/dicey/tree/v0.12.1
 [v0.12.0]: https://github.com/trinistr/dicey/tree/v0.12.0
 [v0.11.0]: https://github.com/trinistr/dicey/tree/v0.11.0
