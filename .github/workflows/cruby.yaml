@@ -16,6 +16,11 @@ jobs:
         - '3.3'
         - '3.4'
         experimental: [false]
+        include:
+          - ruby: '3.1.0'
+            rubygems: '3.3.26'
+          - ruby: '3.1'
+            rubygems: '3.3.26'
     continue-on-error: ${{ matrix.experimental }}
     env:
       BUNDLE_WITHOUT: 'development'
@@ -27,6 +32,7 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
+        rubygems: ${{ matrix.rubygems || 'default' }}
         bundler-cache: true
     - name: Run RSpec
       run: bundle exec rake spec
