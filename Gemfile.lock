@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dicey (0.0.0)
+    dicey (0.12.1)
 
 GEM
   remote: https://rubygems.org/
@@ -192,4 +192,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   2.7.1
+   2.5.23
