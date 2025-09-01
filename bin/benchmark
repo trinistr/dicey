@@ -33,7 +33,6 @@ StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
 end
 puts "Report saved to #{report_path}"
 
-
 # Generate flamegraph to actually understand StackProf's report
 `stackprof tmp/stackprof.dump --d3-flamegraph > tmp/flamegraph.html`
 puts "Flamegraph saved to tmp/flamegraph.html"

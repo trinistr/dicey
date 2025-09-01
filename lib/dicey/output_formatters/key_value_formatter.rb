@@ -10,7 +10,7 @@ module Dicey
       # @param description [String] text to add as a comment.
       # @return [String]
       def call(hash, description = nil)
-        initial_string = description ? +"# #{description}\n" : String.new
+        initial_string = description ? "# #{description}\n" : String.new
         hash.each_with_object(initial_string) do |(key, value), output|
           output << "#{key}#{self.class::SEPARATOR}#{value}\n"
         end

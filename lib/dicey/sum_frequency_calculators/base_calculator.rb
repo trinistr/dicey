@@ -15,7 +15,9 @@ module Dicey
       # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if calculator returned obviously wrong results
       def call(dice, result_type: :frequencies)
-        raise DiceyError, "#{result_type} is not a valid result type!" unless RESULT_TYPES.include?(result_type)
+        unless RESULT_TYPES.include?(result_type)
+          raise DiceyError, "#{result_type} is not a valid result type!"
+        end
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
         frequencies = calculate(dice)
@@ -61,7 +63,7 @@ module Dicey
       # so it's best to fix that for presentation (if possible).
       def sort_result(frequencies)
         frequencies.sort.to_h
-      rescue StandardError
+      rescue
         # Probably Complex numbers got into the mix, leave as is.
         frequencies
       end
@@ -78,9 +80,10 @@ module Dicey
         when :probabilities
           total = frequencies.values.sum
           frequencies.transform_values { _1.fdiv(total) }
+        else
+          # Invalid, but was already checked in #call.
         end
       end
     end
   end
 end
-

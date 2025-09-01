@@ -72,7 +72,7 @@ module Dicey
 
     # @return [String]
     def to_s
-      "(#{sides_list.join(',')})"
+      "(#{sides_list.join(",")})"
     end
 
     # Determine if this die and the other one have the same list of sides.

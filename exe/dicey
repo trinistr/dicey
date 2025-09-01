@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative "../lib/dicey"
+require "dicey"
 
 module Dicey
   # Slice and dice everything in the Dicey module to produce a useful result.
@@ -18,11 +18,7 @@ module Dicey
       FORMATS = %w[list gnuplot json yaml].freeze
 
       # Default values for initial values of the options.
-      DEFAULT_OPTIONS = {
-        mode: "frequencies",
-        format: "list",
-        result: "frequencies"
-      }.freeze
+      DEFAULT_OPTIONS = { mode: "frequencies", format: "list", result: "frequencies" }.freeze
 
       def initialize(initial_options = DEFAULT_OPTIONS.dup)
         @options = initial_options
@@ -83,13 +79,13 @@ module Dicey
         end
       end
 
-      def easy_option(short, long, values, description, &block)
+      def easy_option(short, long, values, description, &)
         values = values.keys if values.respond_to?(:keys)
         option_name = long[/[a-z_]+/].to_sym
         argument_name = long[/[A-Z_]+/]
-        listed_values = "#{argument_name} can be: #{values.map { "`#{_1}`" }.join(', ')}."
+        listed_values = "#{argument_name} can be: #{values.map { "`#{_1}`" }.join(", ")}."
         default_value = "`#{@options[option_name]}` is default." if @options[option_name]
-        @parser.on(*[short, long, values, description, listed_values, default_value].compact, &block)
+        @parser.on(*[short, long, values, description, listed_values, default_value].compact, &)
       end
     end
 
@@ -97,7 +93,7 @@ module Dicey
     ROLL_FREQUENCY_CALCULATORS = [
       SumFrequencyCalculators::KroneckerSubstitution.new,
       SumFrequencyCalculators::MultinomialCoefficients.new,
-      SumFrequencyCalculators::BruteForce.new
+      SumFrequencyCalculators::BruteForce.new,
     ].freeze
 
     # How to transform option values from command-line arguments to internally significant objects.
@@ -105,9 +101,11 @@ module Dicey
       mode: ->(v) { v.to_sym },
       result: ->(v) { v.to_sym },
       format: {
-        "list" => OutputFormatters::ListFormatter.new, "gnuplot" => OutputFormatters::GnuplotFormatter.new,
-        "yaml" => OutputFormatters::YAMLFormatter.new, "json" => OutputFormatters::JSONFormatter.new
-      }.freeze
+        "list" => OutputFormatters::ListFormatter.new,
+        "gnuplot" => OutputFormatters::GnuplotFormatter.new,
+        "yaml" => OutputFormatters::YAMLFormatter.new,
+        "json" => OutputFormatters::JSONFormatter.new,
+      }.freeze,
     }.freeze
 
     # What to run for every mode.
@@ -115,7 +113,7 @@ module Dicey
     RUNNERS = {
       roll: Roller.new,
       frequencies: SumFrequencyCalculators::Runner.new,
-      test: SumFrequencyCalculators::TestRunner.new
+      test: SumFrequencyCalculators::TestRunner.new,
     }.freeze
 
     # Run the program, blending everything together.
@@ -138,7 +136,9 @@ module Dicey
       options = Options.new
       arguments = options.read(argv)
       options = options.to_h
-      options.each_pair { |k, v| options[k] = OPTION_TRANSFORMATIONS[k][v] || v if OPTION_TRANSFORMATIONS[k] }
+      options.each_pair do |k, v|
+        options[k] = OPTION_TRANSFORMATIONS[k][v] || v if OPTION_TRANSFORMATIONS[k]
+      end
       [options, arguments]
     end
 
@@ -149,6 +149,8 @@ module Dicey
         require "yaml"
       when OutputFormatters::JSONFormatter
         require "json"
+      else
+        # No additional libraries needed
       end
     end
   end

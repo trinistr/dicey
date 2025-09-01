@@ -13,9 +13,11 @@ module Dicey
       # List of numbers goes into the NumericDie mold.
       ->(d) { /\A\(?-?\d++(?:,-?\d++)*\)?\z/.match?(d) } => :weirdly_shaped_mold,
       # Real numbers require arbitrary precision arithmetic, which is not enabled by default.
-      ->(d) { /\A\(?-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*+\)?\z/.match?(d) } => :weirdly_precise_mold,
+      ->(d) {
+        /\A\(?-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*+\)?\z/.match?(d)
+      } => :weirdly_precise_mold,
       # Anything else is spilled on the floor.
-      ->(*) { true } => :broken_mold
+      ->(*) { true } => :broken_mold,
     }.freeze
 
     # Regexp for removing brackets from lists.

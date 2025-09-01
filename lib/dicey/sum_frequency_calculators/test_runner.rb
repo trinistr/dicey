@@ -6,7 +6,7 @@ require_relative "multinomial_coefficients"
 
 module Dicey
   module SumFrequencyCalculators
-   # A simple testing facility for roll frequency calculators.
+    # A simple testing facility for roll frequency calculators.
     class TestRunner
       # These are manually calculated frequencies,
       # with test cases for pretty much all variations of what this program can handle.
@@ -41,7 +41,7 @@ module Dicey
         [[[1.i, 2.i, 3.i], [1, 2, 3]],
          { Complex(1, 1) => 1, Complex(2, 1) => 1, Complex(3, 1) => 1,
            Complex(1, 2) => 1, Complex(2, 2) => 1, Complex(3, 2) => 1,
-           Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1 }]
+           Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1 }],
       ].freeze
 
       # Strings for displaying test results.
@@ -57,7 +57,9 @@ module Dicey
       def call(*, roll_calculators:, report_style:, **)
         results = TEST_DATA.to_h { |test| run_test(test, roll_calculators) }
         full_report(results) if report_style == :full
-        results.values.none? { |test_result| test_result.values.any? { FAILURE_RESULTS.include?(_1) } }
+        results.values.none? do |test_result|
+          test_result.values.any? { FAILURE_RESULTS.include?(_1) }
+        end
       end
 
       private
@@ -66,11 +68,13 @@ module Dicey
       #   pair of a dice list definition and expected results
       # @return [Array(Array<NumericDie>, Hash{BaseCalculator => :pass, :fail, :skip, :crash})]
       #   result of running the test in a format suitable for +#to_h+
+      # @param [Object] calculators
       def run_test(test, calculators)
         dice = build_dice(test.first)
-        test_result = calculators.each_with_object({}) do |calculator, hash|
-          hash[calculator] = run_test_on_calculator(calculator, dice, test.last)
-        end
+        test_result =
+          calculators.each_with_object({}) do |calculator, hash|
+            hash[calculator] = run_test_on_calculator(calculator, dice, test.last)
+          end
         [dice, test_result]
       end
 
@@ -86,8 +90,8 @@ module Dicey
       def run_test_on_calculator(calculator, dice, expectation)
         return :skip unless calculator.valid_for?(dice)
 
-        calculator.call(dice) == expectation ? :pass : :fail
-      rescue StandardError
+        (calculator.call(dice) == expectation) ? :pass : :fail
+      rescue
         :crash
       end
 
