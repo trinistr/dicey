@@ -64,5 +64,5 @@ jobs:
     - name: Add code coverage comment
       uses: romeovs/lcov-reporter-action@87a815f34ec27a5826abba44ce09bbc688da58fd
       with:
-        lcov-file: ./coverage/lcov/object_forge.lcov
+        lcov-file: ./coverage/lcov/dicey.lcov
         delete-old-comments: true
