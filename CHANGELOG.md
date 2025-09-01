@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
-This update is me finally packaging **Dicey** in a gem format. There are no changes in functionality or behavior otherwise.
+This update is me finally packaging **Dicey** in a gem format. There are no changes in functionality otherwise.
 
 > [!IMPORTANT]
 > **Dicey** has *not* been released on RubyGems yet.

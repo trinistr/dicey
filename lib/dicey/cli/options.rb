@@ -2,8 +2,6 @@
 
 require "optparse"
 
-require "dicey/version"
-
 module Dicey
   module CLI
     # Helper class for parsing command-line options and generating help.
