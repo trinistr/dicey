@@ -16,7 +16,7 @@ jobs:
     name: Rubocop
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITHOUT: 'development'
+      BUNDLE_ONLY: 'default linting'
     steps:
     - uses: actions/checkout@v5
       with:
@@ -31,7 +31,7 @@ jobs:
     name: RBS
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITHOUT: 'development'
+      BUNDLE_ONLY: 'default linting'
     steps:
     - uses: actions/checkout@v5
       with:
@@ -47,6 +47,8 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     needs: CRuby
     runs-on: ubuntu-latest
+    env:
+      BUNDLE_ONLY: 'default test'
     permissions:
       pull-requests: write
     steps:
