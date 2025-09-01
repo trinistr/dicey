@@ -52,8 +52,8 @@ module Dicey
       # @return [Array<Integer>]
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
         # This builds a triangular matrix where each first element is a 1.
-        # Each element is a sum of +m+ elements in the previous row with indices less or equal to its,
-        # with out-of-bounds indices corresponding to 0s.
+        # Each element is a sum of +m+ elements in the previous row
+        # with indices less or equal to its, with out-of-bounds indices corresponding to 0s.
         # Example for m=3:
         # 1
         # 1 1 1
@@ -95,9 +95,9 @@ module Dicey
         return [first] if first == last
 
         increment = sides_list[1] - sides_list[0]
-        Enumerator.produce(first) {
-          _1 + increment
-        }.take_while { (_1 < last) == (first < last) || _1 == last }
+        Enumerator
+          .produce(first) { _1 + increment }
+          .take_while { (_1 < last) == (first < last) || _1 == last }
       end
     end
   end

@@ -29,14 +29,23 @@ module Dicey
         add_other_options
       end
 
+      # Parse command-line arguments as options and return non-option arguments.
+      #
+      # @param argv [Array<String>]
+      # @return [Array<String>] non-option arguments
       def read(argv)
         @parser.parse!(argv, into: @options)
       end
 
+      # Get an option value by key.
+      #
+      # @param key [Symbol]
+      # @return [Object]
       def [](key)
         @options[key]
       end
 
+      # @return [Hash{Symbol => Object}]
       def to_h
         @options.dup
       end
@@ -60,9 +69,11 @@ module Dicey
       end
 
       def add_test_options
-        @parser.on_tail("--test [REPORT_STYLE]", %w[full quiet],
-                        "Check predefined calculation cases and exit.",
-                        "REPORT_STYLE can be: `full`, `quiet`.", "`full` is default.") do |report_style|
+        @parser.on_tail(
+          "--test [REPORT_STYLE]", %w[full quiet],
+          "Check predefined calculation cases and exit.",
+          "REPORT_STYLE can be: `full`, `quiet`.", "`full` is default."
+        ) do |report_style|
           @options[:mode] = :test
           @options[:report_style] = report_style&.to_sym || :full
         end

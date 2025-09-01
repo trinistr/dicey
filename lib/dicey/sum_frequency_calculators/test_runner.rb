@@ -35,7 +35,7 @@ module Dicey
         [[[-0.5, 0.5, 1], 6],
          { 0.5 => 1, 1.5 => 2, 2 => 1, 2.5 => 2, 3 => 1, 3.5 => 2, 4 => 1,
            4.5 => 2, 5 => 1, 5.5 => 2, 6 => 1, 6.5 => 1, 7 => 1 }],
-        [[[-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75], [-0.25, 0.0, 0.25, 0.5, 0.75]],
+        [Array.new(3) { [-0.25, 0.0, 0.25, 0.5, 0.75] },
          { -0.75 => 1, -0.5 => 3, -0.25 => 6, 0.0 => 10, 0.25 => 15, 0.5 => 18, 0.75 => 19,
            1.0 => 18, 1.25 => 15, 1.5 => 10, 1.75 => 6, 2.0 => 3, 2.25 => 1 }],
         [[[1.i, 2.i, 3.i], [1, 2, 3]],
@@ -52,7 +52,8 @@ module Dicey
       # Check all tests defined in {TEST_DATA} with every passed calculator.
       #
       # @param roll_calculators [Array<BaseCalculator>]
-      # @param report_style [:full, :quiet] +:quiet+ style does not output any text
+      # @param report_style [Symbol] one of: +:full+, +:quiet+;
+      #   +:quiet+ style does not output any text
       # @return [Boolean] whether there are no failing tests
       def call(*, roll_calculators:, report_style:, **)
         results = TEST_DATA.to_h { |test| run_test(test, roll_calculators) }
@@ -66,9 +67,9 @@ module Dicey
 
       # @param test [Array(Array<Integer, Array<Numeric>>, Hash{Numeric => Integer})]
       #   pair of a dice list definition and expected results
-      # @return [Array(Array<NumericDie>, Hash{BaseCalculator => :pass, :fail, :skip, :crash})]
+      # @param calculators [Array<BaseCalculator>]
+      # @return [Array(Array<NumericDie>, Hash{BaseCalculator => Symbol})]
       #   result of running the test in a format suitable for +#to_h+
-      # @param [Object] calculators
       def run_test(test, calculators)
         dice = build_dice(test.first)
         test_result =

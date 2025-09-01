@@ -30,7 +30,7 @@ module Dicey
     # @raise [DiceyError] if no mold fits the definition
     def cast(definition)
       _shape, mold = MOLDS.find { |shape, _mold| shape.call(definition) }
-      send(mold, definition)
+      __send__(mold, definition)
     end
 
     private

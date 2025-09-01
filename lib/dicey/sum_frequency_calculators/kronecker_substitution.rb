@@ -27,7 +27,8 @@ module Dicey
       end
 
       # Turn dice into hashes where keys are side values and values are numbers of those sides,
-      # representing corresponding polynomials where side values are powers and numbers are coefficients.
+      # representing corresponding polynomials where
+      # side values are powers and numbers are coefficients.
       #
       # @param dice [Enumerable<NumericDie>]
       # @return [Array<Hash{Integer => Integer}>]

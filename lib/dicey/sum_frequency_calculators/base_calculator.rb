@@ -5,14 +5,14 @@ module Dicey
     # Base frequencies calculator.
     # @abstract
     class BaseCalculator
-      # Possible values for +result+ argument in {#call}.
+      # Possible values for +result_type+ argument in {#call}.
       RESULT_TYPES = %i[frequencies probabilities].freeze
 
       # @param dice [Enumerable<AbstractDie>]
-      # @param result_type [:frequencies, :probabilities]
+      # @param result_type [Symbol] one of {RESULT_TYPES}
       # @return [Hash{Numeric => Numeric}] frequencies of each sum
-      # @raise [DiceyError] if dice list is invalid for the calculator
       # @raise [DiceyError] if +result_type+ is invalid
+      # @raise [DiceyError] if dice list is invalid for the calculator
       # @raise [DiceyError] if calculator returned obviously wrong results
       def call(dice, result_type: :frequencies)
         unless RESULT_TYPES.include?(result_type)
