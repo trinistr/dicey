@@ -15,7 +15,6 @@ jobs:
         - '3.2'
         - '3.3'
         - '3.4'
-        - 'head'
         experimental: [false]
     continue-on-error: ${{ matrix.experimental }}
     env:
