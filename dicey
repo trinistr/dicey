@@ -11,7 +11,7 @@
 
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
-  VERSION = '0.12.0'
+  VERSION = '0.12.1'
 
   # General error for Dicey.
   class DiceyError < StandardError; end
