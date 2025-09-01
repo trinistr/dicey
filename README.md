@@ -172,7 +172,7 @@ For a further discussion of calculations, it is important to understand which cl
 > [!NOTE]
 > 💡 If your die starts with a negative number or only has a single natural side, brackets can be employed to force treating it as a sides list, e.g. `dicey '(-1)'` (quotation is required due to shell processing).
 
-Dicey is in principle able to handle any numeric dice and some abstract dice with well-defined summation (tested on strings), though not every possibility is exposed through command-line interface: that is limited to floating-point values.
+Dicey is in principle able to handle any numeric dice and some abstract dice with well-defined summation (tested on complex numbers), though not every possibility is exposed through command-line interface: that is limited to floating-point values.
 
 Currently, three algorithms are implemented, with different possibilities and trade-offs.
 
@@ -197,9 +197,9 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 ### Brute force
 
-As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including aforementioned dice with strings or complex numbers.
+As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including aforementioned dice with complex numbers.
 
-- Limitations: objects on dice sides must implement `+` and all be addable together.
+- Limitations: objects on dice sides must be numbers.
 - Example: `dicey 5 1,0.1,2 1,-1,1,-1,0`
 - Complexity: `O(mⁿ)`
 

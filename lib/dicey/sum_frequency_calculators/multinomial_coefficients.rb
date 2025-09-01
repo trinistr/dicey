@@ -23,7 +23,7 @@ module Dicey
         arithmetic_sequence?(first_die.sides_list)
       end
 
-      # @param sides_enum [Array<Numeric>]
+      # @param sides_list [Array<Numeric>]
       # @return [false, Array<Numeric>]
       def arithmetic_sequence?(sides_list)
         increment = sides_list[1] - sides_list[0]
@@ -32,6 +32,8 @@ module Dicey
         sides_list.each_cons(2) { return false if _1 + increment != _2 }
       end
 
+      # @param dice [Array<NumericDie>]
+      # @return [Hash{Numeric => Integer}]
       def calculate(dice)
         first_die = dice.first
         number_of_sides = first_die.sides_num
@@ -50,8 +52,8 @@ module Dicey
       # @return [Array<Integer>]
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
         # This builds a triangular matrix where each first element is a 1.
-        # Each element is a sum of +m+ elements in the previous row with indices less or equal to its,
-        # with out-of-bounds indices corresponding to 0s.
+        # Each element is a sum of +m+ elements in the previous row
+        # with indices less or equal to its, with out-of-bounds indices corresponding to 0s.
         # Example for m=3:
         # 1
         # 1 1 1
@@ -74,7 +76,7 @@ module Dicey
       # @param previous_row [Array<Integer>]
       # @return [Array<Integer>]
       def next_row_of_coefficients(row_index, window_size, previous_row)
-        length = row_index * window_size + 1
+        length = (row_index * window_size) + 1
         (0..length).map do |col_index|
           # Have to clamp to 0 to prevent accessing array from the end.
           window_range = ((col_index - window_size).clamp(0..)..col_index)
@@ -93,7 +95,9 @@ module Dicey
         return [first] if first == last
 
         increment = sides_list[1] - sides_list[0]
-        Enumerator.produce(first) { _1 + increment }.take_while { (_1 < last) == (first < last) || _1 == last }
+        Enumerator
+          .produce(first) { _1 + increment }
+          .take_while { (_1 < last) == (first < last) || _1 == last }
       end
     end
   end

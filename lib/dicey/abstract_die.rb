@@ -4,12 +4,7 @@ module Dicey
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers (but preferably so).
   class AbstractDie
-    attr_reader :sides_list, :sides_num
-
     # rubocop:disable Style/ClassVars
-    # Yes, class variable is actually useful here.
-    # TODO: Allow supplying a custom Random.
-    @@random = Random.new
 
     # Get a random value using a private instance of Random.
     # @see Random#rand
@@ -22,6 +17,11 @@ module Dicey
     def self.srand(...)
       @@random = Random.new(...)
     end
+
+    # Yes, class variable is actually useful here.
+    # TODO: Allow supplying a custom Random.
+    @@random = Random.new
+
     # rubocop:enable Style/ClassVars
 
     # Get a text representation of a list of dice.
@@ -31,6 +31,8 @@ module Dicey
     def self.describe(dice)
       dice.join(";")
     end
+
+    attr_reader :sides_list, :sides_num
 
     # @param sides_list [Enumerable<Object>]
     # @raise [DiceyError] if +sides_list+ is empty
@@ -72,7 +74,7 @@ module Dicey
 
     # @return [String]
     def to_s
-      "(#{sides_list.join(',')})"
+      "(#{sides_list.join(",")})"
     end
 
     # Determine if this die and the other one have the same list of sides.

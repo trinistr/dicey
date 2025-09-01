@@ -27,7 +27,8 @@ module Dicey
       end
 
       # Turn dice into hashes where keys are side values and values are numbers of those sides,
-      # representing corresponding polynomials where side values are powers and numbers are coefficients.
+      # representing corresponding polynomials where
+      # side values are powers and numbers are coefficients.
       #
       # @param dice [Enumerable<NumericDie>]
       # @return [Array<Hash{Integer => Integer}>]
@@ -44,7 +45,7 @@ module Dicey
         polynomial_length = polynomials.flat_map(&:keys).max + 1
         e = Math.log2(polynomial_length).ceil
         b = polynomials.flat_map(&:values).max.bit_length
-        coefficient_magnitude = polynomials.size * b + (polynomials.size - 1) * e
+        coefficient_magnitude = (polynomials.size * b) + ((polynomials.size - 1) * e)
         1 << coefficient_magnitude
       end
 
@@ -55,7 +56,7 @@ module Dicey
       # @return [Array<Integer>]
       def evaluate_polynomials(polynomials, evaluation_point)
         polynomials.map do |polynomial|
-          polynomial.sum { |power, coefficient| evaluation_point**power * coefficient }
+          polynomial.sum { |power, coefficient| (evaluation_point**power) * coefficient }
         end
       end
 

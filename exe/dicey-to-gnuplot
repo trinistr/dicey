@@ -16,11 +16,12 @@ Tempfile.create do |file|
     Process.spawn(
       "gnuplot",
       "-e", "set term pngcairo size 1000,600",
-      "-e", %{set output "#{description}.png"},
+      "-e", %(set output "#{description}.png"),
       "-e", "set boxwidth 0.9 relative",
       "-e", "set style fill solid 0.5",
-      "-e", %{plot [][0:] "#{file.path}" using 1:2:xticlabels(1) with boxes title "#{description}",}\
-        %{ "" using 1:2:2 with labels notitle}
+      "-e", "plot [][0:] \"#{file.path}\" " \
+            "using 1:2:xticlabels(1) with boxes title \"#{description}\", " \
+            "'' using 1:2:2 with labels notitle"
     )
   )
 end

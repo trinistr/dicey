@@ -26,7 +26,7 @@ module Dicey
     # More than that, and we get into the square bracket territory.
     # @return [String]
     def to_s
-      sides_num <= D6.size ? D6[sides_num - 1] : "[#{sides_num}]"
+      (sides_num <= D6.size) ? D6[sides_num - 1] : "[#{sides_num}]"
     end
   end
 end
