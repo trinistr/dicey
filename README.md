@@ -27,16 +27,16 @@ For now, the best way is probably to clone this repo to receive future updates:
 git clone https://github.com/trinistr/dicey.git
 ```
 
-After that, you can just run `dicey` from the `exe` directory (as `exe/dicey`, probably).
+Alternatively, you can download the source code as an archive and unpack it.
 
-Alternatively, you can install **Dicey** as a full gem by running `rake install:local` from its directory.
+After that, install **Dicey** as a gem by running `rake install:local` from its directory to use `dicey` and `dicey-to-gnuplot` directly or use executables in `bin/` (*not* `exe/`).
 
 > [!TIP]
 > Versions upto 0.12.1 were packaged as a single executable file. You can still download it from the [release](https://github.com/trinistr/dicey/releases/tag/v0.12.1).
 
 ### Requirements
 
-**Dicey** is developed on Ruby 3.2, but should work fine on 3.0 and later versions. There are no dependencies aside from default gems and common usage will not even load them.
+**Dicey** is developed on Ruby 3.2, but should work fine on 3.1 and later versions. There are no dependencies aside from default gems and common usage will not even load them.
 
 ## Usage
 
