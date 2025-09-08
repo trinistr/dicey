@@ -5,8 +5,8 @@
 require "bundler/setup"
 
 # Load this gem
-gem_name = File.basename(Dir["*.rb", base: "#{__dir__}/../lib"].first)
-require_relative "../lib/#{gem_name}"
+gem_entry = Dir["#{__dir__}/../lib/*.rb"].first
+require_relative gem_entry
 
 # Start interactive console
 require "irb"
