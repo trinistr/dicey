@@ -86,13 +86,15 @@ module Dicey
         end
       end
 
-      def easy_option(short, long, values, description, &)
+      def easy_option(short, long, values, description, &block)
         values = values.keys if values.respond_to?(:keys)
         option_name = long[/[a-z_]+/].to_sym
         argument_name = long[/[A-Z_]+/]
         listed_values = "#{argument_name} can be: #{values.map { "`#{_1}`" }.join(", ")}."
         default_value = "`#{@options[option_name]}` is default." if @options[option_name]
-        @parser.on(*[short, long, values, description, listed_values, default_value].compact, &)
+        @parser.on(
+          *[short, long, values, description, listed_values, default_value].compact, &block
+        )
       end
     end
   end
