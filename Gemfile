@@ -52,5 +52,5 @@ group :development do
   gem "stackprof", require: false
 
   # For console
-  gem "irb", require: false if RUBY_VERSION >= "3.5.0"
+  gem "irb", require: false
 end
