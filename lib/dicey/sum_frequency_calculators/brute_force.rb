@@ -8,50 +8,48 @@ module Dicey
     class BruteForce < BaseCalculator
       private
 
-      # def validate(dice)
-      #   dice.all? { |die| die.is_a?(NumericDie) }
-      # end
+      def validate(dice)
+        dice.all?(NumericDie)
+      end
 
       def calculate(dice)
-        # TODO: Replace `combine_dice_enumerators` with `Enumerator.product`.
         combine_dice_enumerators(dice).map(&:sum).tally
       end
 
-      # Get an enumerator which goes through all possible permutations of dice sides.
-      #
-      # @param dice [Enumerable<NumericDie>]
-      # @return [Enumerator<Array>]
-      def combine_dice_enumerators(dice)
-        sides_num_list = dice.map(&:sides_num)
-        total = sides_num_list.reduce(:*)
-        Enumerator.new(total) do |yielder|
-          current_values = dice.map(&:next)
-          remaining_iterations = sides_num_list
-          total.times do
-            yielder << current_values
-            iterate_dice(dice, remaining_iterations, current_values)
-          end
+      if defined?(Enumerator::Product)
+        # Get an enumerator which goes through all possible permutations of dice sides.
+        #
+        # @param dice [Enumerable<NumericDie>]
+        # @return [Enumerator<Array<Numeric>>]
+        def combine_dice_enumerators(dice)
+          Enumerator::Product.new(*dice.map(&:sides_list))
         end
-      end
-
-      # Iterate through dice, getting next side for first die,
-      # then getting next side for second die, resetting first die, and so on.
-      # This is analogous to incrementing by 1 in a positional system
-      # where each position is a die.
-      #
-      # @param dice [Enumerable<NumericDie>]
-      # @param remaining_iterations [Array<Integer>]
-      # @param current_values [Array<Numeric>]
-      # @return [void]
-      def iterate_dice(dice, remaining_iterations, current_values)
-        dice.each_with_index do |die, i|
-          value = die.next
-          current_values[i] = value
-          remaining_iterations[i] -= 1
-          break if remaining_iterations[i].nonzero?
-
-          remaining_iterations[i] = die.sides_num
+      # :nocov:
+      else
+        # Get an enumerator which goes through all possible permutations of dice sides.
+        #
+        # @param dice [Enumerable<NumericDie>]
+        # @return [Enumerator<Array<Numeric>>]
+        def combine_dice_enumerators(dice)
+          product(dice.map(&:sides_list))
         end
+
+        # Simplified implementation of {Enumerator::Product}.
+        # Adapted from {https://bugs.ruby-lang.org/issues/18685#note-10}.
+        #
+        # @param enums [Enumerable<Enumerable<Numeric>>]
+        # @return [Enumerator<Array<Numeric>>]
+        def product(enums, &block)
+          return to_enum(__method__, enums) unless block_given?
+
+          enums
+            .reverse
+            .reduce(block) { |inner, enum|
+              ->(values) { enum.each_entry { inner.call([*values, _1]) } }
+            }
+            .call([])
+        end
+        # :nocov:
       end
     end
   end
