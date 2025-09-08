@@ -50,4 +50,7 @@ group :development do
   gem "benchmark", require: false
   gem "benchmark-ips", require: false
   gem "stackprof", require: false
+
+  # For console
+  gem "irb", require: false if RUBY_VERSION >= "3.5.0"
 end
