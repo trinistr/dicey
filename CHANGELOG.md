@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Changed**:
+- Rewrite `BruteForce` calculator to be an order of magnitude faster. Uses `Enumerator::Product` if available, otherwise a better implementation than before.
+
+**Fixed**:
+- Allow calling calculators with an empty list, returning an empty hash.
+
 [Compare v0.13.1...main](https://github.com/trinistr/dicey/compare/v0.13.1...main)
 
 ## [v0.13.1] — 2025-09-03
@@ -19,8 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This update is me finally packaging **Dicey** in a gem format. There are no changes in functionality otherwise.
 
-> [!IMPORTANT]
-> **Dicey** has *not* been released on RubyGems yet.
+**Important**: **Dicey** has *not* been released on RubyGems yet.
 
 **Changed**
 - Rename `dicey` to `exe/dicey`.

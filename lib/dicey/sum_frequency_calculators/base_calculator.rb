@@ -18,6 +18,8 @@ module Dicey
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
         end
+        # Short-circuit for a degenerate case.
+        return {} if dice.empty?
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
         frequencies = calculate(dice)
@@ -31,7 +33,7 @@ module Dicey
       # @param dice [Enumerable<AbstractDie>]
       # @return [Boolean]
       def valid_for?(dice)
-        dice.is_a?(Enumerable) && dice.all? { _1.is_a?(AbstractDie) } && validate(dice)
+        dice.is_a?(Enumerable) && dice.all?(AbstractDie) && validate(dice)
       end
 
       private
@@ -55,7 +57,7 @@ module Dicey
       # @return [void]
       # @raise [DiceyError] if result is wrong
       def verify_result(frequencies, dice)
-        valid = frequencies.values.sum == dice.map(&:sides_num).reduce(:*)
+        valid = frequencies.values.sum == (dice.map(&:sides_num).reduce(:*) || 0)
         raise DiceyError, "calculator #{self.class} returned invalid results!" unless valid
       end
 

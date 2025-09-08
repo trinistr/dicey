@@ -1,21 +1,22 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Set up LOAD_PATH with Bundler
-require "bundler/setup"
+# Set up LOAD_PATH with Bundler if needed
+# require "bundler/setup"
 
 # Load supporting libraries
 require "fileutils"
+require "time"
 
 require "benchmark"
 require "benchmark/ips"
 require "stackprof"
 
 # Load this gem
-gem_name = File.basename(Dir["*.rb", base: "#{__dir__}/../lib"].first)
-require gem_name
+gem_entry = Dir["#{__dir__}/../lib/*.rb"].first
+require_relative gem_entry
 
-# Setup test data
+# Set up test data
 # ...
 
 # Run benchmark and generate reports
@@ -25,8 +26,7 @@ report_path = "tmp/benchmark #{Time.now.iso8601} " \
               "(commit #{`git rev-parse HEAD`.chomp[0..7]}).json"
 StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
   Benchmark.ips do |ips|
-    ips.report("true") { true }
-    ips.report("false") { false }
+    ips.report("Brute") { Dicey::SumFrequencyCalculators::BruteForce.new.call(Dicey::RegularDie.create_dice(6, 6)) }
 
     ips.json!(report_path)
   end

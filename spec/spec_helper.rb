@@ -9,7 +9,7 @@ require "dicey"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = "spec/reports/spec_status.txt"
+  config.example_status_persistence_file_path = "tmp/spec_status.txt"
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
