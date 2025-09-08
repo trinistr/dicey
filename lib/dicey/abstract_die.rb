@@ -26,66 +26,91 @@ module Dicey
 
     # Get a text representation of a list of dice.
     #
-    # @param dice [Enumerable<AbstractDie>]
+    # @param dice [Enumerable<AbstractDie>, AbstractDie]
     # @return [String]
     def self.describe(dice)
-      dice.join(";")
+      return dice.to_s if AbstractDie === dice
+      return dice.join(";") if Array === dice
+
+      dice.to_a.join(";")
     end
 
     attr_reader :sides_list, :sides_num
 
-    # @param sides_list [Enumerable<Object>]
+    # @param sides_list [Enumerable<Any>]
     # @raise [DiceyError] if +sides_list+ is empty
     def initialize(sides_list)
-      @sides_list = sides_list.is_a?(Array) ? sides_list.dup.freeze : sides_list.to_a.freeze
+      @sides_list = (Array === sides_list) ? sides_list.dup.freeze : sides_list.to_a.freeze
       raise DiceyError, "dice must have at least one side!" if @sides_list.empty?
 
       @sides_num = @sides_list.size
-
-      sides_enum = @sides_list.to_enum
-      @enum =
-        Enumerator.produce do
-          sides_enum.next
-        rescue StopIteration
-          sides_enum.rewind
-          retry
-        end
+      @current_side_index = 0
     end
 
     # Get current side of the die.
-    # @return [Object] current side
+    #
+    # @return [Any] current side
     def current
-      @enum.peek
+      @sides_list[@current_side_index]
     end
 
-    # Get next side of the die, advancing internal enumerator state.
-    # Wraps from last to first side.
-    # @return [Object] next side
+    # Get next side of the die, advancing internal state.
+    # Starts from first side, wraps from last to first side.
+    #
+    # @return [Any] next side
     def next
-      @enum.next
+      ret = current
+      @current_side_index = (@current_side_index + 1) % @sides_num
+      ret
     end
 
-    # Advance internal enumerator state by a random number using {#next}.
-    # @return [Object] rolled side
+    # Move internal state to a random side.
+    #
+    # @return [Any] rolled side
     def roll
-      self.class.rand(0...sides_num).times { self.next }
+      @current_side_index = self.class.rand(0...@sides_num)
       current
     end
 
     # @return [String]
     def to_s
-      "(#{sides_list.join(",")})"
+      "(#{@sides_list.join(",")})"
     end
 
     # Determine if this die and the other one have the same list of sides.
     # Be aware that differently ordered sides are not considered equal.
     #
-    # @param other [AbstractDie, Object]
+    # @param other [AbstractDie, Any]
     # @return [Boolean]
     def ==(other)
-      return false unless other.is_a?(AbstractDie)
+      AbstractDie === other && same_sides?(other)
+    end
 
-      sides_list == other.sides_list
+    # Determine if this die and the other one are of the same class
+    # and have the same list of sides.
+    # Be aware that differently ordered sides are not considered equal.
+    #
+    # +die_1.eql?(die_2)+ implies +die_1.hash == die_2.hash+.
+    #
+    # @param other [AbstractDie, Any]
+    # @return [Boolean]
+    def eql?(other)
+      self.class === other && same_sides?(other)
+    end
+
+    # Generates an Integer hash value for this object.
+    #
+    # @return [Integer]
+    def hash
+      [self.class, @sides_list].hash
+    end
+
+    private
+
+    # @param other [AbstractDie]
+    # @return [Boolean]
+    def same_sides?(other)
+      @sides_list == other.sides_list
     end
   end
 end
