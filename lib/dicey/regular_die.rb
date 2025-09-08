@@ -11,15 +11,19 @@ module Dicey
     # Create a list of regular dice with the same number of sides.
     #
     # @param dice [Integer]
-    # @param sides [Integer]
+    # @param max [Integer]
     # @return [Array<RegularDie>]
-    def self.create_dice(dice, sides)
-      (1..dice).map { new(sides) }
+    def self.create_dice(dice, max)
+      (1..dice).map { new(max) }
     end
 
-    # @param sides [Integer]
-    def initialize(sides)
-      super((1..sides))
+    # @param max [Integer]
+    def initialize(max)
+      unless Integer === max && max.positive?
+        raise DiceyError, "regular dice can contain only positive integers, #{max.inspect} is not"
+      end
+
+      super((1..max))
     end
 
     # Dice with 1–6 sides are displayed with a single character.

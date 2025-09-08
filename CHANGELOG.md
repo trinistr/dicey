@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Next]
 
 **Changed**:
+- Decrease required Ruby version to 3.0.0 (from 3.1.0).
 - Rewrite `BruteForce` calculator to be an order of magnitude faster. Uses `Enumerator::Product` if available, otherwise a better implementation than before.
+- Change how rolling works to make rolls with very large dice significantly faster. Also optimize numeric dice initialization.
 
 **Fixed**:
 - Allow calling calculators with an empty list, returning an empty hash.
