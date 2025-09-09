@@ -84,7 +84,7 @@ module Dicey
         length = (row_index * window_size) + 1
         (0..length).map do |col_index|
           # Have to clamp to 0 to prevent accessing array from the end.
-          puts "#{row_index}:#{col_index} #{window_size}"
+          puts "#{row_index}:#{col_index} #{window_size}, col-window: #{col_index - window_size}, clamped: #{(col_index - window_size).clamp(0..)}"
           window_range = ((col_index - window_size).clamp(0..)..col_index)
           window_range.sum { |i| previous_row.fetch(i, 0) }
         end
