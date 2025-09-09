@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe "Running built-in tests via CLI" do
+  require "dicey/cli/blender"
+
+  subject(:blender_call) { Dicey::CLI::Blender.new.call(arguments) }
+
+  let(:arguments) { %w[--test quiet] }
+
   it "exits with true" do
-    require "dicey/cli/blender"
-    expect(Dicey::CLI::Blender.new.call(["--test", "quiet"])).to be true
+    expect(blender_call).to be true
   end
 end
