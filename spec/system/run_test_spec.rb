@@ -5,7 +5,7 @@ RSpec.describe "Running built-in tests via CLI" do
 
   subject(:blender_call) { Dicey::CLI::Blender.new.call(arguments) }
 
-  let(:arguments) { %w[--test full] }
+  let(:arguments) { %w[--test quiet] }
 
   it "exits with true" do
     expect(blender_call).to be true
