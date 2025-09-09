@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**:
+- `AbstractDie.from_list` and `AbstractDie.from_count` methods to easily create many dice.
+
+**Removed**:
+- `RegularDie.create_dice` in favor of `AbstractDie.from_count`.
+
 **Changed**:
 - Decrease required Ruby version to 3.0.0 (from 3.1.0).
 - Rewrite `BruteForce` calculator to be an order of magnitude faster. Uses `Enumerator::Product` if available, otherwise a better implementation than before.
-- Change how rolling works to make rolls with very large dice significantly faster. Also optimize numeric dice initialization.
+- Change how rolling works to make rolls with very large dice significantly faster.
+- Optimize numeric (mainly regular) dice initialization.
 
 **Fixed**:
 - Allow calling calculators with an empty list, returning an empty hash.
@@ -82,7 +89,7 @@ This is mostly a bug fix update.
 
 **Fixed**
 - Fix `FrozenError` on Ruby 2.7.
-- Gracefully handle inability to sort results, even if it hurts.
+- Gracefully handle inability to sort results when it doesn't work.
 - Call `#to_a` on sides list before checking if it's empty.
 
 [Compare v0.10.0...v0.10.1](https://github.com/trinistr/dicey/compare/v0.10.0...v0.10.1)

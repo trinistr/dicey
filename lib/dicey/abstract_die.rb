@@ -35,6 +35,25 @@ module Dicey
       dice.to_a.join(";")
     end
 
+    # Create a bunch of different dice at once.
+    #
+    # @param definitions [Array<Enumerable<Any>>, Array<Any>]
+    #   list of definitions suitable for the dice class
+    # @return [Array<AbstractDie>]
+    def self.from_list(*definitions)
+      definitions.map { new(_1) }
+    end
+
+    # Create a number of equal dice.
+    #
+    # @param count [Integer] number of dice to create
+    # @param definition [Enumerable<Any>, Any]
+    #   definition suitable for the dice class
+    # @return [Array<AbstractDie>]
+    def self.from_count(count, definition)
+      Array.new(count) { new(definition) }
+    end
+
     attr_reader :sides_list, :sides_num
 
     # @param sides_list [Enumerable<Any>]

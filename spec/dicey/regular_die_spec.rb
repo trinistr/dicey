@@ -2,17 +2,6 @@
 
 module Dicey
   RSpec.describe RegularDie do
-    describe ".create_dice" do
-      subject(:dice) { described_class.create_dice(dice_num, max) }
-      let(:dice_num) { rand(3..12) }
-      let(:max) { rand(3..12) }
-
-      it "makes a list of dice with the same number of sides" do
-        expect(dice).to all be_a(described_class)
-        expect(dice).to all have_attributes(sides_num: max)
-      end
-    end
-
     describe ".new" do
       subject(:die) { described_class.new(max) }
       let(:max) { rand(3..12) }

@@ -93,6 +93,59 @@ module Dicey
       end
     end
 
+    describe ".from_list" do
+      subject(:dice) { die_class.from_list(*list) }
+
+      let(:die_class) { described_class }
+      let(:list) { [[1, 2, 3], %w[a b c]] }
+
+      let(:manual_dice) { list.map { die_class.new(_1) } }
+
+      it "returns a list of dice by calling .new repeatedly" do
+        expect(dice).to eq manual_dice
+      end
+
+      context "when called on a custom class" do
+        let(:die_class) do
+          Class.new(described_class) do
+            def initialize(count) = super(Array.new(count, 4))
+          end
+        end
+        let(:list) { [1, 2, 3] }
+
+        it "calls .new on the end class" do
+          expect(dice).to eq manual_dice
+        end
+      end
+    end
+
+    describe ".from_count" do
+      subject(:dice) { die_class.from_count(dice_num, definition) }
+
+      let(:die_class) { described_class }
+      let(:dice_num) { rand(3..12) }
+      let(:definition) { Array.new(rand(3..5)) { rand } }
+
+      let(:manual_dice) { Array.new(dice_num) { die_class.new(definition) } }
+
+      it "returns a list of dice with the same sides" do
+        expect(dice).to eq manual_dice
+      end
+
+      context "when called on a custom class" do
+        let(:die_class) do
+          Class.new(described_class) do
+            def initialize(count) = super(Array.new(count, 4))
+          end
+        end
+        let(:definition) { 3 }
+
+        it "calls .new on the end class" do
+          expect(dice).to eq manual_dice
+        end
+      end
+    end
+
     describe ".new" do
       it "makes a frozen copy of the list of sides" do
         expect(die.sides_list).to be_frozen
