@@ -21,7 +21,7 @@ module Dicey
       def call(arguments, roll_calculators:, format:, result:, **)
         raise DiceyError, "no dice!" if arguments.empty?
 
-        dice = arguments.map { |definition| die_foundry.cast(definition) }
+        dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
         frequencies = roll_calculators.find { _1.valid_for?(dice) }&.call(dice, result_type: result)
         raise DiceyError, "no calculator could handle these dice!" unless frequencies
 

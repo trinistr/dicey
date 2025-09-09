@@ -3,11 +3,18 @@
 RSpec.describe "Running built-in tests via CLI" do
   require "dicey/cli/blender"
 
-  subject(:blender_call) { Dicey::CLI::Blender.new.call(arguments) }
+  subject(:blender) { Dicey::CLI::Blender.new }
 
-  let(:arguments) { %w[--test quiet] }
+  it "exits with true, showing successful test run" do
+    expect(blender.call(%w[--test quiet])).to be true
+  end
 
-  it "exits with true" do
-    expect(blender_call).to be true
+  it "outputs test results" do
+    expect { blender.call(%w[--test]) }.to output(a_string_including(<<~TEXT)).to_stdout
+      ⚀:
+        Dicey::SumFrequencyCalculators::KroneckerSubstitution: ✔
+        Dicey::SumFrequencyCalculators::MultinomialCoefficients: ✔
+        Dicey::SumFrequencyCalculators::BruteForce: ✔
+    TEXT
   end
 end

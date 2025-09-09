@@ -89,7 +89,8 @@ This shows that 5 will probably be rolled a quarter of the time.
 
 During your quest to end all ends you find a cool Burning Sword which deals 1d8 slashing damage and 2d4 fire damage on attack. You run **Dicey** with these dice:
 ```sh
-$ dicey 8 4 4
+# Note the shorthand notation for two dice!
+$ dicey 8 2d4
 # [8];⚃;⚃
 3 => 1
 4 => 3
@@ -111,7 +112,7 @@ Results show that while the total range is 3–16, it is much more likely to rol
 
 If you downloaded `dicey-to-gnuplot` and have [gnuplot](http://gnuplot.info) installed, it is possible to turn these results into a graph with a somewhat clunky command:
 ```sh
-$ dicey 8 4 4 --format gnuplot | dicey-to-gnuplot
+$ dicey 8 2d4 --format gnuplot | dicey-to-gnuplot
 # --format gnuplot can be abbreviated to -f g
 ```
 
@@ -141,7 +142,21 @@ $ dicey 1,2,4 4
 Hmm, this looks normal, doesn't it? But wait, why are there two 2s in a row? Turns out that not having one of the sides just causes the roll frequencies to slightly dip in the middle. Good to know.
 
 > [!TIP]
-> 💡 A single integer argument N practically is a shorthand for listing every side from 1 to N.
+> 💡 A single positive integer argument N practically is a shorthand for listing every side from 1 to N.
+
+But what if you had TWO weird D4s?
+```sh
+$ dicey 2d1,2,4
+# (1,2,4);(1,2,4)
+2 => 1
+3 => 2
+4 => 1
+5 => 2
+6 => 2
+8 => 1
+```
+
+Hah, now this is a properly cursed distribution!
 
 ### Example 4
 
@@ -209,7 +224,7 @@ As a last resort, there is a brute force algorithm which goes through every poss
 
 ## Development
 
-After checking out the repo, run `bundle` (or `bundle install`) to install dependencies. Then, run `rake spec` to run the tests, `rake rubocop` to lint code and check style compliance, `rake rbs` to validate signatures or just `rake` to do everything above. There is also `rake steep` to check typing, and `rake docs` to generate YARD documentation.
+After checking out the repo, run `bundle install` to install dependencies. Then, run `rake spec` to run the tests, `rake rubocop` to lint code and check style compliance, `rake rbs` to validate signatures or just `rake` to do everything above. There is also `rake steep` to check typing, and `rake docs` to generate YARD documentation.
 
 You can also run `bin/console` for an interactive prompt that will allow you to experiment, or `bin/benchmark` to run a benchmark script and generate a StackProf flamegraph.
 

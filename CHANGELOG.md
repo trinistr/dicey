@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Added**:
 - `AbstractDie.from_list` and `AbstractDie.from_count` methods to easily create many dice.
+- Ability to specify multiple dice in shorthand notation, like "*2d6*" or "*3d1,0*".
 
 **Removed**:
 - `RegularDie.create_dice` in favor of `AbstractDie.from_count`.
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Fixed**:
 - Allow calling calculators with an empty list, returning an empty hash.
+- Fix `DieFoundry` failing on strings with both decimal numbers and brackets.
 
 [Compare v0.13.1...main](https://github.com/trinistr/dicey/compare/v0.13.1...main)
 
