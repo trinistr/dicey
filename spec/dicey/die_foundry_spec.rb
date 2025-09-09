@@ -93,6 +93,25 @@ module Dicey
           expect(die.sides_list).to eq [1, 3, 19]
         end
       end
+
+      context "with shorthand notation" do
+        specify "dS produces a single NumericDie" do
+          expect(foundry.call("d3,4")).to eq NumericDie.new([3, 4])
+          expect(foundry.call("D4,3")).to eq NumericDie.new([4, 3])
+        end
+
+        specify "1dS produces an array of 1 NumericDie" do
+          expect(foundry.call("1d-1,0,1")).to eq [NumericDie.new([-1, 0, 1])]
+          expect(foundry.call("1D3,4,27")).to eq [NumericDie.new([3, 4, 27])]
+        end
+
+        specify "MdS produces an array of NumericDie" do
+          expect(foundry.call("2d1,")).to eq [NumericDie.new([1]), NumericDie.new([1])]
+          expect(foundry.call("3D0")).to eq(
+            [NumericDie.new([0]), NumericDie.new([0]), NumericDie.new([0])]
+          )
+        end
+      end
     end
 
     context "when called with a list of real numbers" do
@@ -101,6 +120,7 @@ module Dicey
       it "returns a NumericDie with the given sides" do
         expect(die).to be_a NumericDie
         expect(die.sides_list).to eq [1.5, -3.5, 19.5]
+        expect(die.sides_list).to all be_a BigDecimal
       end
 
       context "if list is surrounded with brackets" do
@@ -109,6 +129,7 @@ module Dicey
         it "strips them before processing" do
           expect(die).to be_a NumericDie
           expect(die.sides_list).to eq [1.5, -3.5, 19.5]
+          expect(die.sides_list).to all be_a BigDecimal
         end
       end
 
@@ -118,6 +139,26 @@ module Dicey
         it "returns a NumericDie with the given sides" do
           expect(die).to be_a NumericDie
           expect(die.sides_list).to eq [1.5, -3.5, 19.5]
+          expect(die.sides_list).to all be_a BigDecimal
+        end
+      end
+
+      context "with shorthand notation" do
+        specify "dS produces a single NumericDie" do
+          expect(foundry.call("d3.0,4")).to eq NumericDie.new([3.0, 4])
+          expect(foundry.call("D4,0.5")).to eq NumericDie.new([4, 0.5])
+        end
+
+        specify "1dS produces an array of 1 NumericDie" do
+          expect(foundry.call("1d-1.0,0,1")).to eq [NumericDie.new([-1.0, 0, 1])]
+          expect(foundry.call("1D3,4,-0.5")).to eq [NumericDie.new([3, 4, -0.5])]
+        end
+
+        specify "MdS produces an array of NumericDie" do
+          expect(foundry.call("2d1.0,")).to eq [NumericDie.new([1.0]), NumericDie.new([1.0])]
+          expect(foundry.call("3D0.0")).to eq(
+            [NumericDie.new([0.0]), NumericDie.new([0.0]), NumericDie.new([0.0])]
+          )
         end
       end
     end

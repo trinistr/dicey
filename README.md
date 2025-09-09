@@ -142,7 +142,21 @@ $ dicey 1,2,4 4
 Hmm, this looks normal, doesn't it? But wait, why are there two 2s in a row? Turns out that not having one of the sides just causes the roll frequencies to slightly dip in the middle. Good to know.
 
 > [!TIP]
-> 💡 A single integer argument N practically is a shorthand for listing every side from 1 to N.
+> 💡 A single positive integer argument N practically is a shorthand for listing every side from 1 to N.
+
+But what if you had TWO weird D4s?
+```sh
+$ dicey 2d1,2,4
+# (1,2,4);(1,2,4)
+2 => 1
+3 => 2
+4 => 1
+5 => 2
+6 => 2
+8 => 1
+```
+
+Hah, now this is a properly cursed distribution!
 
 ### Example 4
 
