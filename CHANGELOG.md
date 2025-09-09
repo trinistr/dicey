@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Added**:
 - `AbstractDie.from_list` and `AbstractDie.from_count` methods to easily create many dice.
+- Ability to specify multiple regular dice in shorthand notation, like "*2d6*".
 
 **Removed**:
 - `RegularDie.create_dice` in favor of `AbstractDie.from_count`.

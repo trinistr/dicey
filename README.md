@@ -89,7 +89,8 @@ This shows that 5 will probably be rolled a quarter of the time.
 
 During your quest to end all ends you find a cool Burning Sword which deals 1d8 slashing damage and 2d4 fire damage on attack. You run **Dicey** with these dice:
 ```sh
-$ dicey 8 4 4
+# Note the shorthand notation for two dice!
+$ dicey 8 2d4
 # [8];⚃;⚃
 3 => 1
 4 => 3
@@ -111,7 +112,7 @@ Results show that while the total range is 3–16, it is much more likely to rol
 
 If you downloaded `dicey-to-gnuplot` and have [gnuplot](http://gnuplot.info) installed, it is possible to turn these results into a graph with a somewhat clunky command:
 ```sh
-$ dicey 8 4 4 --format gnuplot | dicey-to-gnuplot
+$ dicey 8 2d4 --format gnuplot | dicey-to-gnuplot
 # --format gnuplot can be abbreviated to -f g
 ```
 

@@ -6,12 +6,29 @@ module Dicey
 
     include_examples "has an alias", :cast, :call
 
-    context "when called with a single positive integer in a string" do
+    context "when called with a single positive integer" do
       let(:die) { foundry.call("6") }
 
       it "returns a RegularDie with the given number of sides" do
         expect(die).to be_a RegularDie
         expect(die.sides_list).to eq [1, 2, 3, 4, 5, 6]
+      end
+
+      context "with shorthand notation" do
+        specify "dN produces a single RegularDie" do
+          expect(foundry.call("d6")).to eq RegularDie.new(6)
+          expect(foundry.call("D3")).to eq RegularDie.new(3)
+        end
+
+        specify "1dN produces an array of 1 RegularDie" do
+          expect(foundry.call("1d9")).to eq [RegularDie.new(9)]
+          expect(foundry.call("1D2")).to eq [RegularDie.new(2)]
+        end
+
+        specify "MdN produces an array of RegularDie" do
+          expect(foundry.call("2d4")).to eq [RegularDie.new(4), RegularDie.new(4)]
+          expect(foundry.call("2D6")).to eq [RegularDie.new(6), RegularDie.new(6)]
+        end
       end
 
       context "and it's surrounded with brackets" do

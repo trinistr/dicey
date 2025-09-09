@@ -12,7 +12,7 @@ module Dicey
     def call(arguments, format:, **)
       raise DiceyError, "no dice!" if arguments.empty?
 
-      dice = arguments.map { |definition| die_foundry.cast(definition) }
+      dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
       result = dice.sum(&:roll)
 
       format.call({ "roll" => result }, AbstractDie.describe(dice))
