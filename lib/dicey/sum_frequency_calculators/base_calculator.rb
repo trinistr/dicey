@@ -47,7 +47,9 @@ module Dicey
       # Peform frequencies calculation.
       # (see #call)
       def calculate(dice)
+        # :nocov:
         raise NotImplementedError
+        # :nocov:
       end
 
       # Check that resulting frequencies actually add up to what they are supposed to be.
@@ -76,14 +78,11 @@ module Dicey
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @return [Hash{Numeric => Numeric}]
       def transform_result(frequencies, result_type)
-        case result_type
-        when :frequencies
+        if result_type == :frequencies
           frequencies
-        when :probabilities
+        else
           total = frequencies.values.sum
           frequencies.transform_values { _1.fdiv(total) }
-        else
-          # Invalid, but was already checked in #call.
         end
       end
     end

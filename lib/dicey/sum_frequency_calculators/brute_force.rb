@@ -49,8 +49,8 @@ module Dicey
             }
             .call([])
         end
-        # :nocov:
       end
+      # :nocov:
     end
   end
 end

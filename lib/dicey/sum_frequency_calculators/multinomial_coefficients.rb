@@ -30,6 +30,7 @@ module Dicey
         return false if increment.zero?
 
         sides_list.each_cons(2) { return false if _1 + increment != _2 }
+        true
       end
 
       # @param dice [Array<NumericDie>]
@@ -48,7 +49,8 @@ module Dicey
       #
       # @param dice [Integer] number of dice, must be positive
       # @param sides [Integer] number of sides, must be positive
-      # @param throw_away_garbage [Boolean] whether to discard unused coefficients (debug option)
+      # @param throw_away_garbage [Boolean]
+      #    whether to discard unused coefficients (debug option)
       # @return [Array<Integer>]
       def multinomial_coefficients(dice, sides, throw_away_garbage: true)
         # This builds a triangular matrix where each first element is a 1.
@@ -64,9 +66,12 @@ module Dicey
           row = next_row_of_coefficients(row_index, sides - 1, coefficients.last)
           if throw_away_garbage
             coefficients[0] = row
+          # :nocov:
           else
+            # Debugging path.
             coefficients << row
           end
+          # :nocov:
         end
         coefficients.last
       end

@@ -2,29 +2,21 @@
 
 module Dicey
   RSpec.describe SumFrequencyCalculators::BruteForce do
-    subject(:calculator) { described_class.new }
+    subject(:result) { calculator.call(dice) }
+
+    let(:calculator) { described_class.new }
+
     let(:dice) do
       [
-        Dicey::NumericDie.new([0.1, 0.2, 0.3]),
-        Dicey::NumericDie.new([-1, -5]),
-        Dicey::RegularDie.new(3),
+        NumericDie.new([0.1, 0.2, 0.3]),
+        NumericDie.new([-1, -5]),
+        RegularDie.new(3),
       ]
     end
 
-    it "rejects non-numeric dice" do
-      dice << Dicey::AbstractDie.new(%w[s n a k e])
-      expect { calculator.call(dice) }.to raise_error(Dicey::DiceyError)
-    end
-
-    context "when called with an empty list of dice" do
-      it "returns an empty hash" do
-        expect(calculator.call([])).to eq({})
-      end
-    end
-
-    context "when called with no-overlap dice" do
+    context "when called with valid no-overlap dice" do
       it "calculates frequencies correctly" do
-        expect(calculator.call(dice)).to eq({
+        expect(result).to eq({
           -3.9 => 1,
           -3.8 => 1,
           -3.7 => 1,
@@ -47,20 +39,43 @@ module Dicey
       end
     end
 
-    context "when called with overlap dice" do
-      before { dice[0] = Dicey::RegularDie.new(2) }
+    context "when called with valid overlap dice" do
+      before { dice[0] = RegularDie.new(2) }
 
       it "calculates frequencies correctly" do
-        expect(calculator.call(dice)).to eq({
-          -3 => 1,
-          -2 => 2,
-          -1 => 2,
-          0 => 1,
-          1 => 1,
-          2 => 2,
-          3 => 2,
-          4 => 1,
-        })
+        expect(result).to eq({ -3 => 1, -2 => 2, -1 => 2, 0 => 1, 1 => 1, 2 => 2, 3 => 2, 4 => 1 })
+      end
+    end
+
+    context "when called with an empty list of dice" do
+      let(:dice) { [] }
+
+      it "returns an empty hash" do
+        expect(result).to eq({})
+      end
+    end
+
+    context "when called with non-numeric dice" do
+      before { dice << AbstractDie.new(%w[s n a k e]) }
+
+      it "rejects them" do
+        expect { result }.to raise_error(DiceyError)
+      end
+    end
+
+    describe "#valid_for?" do
+      subject(:validity) { calculator.valid_for?(dice) }
+
+      context "when called with a list of any numeric dice" do
+        let(:dice) { NumericDie.from_list([-0.5, 1, 2.5], [1, 2, 5]) }
+
+        it { is_expected.to be true }
+      end
+
+      context "when called with a list of any dice" do
+        let(:dice) { AbstractDie.from_list([1, 2, 3], ["a", 2, :"3"]) }
+
+        it { is_expected.to be false }
       end
     end
   end
