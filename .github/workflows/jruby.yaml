@@ -15,7 +15,8 @@ jobs:
         experimental: [false]
     continue-on-error: ${{ matrix.experimental }}
     env:
-      BUNDLE_ONLY: 'default test'
+      BUNDLE_ONLY: "default test"
+      BUNDLE_GEMFILE: "Gemfile.jruby"
     steps:
     - uses: actions/checkout@v5
       with:
