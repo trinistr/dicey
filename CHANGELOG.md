@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Fixed**:
 - Allow calling calculators with an empty list, returning an empty hash.
+- Fix `DieFoundry` failing on strings with both decimal numbers and brackets.
 
 [Compare v0.13.1...main](https://github.com/trinistr/dicey/compare/v0.13.1...main)
 
