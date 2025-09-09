@@ -84,7 +84,8 @@ module Dicey
         length = (row_index * window_size) + 1
         (0..length).map do |col_index|
           # Have to clamp to 0 to prevent accessing array from the end.
-          window_range = ((col_index - window_size).clamp(0..)..col_index)
+          # BUG: TruffleRuby can't handle endless range in #clamp (see https://github.com/oracle/truffleruby/issues/3945)
+          window_range = ((col_index - window_size).clamp(0..col_index)..col_index)
           window_range.sum { |i| previous_row.fetch(i, 0) }
         end
       end
