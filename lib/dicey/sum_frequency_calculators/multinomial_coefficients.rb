@@ -49,31 +49,22 @@ module Dicey
       #
       # @param dice [Integer] number of dice, must be positive
       # @param sides [Integer] number of sides, must be positive
-      # @param throw_away_garbage [Boolean]
-      #    whether to discard unused coefficients (debug option)
       # @return [Array<Integer>]
-      def multinomial_coefficients(dice, sides, throw_away_garbage: true)
-        # This builds a triangular matrix where each first element is a 1.
-        # Each element is a sum of +m+ elements in the previous row
-        # with indices less or equal to its, with out-of-bounds indices corresponding to 0s.
-        # Example for m=3:
+      def multinomial_coefficients(dice, sides)
+        # This builds a triangular matrix where first elements are always 1s
+        # and other elements are sums of +sides+ elements in the previous row
+        # with indices less or equal, with out-of-bounds indices corresponding to 0s.
+        # Example for sides=3:
         # 1
         # 1 1 1
         # 1 2 3 2 1
         # 1 3 6 7 6 3 1, etc.
-        coefficients = [[1]]
-        (1..dice).each do |row_index|
-          row = next_row_of_coefficients(row_index, sides - 1, coefficients.last)
-          if throw_away_garbage
-            coefficients[0] = row
-          # :nocov:
-          else
-            # Debugging path.
-            coefficients << row
-          end
-          # :nocov:
+        # We start directly from second row, which corresponds to 1 die.
+        coefficients = Array.new(sides, 1)
+        (2..dice).each do |row_index|
+          coefficients = next_row_of_coefficients(row_index, sides - 1, coefficients)
         end
-        coefficients.last
+        coefficients
       end
 
       # @param row_index [Integer]

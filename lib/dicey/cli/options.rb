@@ -19,6 +19,9 @@ module Dicey
       def initialize(initial_options = DEFAULT_OPTIONS.dup)
         @options = initial_options
         @parser = ::OptionParser.new
+        @parser.program_name = "dicey"
+        @parser.version = Dicey::VERSION
+
         add_banner_and_version
         add_common_options
         add_test_options
@@ -54,7 +57,6 @@ module Dicey
                  #{@parser.program_name} --test [full|quiet]
           All option names and arguments can be abbreviated if abbreviation is unambiguous.
         TEXT
-        @parser.version = Dicey::VERSION
       end
 
       def add_common_options
@@ -87,11 +89,10 @@ module Dicey
       end
 
       def easy_option(short, long, values, description, &block)
-        values = values.keys if values.respond_to?(:keys)
         option_name = long[/[a-z_]+/].to_sym
         argument_name = long[/[A-Z_]+/]
         listed_values = "#{argument_name} can be: #{values.map { "`#{_1}`" }.join(", ")}."
-        default_value = "`#{@options[option_name]}` is default." if @options[option_name]
+        default_value = "`#{@options[option_name]}` is default."
         @parser.on(
           *[short, long, values, description, listed_values, default_value].compact, &block
         )
