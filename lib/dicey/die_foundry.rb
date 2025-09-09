@@ -9,29 +9,29 @@ module Dicey
     # Possible molds for the dice. They are matched in the order as written.
     MOLDS = {
       # Positive integer goes into the RegularDie mold.
-      ->(d) { /\A[1-9]\d*\z/.match?(d) } => :regular_mold,
+      /\A[1-9]\d*\z/ => :regular_mold,
       # List of numbers goes into the NumericDie mold.
-      ->(d) { /\A\(?-?\d++(?:,-?\d++)*\)?\z/.match?(d) } => :weirdly_shaped_mold,
-      # Real numbers require arbitrary precision arithmetic, which is not enabled by default.
-      ->(d) {
-        /\A\(?-?\d++(?:\.\d++)?(?:,-?\d++(?:\.\d++)?)*+\)?\z/.match?(d)
-      } => :weirdly_precise_mold,
+      /\A\(?-?\d++(?:,(?>-?\d++)?)*\)?\z/ => :weirdly_shaped_mold,
+      # Non-integers require arbitrary precision arithmetic, which is not enabled by default.
+      /\A\(?-?\d++(?>\.\d++)?(?:,(?>-?\d++(?>\.\d++)?)?)*+\)?\z/ => :weirdly_precise_mold,
       # Anything else is spilled on the floor.
       ->(*) { true } => :broken_mold,
     }.freeze
 
     # Regexp for removing brackets from lists.
-    BRACKET_STRIPPER = /\A\(?(.+)\)?\z/
+    BRACKET_STRIPPER = /\A(?:\((?<list>.+)\)|(?<list>.+))\z/
 
     # Cast a die definition into a mold to make a die.
     #
     # @param definition [String] die shape, refer to {MOLDS} for possible variants
     # @return [NumericDie, RegularDie]
     # @raise [DiceyError] if no mold fits the definition
-    def cast(definition)
-      _shape, mold = MOLDS.find { |shape, _mold| shape.call(definition) }
+    def call(definition)
+      _shape, mold = MOLDS.find { |shape, _mold| shape === definition }
       __send__(mold, definition)
     end
+
+    alias cast call
 
     private
 
@@ -40,13 +40,14 @@ module Dicey
     end
 
     def weirdly_shaped_mold(definition)
-      definition = definition.match(BRACKET_STRIPPER)[1]
+      definition = definition.match(BRACKET_STRIPPER)[:list]
       NumericDie.new(definition.split(",").map(&:to_i))
     end
 
     def weirdly_precise_mold(definition)
-      require "bigdecimal"
-      definition = definition.match(BRACKET_STRIPPER)[1]
+      require "bigdecimal" unless defined?(BigDecimal)
+
+      definition = definition.match(BRACKET_STRIPPER)[:list]
       NumericDie.new(definition.split(",").map { BigDecimal(_1) })
     end
 
