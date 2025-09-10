@@ -1,16 +1,35 @@
 # Dicey
 
+[![Gem Version](https://badge.fury.io/rb/dicey.svg?icon=si%3Arubygems)](https://rubygems.org/gems/dicey)
+[![CI](https://github.com/trinistr/dicey/actions/workflows/CI.yaml/badge.svg)](https://github.com/trinistr/dicey/actions/workflows/CI.yaml)
+
 > [!TIP]
 > You may be viewing documentation for an older (or newer) version of the gem than intended. Look at [Changelog](https://github.com/trinistr/dicey/blob/main/CHANGELOG.md) to see all versions, including unreleased changes.
-
-<!-- Latest: [![Gem Version](https://badge.fury.io/rb/dicey.svg?icon=si%3Arubygems)](https://rubygems.org/gems/dicey) -->
-<!-- [![CI](https://github.com/trinistr/dicey/actions/workflows/CI.yaml/badge.svg)](https://github.com/trinistr/dicey/actions/workflows/CI.yaml) -->
 
 ***
 
 The premier solution in total paradigm shift for resolving dicey problems of tomorrow, today, used by industry-leading professionals around the world!
 
-In seriousness, this program produces total frequency (probability) distributions of all possible dice rolls for a given set of dice. Dice in such a set can be different or even have arbitrary numbers on the sides.
+In seriousness, this program is mainly useful for calculating total frequency (probability) distributions of all possible dice rolls for a given set of dice. Dice in such a set can be different or even have arbitrary numbers on the sides. It can also be used to roll any dice that it supports.
+
+## Table of contents
+
+- [No installation](#no-installation)
+- [Installation](#installation)
+  - [Requirements](#requirements)
+- [Usage / CLI (command line interface)](#usage--cli-command-line-interface)
+  - [Example 1 — Basic distribution](#example-1--basic-distribution)
+  - [Example 2 — Complex distribution with different dice](#example-2--complex-distribution-with-different-dice)
+  - [Example 3 — Custom dice](#example-3--custom-dice)
+  - [Example 4 — Rolling even more custom dice](#example-4--rolling-even-more-custom-dice)
+- [Usage / API](#usage--api)
+  - [Dice](#dice)
+  - [Rolling](#rolling)
+  - [Calculators](#calculators)
+- [Diving deeper](#diving-deeper)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## No installation
 
@@ -22,7 +41,7 @@ Thanks to the efforts of Ruby developers, you can try **Dicey** online!
 
 ## Installation
 
-Install via `gem`:
+Install manually via `gem`:
 ```sh
 gem install dicey
 ```
@@ -36,20 +55,24 @@ gem "dicey", "~> 0.13"
 > Versions upto 0.12.1 were packaged as a single executable file. You can still download it from the [release](https://github.com/trinistr/dicey/releases/tag/v0.12.1).
 
 > [!NOTE]
-> `dicey` 0.0.1 was a completely separate project by [Adam Rogers](https://github.com/rodreegez). Big thanks for transfering the name!
+> `dicey` 0.0.1 was a completely separate [project](https://github.com/rodreegez/dicey) by [Adam Rogers](https://github.com/rodreegez). Big thanks for transfering the name!
 
 ### Requirements
 
-**Dicey** is developed on Ruby 3.2, but should work fine on 3.1 and later versions. There are no dependencies aside from standard library (`json`, `yaml`, `bigdecimal`) and common usage will not even load them.
+**Dicey** is tested to work on CRuby 3.0+, latest JRuby and TruffleRuby. Compatible implementations should work too.
+- JSON and YAML formatting require `json` and `yaml`.
+- Decimal dice require `bigdecimal`.
 
-## Usage
+Otherwise, there are no direct dependencies.
+
+## Usage / CLI (command line interface)
 
 Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`. You can also run it with `ruby dicey` instead.
 
 > [!NOTE]
 > 💡 Run `dicey --help` to get a list of all possible options.
 
-### Example 1
+### Example 1 — Basic distribution
 
 Let's start with something simple. Imagine that your Bard character has Vicious Mockery cantrip with 2d4 damage, and you would like to know the distribution of possible damage rolls. Run **Dicey** with two 4s as arguments:
 ```sh
@@ -85,7 +108,7 @@ $ dicey 4 4 --result probabilities # or -r p for short
 
 This shows that 5 will probably be rolled a quarter of the time.
 
-### Example 2
+### Example 2 — Complex distribution with different dice
 
 During your quest to end all ends you find a cool Burning Sword which deals 1d8 slashing damage and 2d4 fire damage on attack. You run **Dicey** with these dice:
 ```sh
@@ -110,19 +133,48 @@ $ dicey 8 2d4
 
 Results show that while the total range is 3–16, it is much more likely to roll numbers in the 6–13 range. That's pretty fire, huh?
 
+#### Example 2.1 — Graph
+
 If you downloaded `dicey-to-gnuplot` and have [gnuplot](http://gnuplot.info) installed, it is possible to turn these results into a graph with a somewhat clunky command:
 ```sh
 $ dicey 8 2d4 --format gnuplot | dicey-to-gnuplot
-# --format gnuplot can be abbreviated to -f g
+# `--format gnuplot` can be abbreviated as `-f g`
 ```
 
 This will create a PNG image named `[8];⚃;⚃.png`:
 ![Graph of damage roll frequencies for Burning Sword]([8];⚃;⚃.png)
 
-> [!NOTE]
-> 💡 It is possible to output JSON or YAML with `--format json` and `--format yaml` respectively.
+#### Example 2.2 — JSON and YAML
 
-### Example 3
+If you find that you need to export results for further processing, it would be great if a common data interchange format was used. **Dicey** supports output as JSON and YAML with `--format json` (or `-f j`) and `--format yaml` (or `-f y`) respectively.
+
+JSON via `dicey 8 2d4 --format json`:
+```json
+{"description":"[8];⚃;⚃","results":{"3":1,"4":3,"5":6,"6":10,"7":13,"8":15,"9":16,"10":16,"11":15,"12":13,"13":10,"14":6,"15":3,"16":1}}
+```
+
+YAML via `dicey 8 2d4 --format yaml`:
+```yaml
+---
+description: "[8];⚃;⚃"
+results:
+  3: 1
+  4: 3
+  5: 6
+  6: 10
+  7: 13
+  8: 15
+  9: 16
+  10: 16
+  11: 15
+  12: 13
+  13: 10
+  14: 6
+  15: 3
+  16: 1
+```
+
+### Example 3 — Custom dice
 
 While walking home from work you decide to take a shortcut through a dark alleyway. Suddenly, you notice a die lying on the ground. Looking closer, it turns out to be a D4, but its 3 side was erased from reality. You just have to learn what impact this has on a roll together with a normal D4. Thankfully, you know just the program for the job.
 
@@ -158,19 +210,109 @@ $ dicey 2d1,2,4
 
 Hah, now this is a properly cursed distribution!
 
-### Example 4
+### Example 4 — Rolling even more custom dice
 
 You have a sudden urge to roll dice while only having boring integer dice at home. Where to find *the cool* dice though?
 
 Look no further than **roll** mode introduced in **Dicey** 0.12:
 ```sh
-dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
+$ dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
 # (0.5e0,0.15e1,0.25e1);⚃
 roll => 0.35e1 # You probably will get a different value here.
 ```
 
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format`, but not `--result`.
+
+## Usage / API
+
+### Dice
+
+There are 3 classes of dice currently:
+- `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides. For now, it is *only* useful for rolling and can't be used for distribution calculations.
+- `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie`, except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
+- `Dicey::RegularDie` is a subclass of `Dicey::NumericDie`. It is defined by a single integer which is expanded to range (1..N).
+
+All dice classes have constructor methods aside from `.new`:
+- `.from_list` takes a list of definitions and calls `.new` with each one;
+- `.from_count` takes a count and a definition and calls `.new` with it specified number of times.
+
+See [Diving deeper](#diving-deeper) for more information.
+
+> [!NOTE]
+> 💡 Using `Float` values is liable to cause precision issues. Due to in-built result verification, this **will** raise errors. Use `Rational` or `BigDecimal` instead. 
+
+#### DieFoundry
+
+`Dicey::DieFoundry#call` provides the string interface for creating dice as available in CLI:
+```rb
+Dicey::DieFoundry.new.call("100")
+  # same as Dicey::RegularDie.new(100)
+Dicey::DieFoundry.new.call("2d6")
+  # same as Dicey::RegularDie.from_count(2, 6)
+Dicey::DieFoundry.new.call("1d1,2,4")
+  # same as Dicey::NumericDie.from_list([1,2,4])
+```
+
+It only takes a single argument and may return both an array of dice and a single die. You will probably want to use `Enumerable#flat_map`:
+```rb
+foundry = Dicey::DieFoundry.new
+%w[8 2d4].flat_map { foundry.call(_1) }
+  # same as [Dicey::RegularDie.new(8), Dicey::RegularDie.new(4), Dicey::RegularDie.new(4)]
+```
+
+### Rolling
+
+`Dicey::AbstractDie#roll` implements the rolling:
+```rb
+Dicey::AbstractDie.new([0, 1, 5, "10"]).roll
+  # almost same as [0, 1, 5, "10"].sample
+Dicey::RegularDie.new(6).roll
+  # almost same as rand(1..6)
+```
+
+Dice retain their roll state, with `#current` returning the last roll (or initial side if never rolled):
+```rb
+die = Dicey::RegularDie.new(6)
+die.current
+  # => 1
+die.roll
+  # => 3
+die.current
+  # => 3
+```
+
+Rolls can be reproducible if a specific seed is set:
+```rb
+Dicey::AbstractDie.srand(493_525)
+die = Dicey::RegularDie.new(6)
+die.roll
+  # => 4
+die.roll
+  # => 1
+# Repeat:
+Dicey::AbstractDie.srand(493_525)
+die = Dicey::RegularDie.new(6)
+die.roll
+  # => 4
+die.roll
+  # => 1
+```
+
+Randomness source is *global*, shared between all dice and probably not thread-safe.
+
+### Calculators
+
+Frequency calculators live in `Dicey::SumFrequencyCalculators` module. There are three implemented calculators:
+- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on my laptop.
+- `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
+- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can handle any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
+
+Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
+- `#call(dice, result_type: {:frequencies | :probabilities}) : Hash`
+- `#valid_for?(dice) : Boolean`
+
+See [next section](#diving-deeper) for more details on limitations and complexity considerations.
 
 ## Diving deeper
 

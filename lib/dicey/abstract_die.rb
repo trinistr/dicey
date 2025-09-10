@@ -6,6 +6,7 @@ module Dicey
   class AbstractDie
     # rubocop:disable Style/ClassVars
 
+    # @api private
     # Get a random value using a private instance of Random.
     # @see Random#rand
     def self.rand(...)

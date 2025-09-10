@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+This is a major update, with following features:
+- **Dicey** is now significantly more convenient to use when repeated dice are involved, both with CLI and API.
+- Support for all Rubies 3+, JRuby and TruffleRuby.
+- Full test coverage, improving confidence in behavior.
+- Bugfixes and optimizations.
+
 **Added**:
-- `AbstractDie.from_list` and `AbstractDie.from_count` methods to easily create many dice.
-- Ability to specify multiple dice in shorthand notation, like "*2d6*" or "*3d1,0*".
+- Ability to specify multiple dice in shorthand notation, like "*2d6*" or "*3d1,0*", available in `DieFoundry#call` and used in CLI.
+- `AbstractDie.from_list` and `AbstractDie.from_count` methods to easily create many dice programmatically.
 
 **Removed**:
 - `RegularDie.create_dice` in favor of `AbstractDie.from_count`.
@@ -21,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimize numeric (mainly regular) dice initialization.
 
 **Fixed**:
-- Allow calling calculators with an empty list, returning an empty hash.
+- Allow calling calculators with an empty list, returning an empty hash. CLI still prohibits this.
 - Fix `DieFoundry` failing on strings with both decimal numbers and brackets.
 
 [Compare v0.13.1...main](https://github.com/trinistr/dicey/compare/v0.13.1...main)
@@ -57,7 +63,7 @@ This update documents how to run **Dicey** online in a more reasonable way than 
 
 ## [v0.12.0] — 2024-05-05
 
-Rolling update.
+Update to add rolling mode.
 
 **Added**
 - `--mode` option to select between `roll` and `frequencies` (default) modes. While ability to roll dice existed in API for a while, it was not exposed through command line.
@@ -70,7 +76,7 @@ Rolling update.
 
 ## [v0.11.0] — 2024-05-01
 
-This update brought clarity.
+This update brought clarity with "*README.md*".
 
 **Added**
 - "*README.md*", finally.
