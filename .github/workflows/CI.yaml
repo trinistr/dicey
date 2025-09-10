@@ -24,10 +24,10 @@ on:
 jobs:
   CRuby:
     uses: ./.github/workflows/cruby.yaml
-  TruffleRuby:
-    uses: ./.github/workflows/truffle_ruby.yaml
   JRuby:
     uses: ./.github/workflows/jruby.yaml
+  TruffleRuby:
+    uses: ./.github/workflows/truffle_ruby.yaml
   lint:
     name: Rubocop
     runs-on: ubuntu-latest

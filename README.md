@@ -384,13 +384,13 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/trinis
 
 ### Checklist for a new or updated feature
 
-- Running `rspec` reports 100% coverage (unless it's impossible to achieve in one run).
-- Running `rubocop` reports no offenses.
+- Running `rake spec` reports 100% coverage (unless it's impossible to achieve in one run).
+- Running `rake rubocop` reports no offenses.
 - Running `rake steep` reports no new warnings or errors.
-- Tests cover the behavior and its interactions. 100% coverage *is not enough*, as it does not guarantee that all code paths are covered.
+- Tests cover the behavior and its interactions. 100% coverage *is not enough*, as it does not guarantee that all code paths are tested.
 - Documentation is up-to-date: generate it with `rake docs` and read it.
-- `CHANGELOG.md` lists the change if it has impact on users.
-- `README.md` is updated if the feature should be visible there.
+- "*CHANGELOG.md*" lists the change if it has impact on users.
+- "*README.md*" is updated if the feature should be visible there, including the Kanban board.
 
 ## License
 
