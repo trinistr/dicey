@@ -226,6 +226,10 @@ roll => 0.35e1 # You probably will get a different value here.
 
 ## Usage / API
 
+> [!Note]
+> - Latest documentation from `main` branch is automatically deployed to [my site](https://dicey.docs.bulancov.pro).
+> - Documentation for published versions is available on [RubyDoc](https://rubydoc.info/gems/dicey).
+
 ### Dice
 
 There are 3 classes of dice currently:
