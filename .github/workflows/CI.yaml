@@ -5,10 +5,22 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "**/*.rb"
+      - "**/*.rbs"
+      - "**/*.gemspec"
+      - Gemfile*
+      - Rakefile
   pull_request:
+    paths:
+      - "**/*.rb"
+      - "**/*.rbs"
+      - "**/*.gemspec"
+      - Gemfile*
+      - Rakefile
   workflow_dispatch:
   schedule:
-  - cron: '53 4 * * TUE'
+  - cron: "53 4 * * TUE"
 jobs:
   CRuby:
     uses: ./.github/workflows/cruby.yaml
@@ -20,7 +32,7 @@ jobs:
     name: Rubocop
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: 'default linting'
+      BUNDLE_ONLY: "default linting"
     steps:
     - uses: actions/checkout@v5
       with:
@@ -35,7 +47,7 @@ jobs:
     name: RBS
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: 'default linting'
+      BUNDLE_ONLY: "default linting"
     steps:
     - uses: actions/checkout@v5
       with:
@@ -52,7 +64,7 @@ jobs:
     needs: CRuby
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: 'default test'
+      BUNDLE_ONLY: "default test"
     permissions:
       pull-requests: write
     steps:
