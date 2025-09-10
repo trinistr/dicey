@@ -8,3 +8,7 @@ plugins:
   - rubocop-rspec
   - rubocop-thread_safety
   - rubocop-yard
+
+AllCops:
+  Exclude:
+    - "bin/pack_files"
