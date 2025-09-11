@@ -5,7 +5,7 @@ module Dicey
   # General error for Dicey.
   class DiceyError < StandardError; end
 
-  Dir["#{__dir__}/dicey/*.rb"].each { require _1 }
-  Dir["#{__dir__}/dicey/output_formatters/*.rb"].each { require _1 }
-  Dir["#{__dir__}/dicey/sum_frequency_calculators/*.rb"].each { require _1 }
+  Dir["dicey/*.rb", base: __dir__].each { require_relative _1 }
+  Dir["dicey/output_formatters/*.rb", base: __dir__].each { require_relative _1 }
+  Dir["dicey/sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
 end
