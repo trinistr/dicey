@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.14.0...main](https://github.com/trinistr/dicey/compare/v0.14.0...main)
+
+## [v0.14.0] — 2025-09-11
+
 This is a major update, with following features:
 - **Dicey** is now significantly more convenient to use when repeated dice are involved, both with CLI and API.
 - Support for all Rubies 3+, JRuby and TruffleRuby.
@@ -30,7 +34,7 @@ This is a major update, with following features:
 - Allow calling calculators with an empty list, returning an empty hash. CLI still prohibits this.
 - Fix `DieFoundry` failing on strings with both decimal numbers and brackets.
 
-[Compare v0.13.1...main](https://github.com/trinistr/dicey/compare/v0.13.1...main)
+[Compare v0.13.1...v0.14.0](https://github.com/trinistr/dicey/compare/v0.13.1...v0.14.0)
 
 ## [v0.13.1] — 2025-09-03
 
@@ -195,6 +199,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.14.0]: https://github.com/trinistr/dicey/tree/v0.14.0
 [v0.13.1]: https://github.com/trinistr/dicey/tree/v0.13.1
 [v0.13.0]: https://github.com/trinistr/dicey/tree/v0.13.0
 [v0.12.1]: https://github.com/trinistr/dicey/tree/v0.12.1
