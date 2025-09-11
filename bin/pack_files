@@ -1,16 +1,19 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # This scripts packs all `require_relative`d files into a single file for ease of distribution.
 # Usage: bin/pack_files [files...]
 # If no files are specified, root files are lib/*.rb.
+
+# rubocop:disable Style/GlobalVars
 
 # Track relative requires to determine dependencies.
 
 puts "Requiring files to determine dependencies:"
 
 $require_relative_calls = {}
-alias original_require_relative require_relative
-def require_relative_with_tracking(path)
+# Replace `Kernel.require_relative` with our own version that tracks dependencies.
+def require_relative_with_tracking(path) # rubocop:disable Style/TopLevelMethodDefinition
   caller_path = caller_locations(1, 1).first.path.delete_suffix(".rb")
   required_path = File.absolute_path(path, File.dirname(caller_path)).delete_suffix(".rb")
   $require_relative_calls[caller_path] ||= []
@@ -18,6 +21,7 @@ def require_relative_with_tracking(path)
   print "."
   require required_path
 end
+alias original_require_relative require_relative
 alias require_relative require_relative_with_tracking
 
 $roots = ARGV.empty? ? Dir["#{Dir.pwd}/lib/*.rb"] : ARGV
@@ -29,7 +33,7 @@ $roots.each do |root|
   puts
 end
 
-alias require_relative original_require_relative
+alias require_relative original_require_relative # rubocop:disable Lint/DuplicateMethods
 undef original_require_relative
 undef require_relative_with_tracking
 
@@ -92,7 +96,9 @@ $require_relative_calls.each do |caller_path, required_paths|
   end
 end
 
-Dir.mkdir("pkg") unless Dir.exist?("pkg")
+require "fileutils"
+
+FileUtils.mkdir_p("pkg")
 package_file = "pkg/#{File.basename(Dir.pwd)}.pack.rb"
 print "Packing files into #{package_file}"
 Rake::Task[:package].invoke
@@ -100,3 +106,5 @@ File.write(package_file, $package)
 puts
 
 puts "Done"
+
+# rubocop:enable Style/GlobalVars
