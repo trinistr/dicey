@@ -92,6 +92,7 @@ $require_relative_calls.each do |caller_path, required_paths|
   end
 end
 
+Dir.mkdir("pkg") unless Dir.exist?("pkg")
 package_file = "pkg/#{File.basename(Dir.pwd)}.pack.rb"
 print "Packing files into #{package_file}"
 Rake::Task[:package].invoke
