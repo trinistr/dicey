@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 
-# This scripts packs all .rb files in lib/ into a single file for ease of distribution.
+# This scripts packs all `require_relative`d files into a single file for ease of distribution.
+# Usage: bin/pack_files [files...]
+# If no files are specified, root files are lib/*.rb.
 
 # Track relative requires to determine dependencies.
 
@@ -18,9 +20,10 @@ def require_relative_with_tracking(path)
 end
 alias require_relative require_relative_with_tracking
 
-$roots = Dir["#{Dir.pwd}/lib/*.rb"]
+$roots = ARGV.empty? ? Dir["#{Dir.pwd}/lib/*.rb"] : ARGV
+$roots.map! { File.absolute_path?(_1) ? _1 : File.absolute_path(_1, Dir.pwd) }
 $roots.each do |root|
-  print "  ", root.delete_prefix(Dir.pwd)
+  print "  ", root.delete_prefix(Dir.pwd).delete_prefix("/")
   root = root.delete_suffix(".rb")
   require root
   puts
@@ -30,7 +33,7 @@ alias require_relative original_require_relative
 undef original_require_relative
 undef require_relative_with_tracking
 
-# Build a graph using Rake.
+# Build a DAG using Rake.
 
 require "rake"
 
@@ -44,21 +47,26 @@ Rake::Task.define_task(:package_header) do
     # frozen_string_literal: true
 
     # Refinement for this file to skip `require_relative` calls.
-    module RequireReltiveRefinement
+    # While generally not needed, some may slip through.
+    module RequireRelativeRefinement
       refine Kernel do
-        # Do nothing on call.
+        # Do nothing as files are already included.
         def require_relative(_path) = nil
       end
     end
 
-    using RequireReltiveRefinement
+    using RequireRelativeRefinement
 
   RUBY
 end
 
 # Helper to append files to package.
 Rake::Task.define_task(:_append_file, [:file]) do |_task, args|
-  $package << File.read("#{args[:file]}.rb")
+  content = File.read("#{args[:file]}.rb")
+  content.gsub!(%r{^require_relative (['"])[\w./-]+\1$}, "")
+  content.gsub!(/\A(?># frozen_string_literal: true)?\n*+/, "")
+  content.gsub!(/\n*+\z/, "\n")
+  $package << content
   print "."
 end
 
@@ -84,13 +92,10 @@ $require_relative_calls.each do |caller_path, required_paths|
   end
 end
 
-# Rake::Task.tasks.each do |task|
-#   print task.name.delete_prefix(Dir.pwd), ":\n"
-#   task.prerequisite_tasks.each { |prereq| print "  ", prereq.name.delete_prefix(Dir.pwd), "\n" }
-# end
-
-$package_file = "pkg/#{File.basename(Dir.pwd)}.pack.rb"
-print "Packing files into #{$package_file}"
+package_file = "pkg/#{File.basename(Dir.pwd)}.pack.rb"
+print "Packing files into #{package_file}"
 Rake::Task[:package].invoke
-File.write($package_file, $package)
-puts "\nDone"
+File.write(package_file, $package)
+puts
+
+puts "Done"
