@@ -18,7 +18,7 @@ module Dicey
         dice.all? { |die| die.sides_list.all? { _1.is_a?(Integer) && _1 >= 0 } }
       end
 
-      def calculate(dice)
+      def calculate(dice, **nil)
         polynomials = build_polynomials(dice)
         evaluation_point = find_evaluation_point(polynomials)
         values = evaluate_polynomials(polynomials, evaluation_point)

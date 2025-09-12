@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**
+- `Empirical` calculator. It actually rolls dice to acquire approximate probabilities. Not used by CLI at all.
+- Ability to pass calculator-specific options in API. Currently only used by `Empirical` calculator for the number of rolls.
+
 [Compare v0.14.0...main](https://github.com/trinistr/dicey/compare/v0.14.0...main)
 
 ## [v0.14.0] — 2025-09-11
@@ -54,7 +58,7 @@ This update is me finally packaging **Dicey** in a gem format. There are no chan
 - Split all classes into their own files with a proper directory structure.
 - Delete partial support for non-numeric dice, which didn't actually work.
 
-[Compare v0.12.1..main](https://github.com/trinistr/dicey/compare/v0.12.1...v0.13.0)
+[Compare v0.12.1...v0.13.0](https://github.com/trinistr/dicey/compare/v0.12.1...v0.13.0)
 
 ## [v0.12.1] — 2025-06-29
 

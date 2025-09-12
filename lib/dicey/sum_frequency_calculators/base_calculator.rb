@@ -10,11 +10,12 @@ module Dicey
 
       # @param dice [Enumerable<AbstractDie>]
       # @param result_type [Symbol] one of {RESULT_TYPES}
+      # @param options [Hash{Symbol => Any}] calculator-specific options
       # @return [Hash{Numeric => Numeric}] frequencies of each sum
       # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if dice list is invalid for the calculator
       # @raise [DiceyError] if calculator returned obviously wrong results
-      def call(dice, result_type: :frequencies)
+      def call(dice, result_type: :frequencies, **options)
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
         end
@@ -22,7 +23,7 @@ module Dicey
         return {} if dice.empty?
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
-        frequencies = calculate(dice)
+        frequencies = calculate(dice, **options)
         verify_result(frequencies, dice)
         frequencies = sort_result(frequencies)
         transform_result(frequencies, result_type)
@@ -46,7 +47,7 @@ module Dicey
 
       # Peform frequencies calculation.
       # (see #call)
-      def calculate(dice)
+      def calculate(dice, **nil)
         # :nocov:
         raise NotImplementedError
         # :nocov:

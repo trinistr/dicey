@@ -12,7 +12,7 @@ module Dicey
         dice.all?(NumericDie)
       end
 
-      def calculate(dice)
+      def calculate(dice, **nil)
         combine_dice_enumerators(dice).map(&:sum).tally
       end
 
