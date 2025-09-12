@@ -33,9 +33,7 @@ module Dicey
         true
       end
 
-      # @param dice [Array<NumericDie>]
-      # @return [Hash{Numeric => Integer}]
-      def calculate(dice)
+      def calculate(dice, **nil)
         first_die = dice.first
         number_of_sides = first_die.sides_num
         number_of_dice = dice.size
