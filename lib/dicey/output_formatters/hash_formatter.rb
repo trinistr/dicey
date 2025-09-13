@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
+  # Processors which turn data to text.
   module OutputFormatters
     # Base formatter for outputting in formats which can be converted from a Hash directly.
     # Can add an optional description into the result.

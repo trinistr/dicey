@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
+  # Calculators for probability distributions of dice.
   module SumFrequencyCalculators
     # Base frequencies calculator.
     #

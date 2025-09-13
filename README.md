@@ -14,18 +14,18 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 
 ## Table of contents
 
-- [Online / No installation](#online--no-installation)
-  - [Recommended 💚](#recommended)
+- [Online (no installation)](#online-no-installation)
+  - [Recommended](#recommended)
   - [For those who want the full command line experience](#for-those-who-want-the-full-command-line-experience)
 - [Installation](#installation)
   - [Requirements](#requirements)
-- [Usage — CLI (command line)](#usage--cli-command-line)
-  - [Example 1 — Basic distribution](#example-1--basic-distribution)
-  - [Example 2 — Complex distribution with different dice](#example-2--complex-distribution-with-different-dice)
-  - [Example 3 — Custom dice](#example-3--custom-dice)
-  - [Example 4 — Rolling even more custom dice](#example-4--rolling-even-more-custom-dice)
-  - [All ways to define dice 🎲](#all-ways-to-define-dice)
-- [Usage — API](#usage--api)
+- [Usage: CLI (command line)](#usage-cli-command-line)
+  - [Example 1: Basic distribution](#example-1-basic-distribution)
+  - [Example 2: Complex distribution with different dice](#example-2-complex-distribution-with-different-dice)
+  - [Example 3: Custom dice](#example-3-custom-dice)
+  - [Example 4: Rolling even more custom dice](#example-4-rolling-even-more-custom-dice)
+  - [All ways to define dice](#all-ways-to-define-dice)
+- [Usage: API](#usage-api)
   - [Dice](#dice)
   - [Rolling](#rolling)
   - [Calculators](#calculators)
@@ -34,9 +34,9 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 - [Contributing](#contributing)
 - [License](#license)
 
-## Online / No installation
+## Online (no installation)
 
-### Recommended 💚
+### Recommended
 
 Use online version of **Dicey** on its own website: [dicey.bulancov.tech](https://dicey.bulancov.tech)!
 
@@ -79,14 +79,14 @@ gem "dicey", "~> 0.14"
 
 Otherwise, there are no direct dependencies.
 
-## Usage — CLI (command line)
+## Usage: CLI (command line)
 
 Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`. You can also run it with `ruby dicey` instead.
 
 > [!NOTE]
 > 💡 Run `dicey --help` to get a list of all possible options.
 
-### Example 1 — Basic distribution
+### Example 1: Basic distribution
 
 Let's start with something simple. Imagine that your Bard character has Vicious Mockery cantrip with 2d4 damage, and you would like to know the distribution of possible damage rolls. Run **Dicey** with two 4s as arguments:
 ```sh
@@ -122,7 +122,7 @@ $ dicey 4 4 --result probabilities # or -r p for short
 
 This shows that 5 will probably be rolled a quarter of the time.
 
-### Example 2 — Complex distribution with different dice
+### Example 2: Complex distribution with different dice
 
 During your quest to end all ends you find a cool Burning Sword which deals 1d8 slashing damage and 2d4 fire damage on attack. You run **Dicey** with these dice:
 ```sh
@@ -147,7 +147,7 @@ $ dicey 8 2d4
 
 Results show that while the total range is 3–16, it is much more likely to roll numbers in the 6–13 range. That's pretty fire, huh?
 
-#### Example 2.1 — Graph
+#### Example 2.1: Graph
 
 If you downloaded `dicey-to-gnuplot` and have [gnuplot](http://gnuplot.info) installed, it is possible to turn these results into a graph with a somewhat clunky command:
 ```sh
@@ -158,7 +158,7 @@ $ dicey 8 2d4 --format gnuplot | dicey-to-gnuplot
 This will create a PNG image named `[8];⚃;⚃.png`:
 ![Graph of damage roll frequencies for Burning Sword]([8];⚃;⚃.png)
 
-#### Example 2.2 — JSON and YAML
+#### Example 2.2: JSON and YAML
 
 If you find that you need to export results for further processing, it would be great if a common data interchange format was used. **Dicey** supports output as JSON and YAML with `--format json` (or `-f j`) and `--format yaml` (or `-f y`) respectively.
 
@@ -188,7 +188,7 @@ results:
   16: 1
 ```
 
-### Example 3 — Custom dice
+### Example 3: Custom dice
 
 While walking home from work you decide to take a shortcut through a dark alleyway. Suddenly, you notice a die lying on the ground. Looking closer, it turns out to be a D4, but its 3 side was erased from reality. You just have to learn what impact this has on a roll together with a normal D4. Thankfully, you know just the program for the job.
 
@@ -224,7 +224,7 @@ $ dicey 2d1,2,4
 
 Hah, now this is a properly cursed distribution!
 
-### Example 4 — Rolling even more custom dice
+### Example 4: Rolling even more custom dice
 
 You have a sudden urge to roll dice while only having boring integer dice at home. Where to find *the cool* dice though?
 
@@ -238,7 +238,7 @@ roll => 0.35e1 # You probably will get a different value here.
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format`, but not `--result`.
 
-### All ways to define dice 🎲
+### All ways to define dice
 
 There are three *main* ways to define dice:
 - *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
@@ -251,7 +251,7 @@ There are three *main* ways to define dice:
 
 *"2D6", "5d-1,3", or "277D(2..4)"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
-## Usage — API
+## Usage: API
 
 > [!Note]
 > - Latest API documentation from `main` branch is automatically deployed to [GitHub Pages](https://trinistr.github.io/dicey).
