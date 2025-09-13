@@ -34,9 +34,8 @@ module Dicey
       context "and it's surrounded with brackets" do
         let(:die) { foundry.call("(6)") }
 
-        it "returns a NumericDie with one side" do
-          expect(die).to be_a NumericDie
-          expect(die.sides_list).to eq [6]
+        it "raises DiceyError" do
+          expect { die }.to raise_error DiceyError
         end
       end
 
@@ -53,18 +52,16 @@ module Dicey
     context "when called with a single negative integer in a string" do
       let(:die) { foundry.call("-6") }
 
-      it "returns a NumericDie with one side" do
-        expect(die).to be_a NumericDie
-        expect(die.sides_list).to eq [-6]
+      it "raises DiceyError" do
+        expect { die }.to raise_error DiceyError
       end
     end
 
     context "when called with a single 0 in a string" do
       let(:die) { foundry.call("0") }
 
-      it "returns a NumericDie with one side" do
-        expect(die).to be_a NumericDie
-        expect(die.sides_list).to eq [0]
+      it "raises DiceyError" do
+        expect { die }.to raise_error DiceyError
       end
     end
 
@@ -107,14 +104,14 @@ module Dicey
 
         specify "MdS produces an array of NumericDie" do
           expect(foundry.call("2d1,")).to eq [NumericDie.new([1]), NumericDie.new([1])]
-          expect(foundry.call("3D0")).to eq(
+          expect(foundry.call("3D0,")).to eq(
             [NumericDie.new([0]), NumericDie.new([0]), NumericDie.new([0])]
           )
         end
       end
     end
 
-    context "when called with a list of real numbers" do
+    context "when called with a list of decimal numbers" do
       let(:die) { foundry.call("1.5,-3.5,19.5") }
 
       it "returns a NumericDie with the given sides" do
@@ -150,14 +147,77 @@ module Dicey
         end
 
         specify "1dS produces an array of 1 NumericDie" do
-          expect(foundry.call("1d-1.0,0,1")).to eq [NumericDie.new([-1.0, 0, 1])]
+          expect(foundry.call("1d(-1.0,0,1)")).to eq [NumericDie.new([-1.0, 0, 1])]
           expect(foundry.call("1D3,4,-0.5")).to eq [NumericDie.new([3, 4, -0.5])]
         end
 
         specify "MdS produces an array of NumericDie" do
           expect(foundry.call("2d1.0,")).to eq [NumericDie.new([1.0]), NumericDie.new([1.0])]
-          expect(foundry.call("3D0.0")).to eq(
+          expect(foundry.call("3D0.0,")).to eq(
             [NumericDie.new([0.0]), NumericDie.new([0.0]), NumericDie.new([0.0])]
+          )
+        end
+      end
+
+      context "when called with a single decimal number" do
+        let(:die) { foundry.call("0.5") }
+
+        it "raises DiceyError" do
+          expect { die }.to raise_error DiceyError
+        end
+      end
+    end
+
+    context "when called with a range" do
+      let(:die) { foundry.call("5-15") }
+
+      it "returns a NumericDie with the given sides" do
+        expect(die).to be_a NumericDie
+        expect(die.sides_list).to eq (5..15).to_a
+      end
+
+      context "when is separator is not '-'" do
+        let(:die) { foundry.call("5#{sep}7") }
+        let(:sep) { %w[– — .. ... …].sample }
+
+        it "returns a NumericDie with the given sides" do
+          expect(die).to be_a NumericDie
+          expect(die.sides_list).to eq (5..7).to_a
+        end
+      end
+
+      context "if ends are reversed" do
+        let(:die) { foundry.call("15-5") }
+
+        it "returns a NumericDie with the given sides in ascending order" do
+          expect(die).to be_a NumericDie
+          expect(die.sides_list).to eq (5..15).to_a
+        end
+      end
+
+      context "if either end is non-integer" do
+        let(:die) { foundry.call(["5.5-15", "5-15.0"].sample) }
+
+        it "raises DiceyError" do
+          expect { die }.to raise_error DiceyError
+        end
+      end
+
+      context "with shorthand notation" do
+        specify "dS produces a single NumericDie" do
+          expect(foundry.call("d3-5")).to eq NumericDie.new([3, 4, 5])
+          expect(foundry.call("D4..6")).to eq NumericDie.new([4, 5, 6])
+        end
+
+        specify "1dS produces an array of 1 NumericDie" do
+          expect(foundry.call("1d(-1—1)")).to eq [NumericDie.new([-1, 0, 1])]
+          expect(foundry.call("1D3-5")).to eq [NumericDie.new([3, 4, 5])]
+        end
+
+        specify "MdS produces an array of NumericDie" do
+          expect(foundry.call("2d1-1")).to eq [NumericDie.new([1]), NumericDie.new([1])]
+          expect(foundry.call("3D0…0")).to eq(
+            [NumericDie.new([0]), NumericDie.new([0]), NumericDie.new([0])]
           )
         end
       end

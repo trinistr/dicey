@@ -24,6 +24,7 @@ In seriousness, this program is mainly useful for calculating total frequency (p
   - [Example 2 — Complex distribution with different dice](#example-2--complex-distribution-with-different-dice)
   - [Example 3 — Custom dice](#example-3--custom-dice)
   - [Example 4 — Rolling even more custom dice](#example-4--rolling-even-more-custom-dice)
+  - [All ways to define dice 🎲](#all-ways-to-define-dice)
 - [Usage — API](#usage--api)
   - [Dice](#dice)
   - [Rolling](#rolling)
@@ -236,6 +237,19 @@ roll => 0.35e1 # You probably will get a different value here.
 
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format`, but not `--result`.
+
+### All ways to define dice 🎲
+
+There are three *main* ways to define dice:
+- *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
+- *"3-6", "-5..5", "(0-1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
+  - Accepted separators: "-", "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
+- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes an arbitrary numeric die.
+  - Lists can end in a comma, allowing single-number lists.
+
+*"D6", "d(-1,3)", or "d2..4"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
+
+*"2D6", "5d-1,3", or "277D(2..4)"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
 ## Usage — API
 

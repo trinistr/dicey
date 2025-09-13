@@ -8,8 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Next]
 
 **Added**
+- Ability to specify dice by integer ranges in `DieFoundry`.
 - `Empirical` calculator. It actually rolls dice to acquire approximate probabilities. Not used by CLI at all.
 - Ability to pass calculator-specific options in API. Currently only used by `Empirical` calculator for the number of rolls.
+
+**Changed**
+- `DieFoundry` no longer accepts single numbers except for positive integers. If a list is desired, comma must be used. This prevents suprising behavior and possible mistakes.
 
 [Compare v0.14.0...main](https://github.com/trinistr/dicey/compare/v0.14.0...main)
 
