@@ -3,6 +3,14 @@
 module Dicey
   module SumFrequencyCalculators
     # Base frequencies calculator.
+    #
+    # *Options:*
+    #
+    # Calculators may have calculator-specific options,
+    # passed as extra keyword arguments to {#call}.
+    # If present, they will be documented under *Options* heading
+    # on the class itself.
+    #
     # @abstract
     class BaseCalculator
       # Possible values for +result_type+ argument in {#call}.

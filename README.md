@@ -14,15 +14,17 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 
 ## Table of contents
 
-- [No installation](#no-installation)
+- [Online / No installation](#online--no-installation)
+  - [Recommended 💚](#recommended)
+  - [For those who want the full command line experience](#for-those-who-want-the-full-command-line-experience)
 - [Installation](#installation)
   - [Requirements](#requirements)
-- [Usage / CLI (command line interface)](#usage--cli-command-line-interface)
+- [Usage — CLI (command line)](#usage--cli-command-line)
   - [Example 1 — Basic distribution](#example-1--basic-distribution)
   - [Example 2 — Complex distribution with different dice](#example-2--complex-distribution-with-different-dice)
   - [Example 3 — Custom dice](#example-3--custom-dice)
   - [Example 4 — Rolling even more custom dice](#example-4--rolling-even-more-custom-dice)
-- [Usage / API](#usage--api)
+- [Usage — API](#usage--api)
   - [Dice](#dice)
   - [Rolling](#rolling)
   - [Calculators](#calculators)
@@ -31,13 +33,24 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 - [Contributing](#contributing)
 - [License](#license)
 
-## No installation
+## Online / No installation
 
-Thanks to the efforts of Ruby developers, you can try **Dicey** online!
-1. Head over to https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3
-2. Make sure that "*-main.rb*" is open
-3. Input arguments between "ARGUMENTS" lines, separated by spaces.
+### Recommended 💚
+
+Use online version of **Dicey** on its own website: [dicey.bulancov.tech](https://dicey.bulancov.tech)!
+
+It does not provide quite all features, but is much easier and quicker to use.
+
+### For those who want the full command line experience
+
+Thanks to the efforts of Ruby developers, you can run full **Dicey** online!
+1. Head over to the prepared [RunRuby page](https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3).
+2. Make sure that "*-main.rb*" is open.
+3. Input arguments between "ARGUMENTS" lines, separated by spaces. Refer to [Usage / CLI](#usage--cli-command-line) section.
 4. Click "**Run code**" button below the editor.
+5. Results will be printed to the "Logs" tab.
+
+If familiar with Ruby, you can also use **RunRuby** to explore the API. Refer to [Usage / API](#usage--api) section for documentation.
 
 ## Installation
 
@@ -48,7 +61,7 @@ gem install dicey
 
 Or, if using Bundler, add it to your `Gemfile`:
 ```rb
-gem "dicey", "~> 0.13"
+gem "dicey", "~> 0.14"
 ```
 
 > [!TIP]
@@ -65,7 +78,7 @@ gem "dicey", "~> 0.13"
 
 Otherwise, there are no direct dependencies.
 
-## Usage / CLI (command line interface)
+## Usage — CLI (command line)
 
 Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`. You can also run it with `ruby dicey` instead.
 
@@ -224,31 +237,31 @@ roll => 0.35e1 # You probably will get a different value here.
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format`, but not `--result`.
 
-## Usage / API
+## Usage — API
 
 > [!Note]
-> - Latest documentation from `main` branch is automatically deployed to [GitHub Pages](https://trinistr.github.io/dicey).
+> - Latest API documentation from `main` branch is automatically deployed to [GitHub Pages](https://trinistr.github.io/dicey).
 > - Documentation for published versions is available on [RubyDoc](https://rubydoc.info/gems/dicey).
 
 ### Dice
 
 There are 3 classes of dice currently:
 - `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides. For now, it is *only* useful for rolling and can't be used for distribution calculations.
-- `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie`, except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
-- `Dicey::RegularDie` is a subclass of `Dicey::NumericDie`. It is defined by a single integer which is expanded to range (1..N).
+- `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie` (being its subclass), except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
+- `Dicey::RegularDie` is a specialized subclass of `Dicey::NumericDie`. It is defined by a single integer which is expanded to range (1..N).
 
 All dice classes have constructor methods aside from `.new`:
 - `.from_list` takes a list of definitions and calls `.new` with each one;
 - `.from_count` takes a count and a definition and calls `.new` with it specified number of times.
 
-See [Diving deeper](#diving-deeper) for more information.
+See [Diving deeper](#diving-deeper) for more theoretical information.
 
 > [!NOTE]
 > 💡 Using `Float` values is liable to cause precision issues. Due to in-built result verification, this **will** raise errors. Use `Rational` or `BigDecimal` instead. 
 
 #### DieFoundry
 
-`Dicey::DieFoundry#call` provides the string interface for creating dice as available in CLI:
+`Dicey::DieFoundry#call` provides the interface for creating dice from Strings as available in CLI:
 ```rb
 Dicey::DieFoundry.new.call("100")
   # same as Dicey::RegularDie.new(100)
@@ -262,7 +275,7 @@ It only takes a single argument and may return both an array of dice and a singl
 ```rb
 foundry = Dicey::DieFoundry.new
 %w[8 2d4].flat_map { foundry.call(_1) }
-  # same as [Dicey::RegularDie.new(8), Dicey::RegularDie.new(4), Dicey::RegularDie.new(4)]
+  # same as [Dicey::RegularDie.new(8), *Dicey::RegularDie.from_count(2, 4)]
 ```
 
 ### Rolling
@@ -303,17 +316,19 @@ die.roll
   # => 1
 ```
 
-Randomness source is *global*, shared between all dice and probably not thread-safe.
+> [!NOTE]
+> 💡 Randomness source is *global*, shared between all dice and probably not thread-safe.
 
 ### Calculators
 
-Frequency calculators live in `Dicey::SumFrequencyCalculators` module. There are three implemented calculators:
+Frequency calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
 - `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on my laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can handle any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
+- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones.
 
 Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
-- `#call(dice, result_type: {:frequencies | :probabilities}) : Hash`
+- `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
 
 See [next section](#diving-deeper) for more details on limitations and complexity considerations.

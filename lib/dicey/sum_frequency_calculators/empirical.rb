@@ -6,11 +6,14 @@ module Dicey
   module SumFrequencyCalculators
     # "Calculator" for a collection of {NumericDie} using empirically-obtained statistics.
     #
-    # @note This calculator is mostly a joke. It can be still be useful for educational purposes,
+    # @note This calculator is mostly a joke. It can be useful for educational purposes,
     #   or to verify results of {BruteForce} when in doubt. It is not used by default.
     #
-    # Does +n+ rolls ({N} by default) and calculates approximate probabilities from that.
-    # Even if frrequencies are requested, results are non-integer.
+    # Does a number of rolls and calculates approximate probabilities from that.
+    # Even if frequencies are requested, results are non-integer.
+    #
+    # *Options:*
+    # - *rolls* (Integer) (_defaults_ _to:_ _N_) — number of rolls to perform
     class Empirical < BaseCalculator
       # Default number of rolls to perform.
       N = 10_000
