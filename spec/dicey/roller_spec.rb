@@ -8,7 +8,7 @@ module Dicey
     let(:format) { OutputFormatters::ListFormatter.new }
 
     it "returns a formatted string with dice description and roll result" do
-      expect(result).to match(/\A# ⚁;\(1,5\);⚂;⚂\nroll => (?:[4-9]|1[0-3])\n\z/)
+      expect(result).to match(/\A# D2\+\(1,5\)\+D3\+D3\nroll => (?:[4-9]|1[0-3])\n\z/)
     end
 
     context "if no dice are given" do

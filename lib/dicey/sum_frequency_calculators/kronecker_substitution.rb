@@ -10,7 +10,9 @@ module Dicey
     #
     # Based on Kronecker substitution method for polynomial multiplication.
     # @see https://en.wikipedia.org/wiki/Kronecker_substitution
-    # @see https://arxiv.org/pdf/0712.4046v1.pdf in particular section 3
+    # @see https://arxiv.org/pdf/0712.4046v1.pdf
+    #   David Harvey, Faster polynomial multiplication via multi-point Kronecker substitution
+    #   (in particular section 3)
     class KroneckerSubstitution < BaseCalculator
       private
 

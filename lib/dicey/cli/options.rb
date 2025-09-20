@@ -54,8 +54,10 @@ module Dicey
       def add_banner_and_version
         @parser.banner = <<~TEXT
           Usage: #{@parser.program_name} [options] <die> [<die> ...]
+                 #{@parser.program_name} [options] -- <die> [<die> ...]
                  #{@parser.program_name} --test [full|quiet]
           All option names and arguments can be abbreviated if abbreviation is unambiguous.
+          A lone "--" separates options and die definitions, allowing definitions to start with "-".
         TEXT
       end
 

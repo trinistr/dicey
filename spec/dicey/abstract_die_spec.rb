@@ -62,7 +62,7 @@ module Dicey
         let(:dice) { [described_class.new([5, 5, 0.5]), described_class.new([1, 2, 3])] }
 
         it "returns a string description of the dice in the order provided" do
-          expect(description).to eq "(5,5,0.5);(1,2,3)"
+          expect(description).to eq "(5,5,0.5)+(1,2,3)"
         end
       end
 
@@ -70,7 +70,7 @@ module Dicey
         let(:dice) { [custom_die_class.new([5, 5, 0.5]), described_class.new([1, 2, 3])] }
 
         it "returns a concatenated list of their #to_s" do
-          expect(description).to eq "5-5-0.5;(1,2,3)"
+          expect(description).to eq "5-5-0.5+(1,2,3)"
         end
       end
 
@@ -80,7 +80,7 @@ module Dicey
         let(:dice) { [described_class.new([5, 5, 0.5]), custom_die_class.new([1, 2, 3])] }
 
         it "returns a string description of the dice in the order provided" do
-          expect(description).to eq "(5,5,0.5);1-2-3"
+          expect(description).to eq "(5,5,0.5)+1-2-3"
         end
       end
 
@@ -88,7 +88,7 @@ module Dicey
         let(:dice) { [described_class.new([5, 5, 0.5])].each + [described_class.new([1, 2, 3])] }
 
         it "works the same as with an Array" do
-          expect(description).to eq "(5,5,0.5);(1,2,3)"
+          expect(description).to eq "(5,5,0.5)+(1,2,3)"
         end
       end
     end
@@ -232,6 +232,14 @@ module Dicey
     describe "#to_s" do
       it "returns a bracketed list of die's sides" do
         expect(die.to_s).to eq "(#{sides.join(",")})"
+      end
+
+      context "when the die has only one side" do
+        let(:sides) { [1] }
+
+        it "returns the side with a comma after it, surrounded by brackets" do
+          expect(die.to_s).to eq "(1,)"
+        end
       end
     end
 

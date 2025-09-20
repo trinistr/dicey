@@ -11,7 +11,7 @@ RSpec.describe "Running built-in tests via CLI" do
 
   it "outputs test results" do
     expect { blender.call(%w[--test]) }.to output(a_string_including(<<~TEXT)).to_stdout
-      ⚀:
+      D1:
         Dicey::SumFrequencyCalculators::KroneckerSubstitution: ✔
         Dicey::SumFrequencyCalculators::MultinomialCoefficients: ✔
         Dicey::SumFrequencyCalculators::BruteForce: ✔

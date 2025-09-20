@@ -21,6 +21,8 @@ module Dicey
 
     # Yes, class variable is actually useful here.
     # TODO: Allow supplying a custom Random.
+
+    # Shared randomness source, accessed through {.rand} and {.srand}.
     @@random = Random.new
 
     # rubocop:enable Style/ClassVars
@@ -31,9 +33,8 @@ module Dicey
     # @return [String]
     def self.describe(dice)
       return dice.to_s if AbstractDie === dice
-      return dice.join(";") if Array === dice
 
-      dice.to_a.join(";")
+      dice.to_a.join("+")
     end
 
     # Create a bunch of different dice at once.
@@ -55,7 +56,15 @@ module Dicey
       Array.new(count) { new(definition) }
     end
 
-    attr_reader :sides_list, :sides_num
+    # Die's list of sides.
+    #
+    # @return [Array<Any>]
+    attr_reader :sides_list
+
+    # Number of sides of the die.
+    #
+    # @return [Integer]
+    attr_reader :sides_num
 
     # @param sides_list [Enumerable<Any>]
     # @raise [DiceyError] if +sides_list+ is empty
@@ -92,9 +101,13 @@ module Dicey
       current
     end
 
+    # Return a string representing the die.
+    #
+    # Default representation is a list of sides in round brackets.
+    #
     # @return [String]
     def to_s
-      "(#{@sides_list.join(",")})"
+      (@sides_list.size > 1) ? "(#{@sides_list.join(",")})" : "(#{@sides_list.first},)"
     end
 
     # Determine if this die and the other one have the same list of sides.

@@ -40,7 +40,7 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 
 Use online version of **Dicey** on its own website: [dicey.bulancov.tech](https://dicey.bulancov.tech)!
 
-It does not provide quite all features, but is much easier and quicker to use.
+It does not provide quite all features, but it's easy to use and quick to get started.
 
 ### For those who want the full command line experience
 
@@ -81,7 +81,7 @@ Otherwise, there are no direct dependencies.
 
 ## Usage: CLI (command line)
 
-Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`. You can also run it with `ruby dicey` instead.
+Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`.
 
 > [!NOTE]
 > 💡 Run `dicey --help` to get a list of all possible options.
@@ -95,7 +95,7 @@ $ dicey 4 4
 
 It should output the following:
 ```sh
-# ⚃;⚃
+# D4+D4
 2 => 1
 3 => 2
 4 => 3
@@ -110,7 +110,7 @@ First line is a comment telling you that calculation ran for two D4s. Every line
 If probability is preferred, there is an option for that:
 ```sh
 $ dicey 4 4 --result probabilities # or -r p for short
-# ⚃;⚃
+# D4+D4
 2 => 0.0625
 3 => 0.125
 4 => 0.1875
@@ -128,7 +128,7 @@ During your quest to end all ends you find a cool Burning Sword which deals 1d8 
 ```sh
 # Note the shorthand notation for two dice!
 $ dicey 8 2d4
-# [8];⚃;⚃
+# D8+D4+D4
 3 => 1
 4 => 3
 5 => 6
@@ -151,12 +151,12 @@ Results show that while the total range is 3–16, it is much more likely to rol
 
 If you downloaded `dicey-to-gnuplot` and have [gnuplot](http://gnuplot.info) installed, it is possible to turn these results into a graph with a somewhat clunky command:
 ```sh
-$ dicey 8 2d4 --format gnuplot | dicey-to-gnuplot
-# `--format gnuplot` can be abbreviated as `-f g`
+$ dicey 8 2d4 -f g | dicey-to-gnuplot
+# `--format gnuplot` is shortened to `-f g`
 ```
 
-This will create a PNG image named `[8];⚃;⚃.png`:
-![Graph of damage roll frequencies for Burning Sword]([8];⚃;⚃.png)
+This will create a PNG image named "*D8+D4+D4.png*":
+![Graph of damage roll frequencies for Burning Sword](D8+D4+D4.png)
 
 #### Example 2.2: JSON and YAML
 
@@ -164,13 +164,13 @@ If you find that you need to export results for further processing, it would be 
 
 JSON via `dicey 8 2d4 --format json`:
 ```json
-{"description":"[8];⚃;⚃","results":{"3":1,"4":3,"5":6,"6":10,"7":13,"8":15,"9":16,"10":16,"11":15,"12":13,"13":10,"14":6,"15":3,"16":1}}
+{"description":"D8+D4+D4","results":{"3":1,"4":3,"5":6,"6":10,"7":13,"8":15,"9":16,"10":16,"11":15,"12":13,"13":10,"14":6,"15":3,"16":1}}
 ```
 
 YAML via `dicey 8 2d4 --format yaml`:
 ```yaml
 ---
-description: "[8];⚃;⚃"
+description: D8+D4+D4
 results:
   3: 1
   4: 3
@@ -195,7 +195,7 @@ While walking home from work you decide to take a shortcut through a dark alleyw
 Having ran to a computer as fast as you can, you sic **Dicey** on the problem:
 ```sh
 $ dicey 1,2,4 4
-# (1,2,4);⚃
+# (1,2,4)+D4
 2 => 1
 3 => 2
 4 => 2
@@ -207,13 +207,10 @@ $ dicey 1,2,4 4
 
 Hmm, this looks normal, doesn't it? But wait, why are there two 2s in a row? Turns out that not having one of the sides just causes the roll frequencies to slightly dip in the middle. Good to know.
 
-> [!TIP]
-> 💡 A single positive integer argument N practically is a shorthand for listing every side from 1 to N.
-
 But what if you had TWO weird D4s?
 ```sh
 $ dicey 2d1,2,4
-# (1,2,4);(1,2,4)
+# (1,2,4)+(1,2,4)
 2 => 1
 3 => 2
 4 => 1
@@ -224,6 +221,9 @@ $ dicey 2d1,2,4
 
 Hah, now this is a properly cursed distribution!
 
+> [!TIP]
+> 💡 A single positive integer argument N practically is a shorthand for listing every side from 1 to N.
+
 ### Example 4: Rolling even more custom dice
 
 You have a sudden urge to roll dice while only having boring integer dice at home. Where to find *the cool* dice though?
@@ -231,12 +231,12 @@ You have a sudden urge to roll dice while only having boring integer dice at hom
 Look no further than **roll** mode introduced in **Dicey** 0.12:
 ```sh
 $ dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
-# (0.5e0,0.15e1,0.25e1);⚃
+# (0.5e0,0.15e1,0.25e1)+D4
 roll => 0.35e1 # You probably will get a different value here.
 ```
 
 > [!NOTE]
-> 💡 Roll mode is compatible with `--format`, but not `--result`.
+> 💡 Roll mode is compatible with `--format` option.
 
 ### All ways to define dice
 
@@ -262,7 +262,7 @@ There are three *main* ways to define dice:
 There are 3 classes of dice currently:
 - `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides. For now, it is *only* useful for rolling and can't be used for distribution calculations.
 - `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie` (being its subclass), except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
-- `Dicey::RegularDie` is a specialized subclass of `Dicey::NumericDie`. It is defined by a single integer which is expanded to range (1..N).
+- `Dicey::RegularDie` is a specialized subclass of `Dicey::NumericDie`. It is defined by a single integer *N* which is expanded to a range (1..*N*).
 
 All dice classes have constructor methods aside from `.new`:
 - `.from_list` takes a list of definitions and calls `.new` with each one;
@@ -338,7 +338,7 @@ die.roll
 Frequency calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
 - `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on my laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
-- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can handle any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
+- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can in principle work with any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
 - `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones.
 
 Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
@@ -350,10 +350,7 @@ See [next section](#diving-deeper) for more details on limitations and complexit
 ## Diving deeper
 
 For a further discussion of calculations, it is important to understand which classes of dice exist.
-- **Regular** die — a die with N sides with sequential integers from 1 to N,
-  like a classic cubic D6, D20, or even a coin if you assume that it rolls 1 and 2.
-  These are dice used for many tabletop games, including role-playing games.
-  Most probably, you will only ever need these and not anything beyond.
+- **Regular** die — a die with N sides with sequential integers from 1 to N, like a classic cubic D6, D20, or even a coin if you assume that it rolls 1 and 2. These are dice used for many tabletop games, including role-playing games. Most probably, you will only ever need these and not anything beyond.
 
 > [!TIP]
 > 💡 If you only need to roll **regular** dice, this section will not contain anything important.
@@ -364,11 +361,11 @@ For a further discussion of calculations, it is important to understand which cl
 - **Abstract** die is not limited by anything other than not having partial sides (and how would that work anyway?).
 
 > [!NOTE]
-> 💡 If your die starts with a negative number or only has a single natural side, brackets can be employed to force treating it as a sides list, e.g. `dicey '(-1)'` (quotation is required due to shell processing).
+> 💡 If your die definition starts with a negative number, it can be bracketed, prefixed with "d", or put after "--" pseudo-argument to avoid processing as an option.
 
-Dicey is in principle able to handle any numeric dice and some abstract dice with well-defined summation (tested on complex numbers), though not every possibility is exposed through command-line interface: that is limited to floating-point values.
+Dicey is in principle able to handle any real numeric dice and some abstract dice with well-defined summation (tested on complex numbers), though not every possibility is exposed through command-line interface: that is limited to floating-point values.
 
-Currently, three algorithms are implemented, with different possibilities and trade-offs.
+Currently, three algorithms for calculating frequencies are implemented, with different possibilities and trade-offs.
 
 > [!NOTE]
 > 💡 Complexity is listed for `n` dice with at most `m` sides and has not been rigorously proven.
@@ -378,7 +375,7 @@ Currently, three algorithms are implemented, with different possibilities and tr
 An algorithm based on fast polynomial multiplication. This is the default algorithm, used for most reasonable dice.
 
 - Limitations: only **natural** dice are allowed, including **regular** dice.
-- Example: `dicey 5 3,4,1 '(0)'`
+- Example: `dicey 5 3,4,1 0,`
 - Complexity: `O(m⋅n)` where `m` is the highest value
 
 ### Multinomial coefficients

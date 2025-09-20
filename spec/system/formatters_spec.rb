@@ -18,7 +18,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
-          # ⚁;⚂
+          # D2+D3
           2 => 1
           3 => 2
           4 => 2
@@ -34,7 +34,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
-          # ⚁;⚂
+          # D2+D3
           2 1
           3 2
           4 2
@@ -50,7 +50,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT.chomp).to_stdout
-          {"description":"⚁;⚂","results":{"2":1,"3":2,"4":2,"5":1}}
+          {"description":"D2+D3","results":{"2":1,"3":2,"4":2,"5":1}}
         TEXT
         expect(blender_call).to be true
       end
@@ -63,7 +63,7 @@ RSpec.describe "Formatting results" do
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
           ---
-          description: "⚁;⚂"
+          description: D2+D3
           results:
             2: 1
             3: 2
@@ -92,7 +92,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
-          # ⚁;⚂
+          # D2+D3
           roll => #{roll}
         TEXT
         expect(blender_call).to be true
@@ -105,7 +105,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
-          # ⚁;⚂
+          # D2+D3
           roll #{roll}
         TEXT
         expect(blender_call).to be true
@@ -118,7 +118,7 @@ RSpec.describe "Formatting results" do
 
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT.chomp).to_stdout
-          {"description":"⚁;⚂","results":{"roll":#{roll}}}
+          {"description":"D2+D3","results":{"roll":#{roll}}}
         TEXT
         expect(blender_call).to be true
       end
@@ -131,7 +131,7 @@ RSpec.describe "Formatting results" do
       it "prints expected text" do
         expect { blender_call }.to output(<<~TEXT).to_stdout
           ---
-          description: "⚁;⚂"
+          description: D2+D3
           results:
             roll: #{roll}
         TEXT
