@@ -9,7 +9,7 @@ module Dicey
     # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).
     #
     # Based on extension of Pascal's triangle for a higher number of coefficients.
-    # @see https://en.wikipedia.org/wiki/Pascal%27s_triangle
+    # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
     class MultinomialCoefficients < BaseCalculator
       private

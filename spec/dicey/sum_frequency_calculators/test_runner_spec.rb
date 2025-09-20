@@ -13,7 +13,7 @@ module Dicey
 
     it "returns true if all tests pass" do
       expect { call_result }.to output(<<~TEXT).to_stdout
-        ⚀:
+        D1:
           Dicey::SumFrequencyCalculators::BruteForce: ✔
       TEXT
       expect(call_result).to be true
@@ -32,7 +32,7 @@ module Dicey
 
       it "returns false, printing warning text" do
         expect { call_result }.to output(<<~TEXT).to_stdout
-          ⚀:
+          D1:
             #{custom_calculator}: ⛐ 🠐 crash!
             Dicey::SumFrequencyCalculators::BruteForce: ✔
         TEXT
@@ -51,7 +51,7 @@ module Dicey
 
       it "returns false, printing warning text" do
         expect { call_result }.to output(<<~TEXT).to_stdout
-          ⚀:
+          D1:
             #{custom_calculator}: ✘ 🠐 failure!
             Dicey::SumFrequencyCalculators::BruteForce: ✔
         TEXT

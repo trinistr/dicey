@@ -13,7 +13,7 @@ module Dicey
 
     it "returns a formatted string with dice description and calculation result" do
       expect(call_result).to eq <<~TEXT.chomp
-        {"description":"⚁;⚁;(1,5)","results":{"3":1,"4":2,"5":1,"7":1,"8":2,"9":1}}
+        {"description":"D2+D2+(1,5)","results":{"3":1,"4":2,"5":1,"7":1,"8":2,"9":1}}
       TEXT
     end
 

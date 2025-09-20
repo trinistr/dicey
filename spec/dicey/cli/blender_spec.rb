@@ -18,7 +18,7 @@ module Dicey
       let(:argv) { %w[-m r 3d1 --format gnuplot 2d2] }
 
       it "produces expected results" do
-        expect { blender_call }.to output(/\A# ⚀;⚀;⚀;⚁;⚁\nroll [5-7]\n\z/).to_stdout
+        expect { blender_call }.to output(/\A# D1\+D1\+D1\+D2\+D2\nroll [5-7]\n\z/).to_stdout
         expect(blender_call).to be true
       end
     end

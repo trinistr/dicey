@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed**
 - `DieFoundry` no longer accepts single numbers except for positive integers. If a list is desired, comma must be used. This prevents suprising behavior and possible mistakes.
+- `RegularDie#to_s` now presents the die as "D*n*" instead of the old die characters and "[*n*]".
+- `AbstractDie#to_s` now adds a comma after a singular side, making output valid as input to `DieFoundry`.
+- Make `AbstractDie#describe` join dice by "+" instead of ";". This makes punctuation clearer and emphasizes addition of random variables.
 
 [Compare v0.14.0...main](https://github.com/trinistr/dicey/compare/v0.14.0...main)
 

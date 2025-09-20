@@ -33,23 +33,11 @@ module Dicey
     end
 
     describe "#to_s" do
-      subject(:text) { die.to_s }
+      subject(:text) { described_class.new(max).to_s }
+      let(:max) { rand(1..12) }
 
-      context "when die has 1–6 sides" do
-        let(:die) { described_class.new(rand(1..6)) }
-
-        it "returns a Unicode character for die" do
-          expect(text.size).to eq 1
-          expect(text).to be_between("⚀", "⚅")
-        end
-      end
-
-      context "when die has more than 6 sides" do
-        let(:die) { described_class.new(rand(7..12)) }
-
-        it "returns die's maximum value in square brackets" do
-          expect(text).to eq "[#{die.sides_num}]"
-        end
+      it "returns Dmax" do
+        expect(text).to eq "D#{max}"
       end
     end
   end
