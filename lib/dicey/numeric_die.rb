@@ -9,8 +9,8 @@ module Dicey
     # @raise [DiceyError] if +sides_list+ contains non-numerical values or is empty
     def initialize(sides_list)
       if Range === sides_list
-        unless Numeric === sides_list.begin && Numeric === sides_list.end
-          raise DiceyError, "`#{sides_list.inspect}` is not a numerical range!"
+        unless Integer === sides_list.begin && Integer === sides_list.end
+          raise DiceyError, "`#{sides_list.inspect}` is not a valid range!"
         end
       else
         sides_list.each do |value|
