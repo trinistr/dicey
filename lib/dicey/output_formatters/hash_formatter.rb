@@ -22,7 +22,10 @@ module Dicey
       private
 
       def to_primitive(value)
-        primitive?(value) ? value : value.to_s
+        return value if primitive?(value)
+        return value.to_f if Numeric === value
+
+        value.to_s
       end
 
       def primitive?(value)

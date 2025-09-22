@@ -24,5 +24,15 @@ module Dicey
         TEXT
       end
     end
+
+    context "with Rational probabilities" do
+      it "returns pairs with floating-point probabilities" do
+        expect(formatter.call({ a: 1/2r, b: 1/4r, c: 1/4r })).to eq <<~TEXT
+          a 0.5
+          b 0.25
+          c 0.25
+        TEXT
+      end
+    end
   end
 end

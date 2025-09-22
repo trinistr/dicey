@@ -5,6 +5,14 @@ module Dicey
   module SumFrequencyCalculators
     # Base frequencies calculator.
     #
+    # *Result types:*
+    # - +:frequencies+ (default)
+    # - +:probabilities+
+    #
+    # By default, returns frequencies as they are easier to calculate and
+    # can be represented with integers.
+    # Probabilities are calculated using +Rational+ numbers to return exact results.
+    #
     # *Options:*
     #
     # Calculators may have calculator-specific options,
@@ -20,7 +28,7 @@ module Dicey
       # @param dice [Enumerable<AbstractDie>]
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @param options [Hash{Symbol => Any}] calculator-specific options
-      # @return [Hash{Numeric => Numeric}] frequencies of each sum
+      # @return [Hash{Numeric => Numeric}] frequencies or probabilities for each outcome
       # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if dice list is invalid for the calculator
       # @raise [DiceyError] if calculator returned obviously wrong results
@@ -92,7 +100,7 @@ module Dicey
           frequencies
         else
           total = frequencies.values.sum
-          frequencies.transform_values { _1.fdiv(total) }
+          frequencies.transform_values { Rational(_1, total) }
         end
       end
     end

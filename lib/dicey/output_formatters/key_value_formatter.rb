@@ -12,8 +12,18 @@ module Dicey
       def call(hash, description = nil)
         initial_string = description ? "# #{description}\n" : +""
         hash.each_with_object(initial_string) do |(key, value), output|
-          output << "#{key}#{self.class::SEPARATOR}#{value}\n"
+          output << line(transform(key, value)) << "\n"
         end
+      end
+
+      private
+
+      def transform(key, value)
+        [key, value]
+      end
+
+      def line((key, value))
+        "#{key}#{self.class::SEPARATOR}#{value}"
       end
     end
   end
