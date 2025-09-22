@@ -75,7 +75,6 @@ gem "dicey", "~> 0.14"
 
 **Dicey** is tested to work on CRuby 3.0+, latest JRuby and TruffleRuby. Compatible implementations should work too.
 - JSON and YAML formatting require `json` and `yaml`.
-- Decimal dice require `bigdecimal`.
 
 Otherwise, there are no direct dependencies.
 

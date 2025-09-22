@@ -21,5 +21,13 @@ module Dicey
         TEXT
       end
     end
+
+    context "with Rational values" do
+      it "returns JSON with floating-point values" do
+        expect(formatter.call({ 3/10r => 1/2r, 4/10r => 1/4r, 5/10r => 1/4r })).to eq <<~TEXT.chomp
+          {"results":{"0.3":0.5,"0.4":0.25,"0.5":0.25}}
+        TEXT
+      end
+    end
   end
 end

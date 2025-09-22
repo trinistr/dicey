@@ -13,7 +13,11 @@ module Dicey
       private
 
       def transform(key, value)
-        [key, value.is_a?(Rational) ? value.to_f : value]
+        [derationalize(key), derationalize(value)]
+      end
+
+      def derationalize(value)
+        value.is_a?(Rational) ? value.to_f : value
       end
     end
   end

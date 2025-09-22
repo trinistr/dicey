@@ -203,7 +203,6 @@ PLATFORMS
 DEPENDENCIES
   benchmark
   benchmark-ips
-  bigdecimal
   bump
   dicey!
   irb

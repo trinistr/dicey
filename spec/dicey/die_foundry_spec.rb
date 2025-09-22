@@ -117,7 +117,17 @@ module Dicey
       it "returns a NumericDie with the given sides" do
         expect(die).to be_a NumericDie
         expect(die.sides_list).to eq [1.5, -3.5, 19.5]
-        expect(die.sides_list).to all be_a BigDecimal
+        expect(die.sides_list).to all be_a Rational
+      end
+
+      context "if list includes integers" do
+        let(:die) { foundry.call("1.5,-3,19.5") }
+
+        it "returns a NumericDie with both Rationals and Integers" do
+          expect(die).to be_a NumericDie
+          expect(die.sides_list).to eq [1.5, -3, 19.5]
+          expect(die.sides_list).to all be_a(Rational).or be_an(Integer)
+        end
       end
 
       context "if list is surrounded with brackets" do
@@ -126,7 +136,7 @@ module Dicey
         it "strips them before processing" do
           expect(die).to be_a NumericDie
           expect(die.sides_list).to eq [1.5, -3.5, 19.5]
-          expect(die.sides_list).to all be_a BigDecimal
+          expect(die.sides_list).to all be_a Rational
         end
       end
 
@@ -136,7 +146,7 @@ module Dicey
         it "returns a NumericDie with the given sides" do
           expect(die).to be_a NumericDie
           expect(die.sides_list).to eq [1.5, -3.5, 19.5]
-          expect(die.sides_list).to all be_a BigDecimal
+          expect(die.sides_list).to all be_a Rational
         end
       end
 

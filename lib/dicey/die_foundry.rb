@@ -17,7 +17,7 @@ module Dicey
       [/\A#{PREFIX}\(?(?<begin>-?\d++)(?>[-–—…]|\.{2,3})(?<end>-?\d++)\)?\z/, :range_mold].freeze,
       # List of numbers goes into the NumericDie mold.
       [/\A#{PREFIX}\(?(?<sides>-?\d++(?>,(?>-?\d++)?)+|,)\)?\z/, :weirdly_shaped_mold].freeze,
-      # Non-integers require arbitrary precision arithmetic, which is not enabled by default.
+      # Non-integers require special handling for precision.
       [/\A#{PREFIX}\(?(?<sides>-?\d++(?>\.\d++)?(?>,(?>-?\d++(?>\.\d++)?)?)+|,)\)?\z/,
        :weirdly_precise_mold].freeze,
       # Anything else is spilled on the floor.
@@ -30,7 +30,7 @@ module Dicey
     # - integer range (like "3-6" or "(-5..5)"), which produces a {NumericDie};
     # - list of integers (like "3,4,5", "(-1,0,1)", or "2,"), which produces a {NumericDie};
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
-    #   but uses +BigDecimal+ for values to maintain precise results.
+    #   but uses +Rational+ for values to maintain precise results.
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d" without an explicit count is ignored instead, creating a single die.
@@ -69,9 +69,7 @@ module Dicey
     end
 
     def weirdly_precise_mold(definition)
-      require "bigdecimal" unless defined?(BigDecimal)
-
-      sides = definition[:sides].split(",").map { BigDecimal(_1) }
+      sides = definition[:sides].split(",").map { _1.include?(".") ? Rational(_1) : _1.to_i }
       build_dice(NumericDie, definition[:count], sides)
     end
 
