@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Changed**
+- Use `Rational` instead of `Float` for probabilities, maintaining precision.
+- Use `Rational` instead of `BigDecimal` for decimal sides. This removes soft dependency on `bigdecimal` gem which is important for online version.
+
 [Compare v0.15.0...main](https://github.com/trinistr/dicey/compare/v0.15.0...main)
 
 ## [v0.15.0] — 2025-09-22

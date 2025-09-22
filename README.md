@@ -110,13 +110,13 @@ If probability is preferred, there is an option for that:
 ```sh
 $ dicey 4 4 --result probabilities # or -r p for short
 # D4+D4
-2 => 0.0625
-3 => 0.125
-4 => 0.1875
-5 => 0.25
-6 => 0.1875
-7 => 0.125
-8 => 0.0625
+2 => 1/16
+3 => 1/8
+4 => 3/16
+5 => 1/4
+6 => 3/16
+7 => 1/8
+8 => 1/16
 ```
 
 This shows that 5 will probably be rolled a quarter of the time.
@@ -229,9 +229,9 @@ You have a sudden urge to roll dice while only having boring integer dice at hom
 
 Look no further than **roll** mode introduced in **Dicey** 0.12:
 ```sh
-$ dicey 0.5,1.5,2.5 4 --mode roll # As always, can be abbreviated to -m r
-# (0.5e0,0.15e1,0.25e1)+D4
-roll => 0.35e1 # You probably will get a different value here.
+$ dicey 0.5,1.0,1.5,2.0,2.5 4 --mode roll # As always, can be abbreviated to -m r
+# (1/2,1,3/2,2,5/2)+D4
+roll => 7/2 # You probably will get a different value here.
 ```
 
 > [!NOTE]
@@ -415,7 +415,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/trinis
 - Tests cover the behavior and its interactions. 100% coverage *is not enough*, as it does not guarantee that all code paths are tested.
 - Documentation is up-to-date: generate it with `rake docs` and read it.
 - "*CHANGELOG.md*" lists the change if it has impact on users.
-- "*README.md*" is updated if the feature should be visible there, including the Kanban board.
+- "*README.md*" is updated if the feature should be visible there.
 
 ## License
 
