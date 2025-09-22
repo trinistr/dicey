@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dicey (0.14.0)
+    dicey (0.15.0)
 
 GEM
   remote: https://rubygems.org/

@@ -7,18 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.15.0...main](https://github.com/trinistr/dicey/compare/v0.15.0...main)
+
+## [v0.15.0] — 2025-09-22
+
+This update aligns **Dicey**'s behavior with practical use based on [online version](https://dicey.bulancov.tech), with some new features.
+
 **Added**
-- Ability to specify dice by integer ranges in `DieFoundry`.
+- Ability to specify dice by integer ranges in `DieFoundry` (like "-2..8").
 - `Empirical` calculator. It actually rolls dice to acquire approximate probabilities. Not used by CLI at all.
 - Ability to pass calculator-specific options in API. Currently only used by `Empirical` calculator for the number of rolls.
 
 **Changed**
-- `DieFoundry` no longer accepts single numbers except for positive integers. If a list is desired, comma must be used. This prevents suprising behavior and possible mistakes.
+- `DieFoundry` no longer accepts single numbers except for positive integers. If a list is desired, a comma must be used. This prevents suprising behavior and possible mistakes.
 - `RegularDie#to_s` now presents the die as "D*n*" instead of the old die characters and "[*n*]".
 - `AbstractDie#to_s` now adds a comma after a singular side, making output valid as input to `DieFoundry`.
-- Make `AbstractDie#describe` join dice by "+" instead of ";". This makes punctuation clearer and emphasizes addition of random variables.
+- `AbstractDie#describe` now joins dice by "+" instead of ";". This makes punctuation clearer and emphasizes addition of random variables.
 
-[Compare v0.14.0...main](https://github.com/trinistr/dicey/compare/v0.14.0...main)
+[Compare v0.14.0...v0.15.0](https://github.com/trinistr/dicey/compare/v0.14.0...v0.15.0)
 
 ## [v0.14.0] — 2025-09-11
 
@@ -108,7 +114,7 @@ This update brought clarity with "*README.md*".
 This is mostly a bug fix update.
 
 **Added**
-- Ability to provide side lists surrounded by round brackets (like `(-1,0,1)`). This fixes problems with negative sides being interpreted as options.
+- Ability to provide side lists surrounded by round brackets (like `(-1,0,1)`). This allows to mix dice starting with negative numbers and options.
 
 **Fixed**
 - Fix `FrozenError` on Ruby 2.7.
@@ -210,6 +216,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.15.0]: https://github.com/trinistr/dicey/tree/v0.15.0
 [v0.14.0]: https://github.com/trinistr/dicey/tree/v0.14.0
 [v0.13.1]: https://github.com/trinistr/dicey/tree/v0.13.1
 [v0.13.0]: https://github.com/trinistr/dicey/tree/v0.13.0
