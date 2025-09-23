@@ -2,9 +2,13 @@
 
 require_relative "die_foundry"
 
+require_relative "rational_to_integer"
+
 module Dicey
   # Let the dice roll!
   class Roller
+    include RationalToInteger
+
     # @param arguments [Array<String>] die definitions
     # @param format [#call] formatter for output
     # @return [nil]
@@ -15,7 +19,7 @@ module Dicey
       dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
       result = dice.sum(&:roll)
 
-      format.call({ "roll" => result }, AbstractDie.describe(dice))
+      format.call({ "roll" => rational_to_integer(result) }, AbstractDie.describe(dice))
     end
 
     private

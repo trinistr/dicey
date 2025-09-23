@@ -27,7 +27,7 @@ module Dicey
       def calculate(dice, rolls: N)
         statistics = rolls.times.with_object(Hash.new(0)) { |_, hash| hash[dice.sum(&:roll)] += 1 }
         total_results = dice.map(&:sides_num).reduce(:*)
-        statistics.transform_values { (_1 * total_results).fdiv(rolls) }
+        statistics.transform_values { Rational(_1 * total_results, rolls) }
       end
 
       def verify_result(*)

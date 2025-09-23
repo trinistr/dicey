@@ -26,7 +26,7 @@ module Dicey
     end
 
     context "when frequencies are requested" do
-      it "calcualtes frequencies for each result" do
+      it "calcualtes frequencies for each outcome" do
         expect(result).to eq(
           { 0 => 1, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1, 7 => 1, 8 => 1 }
         )
@@ -36,11 +36,12 @@ module Dicey
     context "when probabilities are requested" do
       let(:result_type) { :probabilities }
 
-      it "calcualtes probabilities for each result" do
-        p = 1.fdiv(9)
+      it "calcualtes probabilities for each outcome using Rational" do
+        p = 1/9r
         expect(result).to eq(
           { 0 => p, 1 => p, 2 => p, 3 => p, 4 => p, 5 => p, 6 => p, 7 => p, 8 => p }
         )
+        expect(result.values).to all be_a Rational
       end
     end
 

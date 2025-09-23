@@ -8,9 +8,6 @@ gemspec
 # This is needed for RBS, because otherwise it will install insane number of definitions.
 # Alternatively, ignore them in `rbs_collection.yaml`.
 
-# BigDecimal is no longer in stdlib from 3.4 :(
-gem "bigdecimal"
-
 # For running tasks
 gem "rake", require: false
 
