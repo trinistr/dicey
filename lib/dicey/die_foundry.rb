@@ -3,9 +3,13 @@
 require_relative "numeric_die"
 require_relative "regular_die"
 
+require_relative "rational_to_integer"
+
 module Dicey
   # Helper class to define die definitions and automatically select the best one.
   class DieFoundry
+    include RationalToInteger
+
     # Regexp for matching a possible count.
     PREFIX = /(?>(?<count>[1-9]\d*+)?d)?+/i
 
@@ -69,7 +73,7 @@ module Dicey
     end
 
     def weirdly_precise_mold(definition)
-      sides = definition[:sides].split(",").map { _1.include?(".") ? Rational(_1) : _1.to_i }
+      sides = definition[:sides].split(",").map { rational_to_integer(Rational(_1)) }
       build_dice(NumericDie, definition[:count], sides)
     end
 

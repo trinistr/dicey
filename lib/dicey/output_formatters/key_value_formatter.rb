@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
+require_relative "../rational_to_integer"
+
 module Dicey
   module OutputFormatters
     # Base formatter for outputting lists of key-value pairs separated by newlines.
     # Can add an optional description into the result.
     # @abstract
     class KeyValueFormatter
+      include RationalToInteger
+
       # @param hash [Hash{Object => Object}]
       # @param description [String] text to add as a comment.
       # @return [String]
@@ -19,7 +23,7 @@ module Dicey
       private
 
       def transform(key, value)
-        [key, value]
+        [rational_to_integer(key), rational_to_integer(value)]
       end
 
       def line((key, value))
