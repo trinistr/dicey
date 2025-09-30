@@ -83,6 +83,10 @@ module Dicey
     context "when distribution is complex" do
       let(:distribution) { { 1i => 2, 2 => 3, Complex(2, 3) => 2, Complex(1, 4) => 3 } }
 
+      before do
+        pending "Hangs on JRuby, Complex+Rational raises on TruffleRuby" if RUBY_ENGINE != "ruby"
+      end
+
       it "returns all properties which don't depend on ordering" do
         expect(properties).to include(
           mode: [2, 1 + 4i],
