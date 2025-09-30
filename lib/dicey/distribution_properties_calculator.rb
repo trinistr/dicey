@@ -16,7 +16,12 @@ module Dicey
   # (median, mean, ...) are all equal.
   # Mode is often not unique, but includes this center.
   class DistributionPropertiesCalculator
+    include RationalToInteger
+
     # Calculate properties for a given distribution.
+    #
+    # Depending on values in the distribution, some properties may be undefined.
+    # In such cases, only mode is guaranteed to be present.
     #
     # @param distribution [Hash{Numeric => Numeric}
     #   numeric distribution with pre-sorted keys
@@ -34,10 +39,17 @@ module Dicey
       weights = distribution.values
 
       {
+        mode: mode(outcomes, weights),
         **range_characteristics(outcomes),
+        **median(outcomes),
         **means(outcomes, weights),
         **moments(distribution),
       }
+    end
+
+    def mode(outcomes, weights)
+      max_weight = weights.max
+      outcomes.select.with_index { |_, index| weights[index] == max_weight }
     end
 
     def range_characteristics(outcomes)
@@ -49,23 +61,32 @@ module Dicey
         total_range: max - min,
         mid_range: rational_to_integer(Rational(min + max, 2)),
       }
+    rescue ArgumentError, TypeError, NoMethodError
+      # Outcomes are not comparable with each other, so a range can not be determined.
+      {}
     end
 
-    def means(outcomes, weights)
-      max_weight = weights.max
+    def means(outcomes, _weights)
       {
-        mode: outcomes.select.with_index { |_, index| weights[index] == max_weight },
-        median: median(outcomes),
         arithmetic_mean: rational_to_integer(Rational(outcomes.sum, outcomes.size)),
       }
+    rescue ArgumentError, TypeError
+      # Outcomes are not summable with each other, means are meaningless.
+      {}
     end
 
     def median(outcomes)
-      if outcomes.size.odd?
-        outcomes[outcomes.size / 2]
-      else
-        Rational(outcomes[(outcomes.size / 2) - 1] + outcomes[outcomes.size / 2], 2)
-      end
+      outcomes = outcomes.sort
+      value =
+        if outcomes.size.odd?
+          outcomes[outcomes.size / 2]
+        else
+          Rational(outcomes[(outcomes.size / 2) - 1] + outcomes[outcomes.size / 2], 2)
+        end
+      { median: value }
+    rescue ArgumentError, TypeError, NoMethodError
+      # Outcomes are not compatible with each other, so a median can not be determined.
+      {}
     end
 
     def moments(distribution)
@@ -83,13 +104,19 @@ module Dicey
         standard_deviation: Math.sqrt(variance),
         skewness: skewness,
         kurtosis: kurtosis,
-        excess_kurtosis: kurtosis - 3,
+        excess_kurtosis: kurtosis ? kurtosis - 3 : nil,
       }
+    rescue ArgumentError, TypeError, NoMethodError
+      # Outcomes are not compatible with each other, moments are fleeing.
+      {}
     end
 
     def moment(distribution, total_weight, degree, center = 0, variance = nil)
+      # With 0 variance, normalized moments are undefined.
+      return nil if variance == 0 # rubocop:disable Style/NumericPredicate
+
       unnormalized = distribution.sum { |r, w| ((r - center)**degree) * Rational(w, total_weight) }
-      variance ? (unnormalized / (variance**Rational(degree, 2))) : unnormalized
+      variance ? (unnormalized / (variance**(degree/2r))) : unnormalized
     end
   end
 end
