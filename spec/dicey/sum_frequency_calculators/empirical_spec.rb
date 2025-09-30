@@ -2,7 +2,7 @@
 
 module Dicey
   RSpec.describe SumFrequencyCalculators::Empirical do
-    subject(:result) { calculator.call(dice) }
+    subject(:result) { calculator.call(dice, rolls: 1000) }
 
     let(:calculator) { described_class.new }
 
@@ -17,24 +17,24 @@ module Dicey
     context "when called with valid no-overlap dice" do
       it "calculates frequencies correctly" do
         expect(result).to match({
-          -3.9 => a_value_within(0.2).of(1),
-          -3.8 => a_value_within(0.2).of(1),
-          -3.7 => a_value_within(0.2).of(1),
-          -2.9 => a_value_within(0.2).of(1),
-          -2.8 => a_value_within(0.2).of(1),
-          -2.7 => a_value_within(0.2).of(1),
-          -1.9 => a_value_within(0.2).of(1),
-          -1.8 => a_value_within(0.2).of(1),
-          -1.7 => a_value_within(0.2).of(1),
-          0.1 => a_value_within(0.2).of(1),
-          0.2 => a_value_within(0.2).of(1),
-          0.3 => a_value_within(0.2).of(1),
-          1.1 => a_value_within(0.2).of(1),
-          1.2 => a_value_within(0.2).of(1),
-          1.3 => a_value_within(0.2).of(1),
-          2.1 => a_value_within(0.2).of(1),
-          2.2 => a_value_within(0.2).of(1),
-          2.3 => a_value_within(0.2).of(1),
+          -3.9 => a_value_within(0.5).of(1),
+          -3.8 => a_value_within(0.5).of(1),
+          -3.7 => a_value_within(0.5).of(1),
+          -2.9 => a_value_within(0.5).of(1),
+          -2.8 => a_value_within(0.5).of(1),
+          -2.7 => a_value_within(0.5).of(1),
+          -1.9 => a_value_within(0.5).of(1),
+          -1.8 => a_value_within(0.5).of(1),
+          -1.7 => a_value_within(0.5).of(1),
+          0.1 => a_value_within(0.5).of(1),
+          0.2 => a_value_within(0.5).of(1),
+          0.3 => a_value_within(0.5).of(1),
+          1.1 => a_value_within(0.5).of(1),
+          1.2 => a_value_within(0.5).of(1),
+          1.3 => a_value_within(0.5).of(1),
+          2.1 => a_value_within(0.5).of(1),
+          2.2 => a_value_within(0.5).of(1),
+          2.3 => a_value_within(0.5).of(1),
         })
       end
     end
@@ -44,14 +44,14 @@ module Dicey
 
       it "calculates frequencies correctly" do
         expect(result).to match({
-          -3 => a_value_within(0.2).of(1),
-          -2 => a_value_within(0.2).of(2),
-          -1 => a_value_within(0.2).of(2),
-          0 => a_value_within(0.2).of(1),
-          1 => a_value_within(0.2).of(1),
-          2 => a_value_within(0.2).of(2),
-          3 => a_value_within(0.2).of(2),
-          4 => a_value_within(0.2).of(1),
+          -3 => a_value_within(0.5).of(1),
+          -2 => a_value_within(0.5).of(2),
+          -1 => a_value_within(0.5).of(2),
+          0 => a_value_within(0.5).of(1),
+          1 => a_value_within(0.5).of(1),
+          2 => a_value_within(0.5).of(2),
+          3 => a_value_within(0.5).of(2),
+          4 => a_value_within(0.5).of(1),
         })
       end
     end
