@@ -28,7 +28,8 @@ In seriousness, this program is mainly useful for calculating total frequency (p
 - [Usage: API](#usage-api)
   - [Dice](#dice)
   - [Rolling](#rolling)
-  - [Calculators](#calculators)
+  - [Distribution calculators](#distribution-calculators)
+  - [Distribution properties](#distribution-properties)
 - [Diving deeper](#diving-deeper)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -332,10 +333,10 @@ die.roll
 > [!NOTE]
 > 💡 Randomness source is *global*, shared between all dice and probably not thread-safe.
 
-### Calculators
+### Distribution calculators
 
-Frequency calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
-- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on my laptop.
+Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
+- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on a laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can in principle work with any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
 - `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones.
@@ -344,7 +345,57 @@ Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and pr
 - `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
 
-See [next section](#diving-deeper) for more details on limitations and complexity considerations.
+See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations.
+
+### Distribution properties
+
+While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` already provides this functionality:
+```rb
+Dicey::DistributionPropertiesCalculator.new.call(
+  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+    Dicey::RegularDie.from_count(2, 3)
+  )
+)
+  # => 
+  # {:mode=>[4],
+  # :min=>2,
+  # :max=>6,
+  # :total_range=>4,
+  # :mid_range=>4,
+  # :median=>4,
+  # :arithmetic_mean=>4,
+  # :expected_value=>4,
+  # :variance=>(4/3),
+  # :standard_deviation=>1.1547005383792515,
+  # :skewness=>0.0,
+  # :kurtosis=>(9/4),
+  # :excess_kurtosis=>(-3/4)}
+```
+
+Of course, for regular dice most properties are quite simple and predicatable due to symmetricity of distribution. It becomes more interesting with unfair, lopsided dice. Remember [Example 3](#example-3-custom-dice)?
+```rb
+Dicey::DistributionPropertiesCalculator.new.call(
+  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+    [Dicey::RegularDie.new(4), Dicey::NumericDie.new([1,3,4])]
+  )
+)
+  # => 
+  # {:mode=>[5],
+  # :min=>2,
+  # :max=>8,
+  # :total_range=>6,
+  # :mid_range=>5,
+  # :median=>5,
+  # :arithmetic_mean=>5,
+  # :expected_value=>(31/6),
+  # :variance=>(101/36),
+  # :standard_deviation=>1.674979270186815,
+  # :skewness=>-0.15762965389465178,
+  # :kurtosis=>(23145/10201),
+  # :excess_kurtosis=>(-7458/10201)}
+```
+
+This disitrubution is obviosuly skewed (as can be immediately seen from non-zero skewness), with expected value no longer equal to mean. This is a mild example. It is easily possible to create a distribution with multiple local maxima and high skewness.
 
 ## Diving deeper
 

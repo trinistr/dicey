@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**
+- `DistributionPropertiesCalculator` for calculating mean, mode, expected value, standard deviation and other properties of discrete distributions (not population samples).
+
 **Changed**
 - Use `Rational` instead of `Float` for probabilities, maintaining precision.
 - Use `Rational` instead of `BigDecimal` for decimal sides. This removes soft dependency on `bigdecimal` gem which is important for online version.
