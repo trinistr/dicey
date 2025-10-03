@@ -10,7 +10,7 @@ RSpec.describe Rational do
   end
 
   it "works with Complex the other way around" do
-    expect(Complex(1, 2) / 3r).to eq Complex(1/3r, 2/3r)
+    expect(Complex(1, 2)/3r).to eq Complex(1/3r, 2/3r)
   end
 
   it "allows to divide Complex by Complex" do
@@ -22,6 +22,6 @@ RSpec.describe Rational do
   end
 
   specify "and imaginary literals!" do
-    expect(1/2ri).to eq Complex(0, -0.5r)
+    expect(1 / 2ri).to eq Complex(0, -0.5r)
   end
 end
