@@ -20,15 +20,16 @@ module Dicey
       it "returns properties with trivial values, some of them undefined" do
         expect(properties).to eq(
           mode: [37],
+          modes: [[37]],
           min: 37,
           max: 37,
           mid_range: 37,
-          total_range: 0,
+          range_length: 0,
           median: 37,
           arithmetic_mean: 37,
           expected_value: 37,
           variance: 0,
-          standard_deviation: 0,
+          standard_deviation: 0.0,
           skewness: nil,
           kurtosis: nil,
           excess_kurtosis: nil
@@ -42,10 +43,11 @@ module Dicey
       it "returns expected values for properties" do
         expect(properties).to eq(
           mode: [1, 2, 3, 4, 5, 6],
+          modes: [[1, 2, 3, 4, 5, 6]],
           min: 1,
           max: 6,
           mid_range: (7/2r),
-          total_range: 5,
+          range_length: 5,
           median: (7/2r),
           arithmetic_mean: (7/2r),
           expected_value: (7/2r),
@@ -64,10 +66,11 @@ module Dicey
       it "returns expected values for properties" do
         expect(properties).to match(
           mode: [4],
+          modes: [[2], [4], [60]],
           min: 1,
           max: 60,
           mid_range: (61/2r),
-          total_range: 59,
+          range_length: 59,
           median: (7/2r),
           arithmetic_mean: (75/6r),
           expected_value: (158/14r),
@@ -80,6 +83,29 @@ module Dicey
       end
     end
 
+    context "when distribution is multi-modal" do
+      let(:distribution) { { 1 => 1, 2 => 3, 3 => 1, 4 => 2, 5 => 2 } }
+
+      it "returns expected values for properties" do
+        expect(properties).to match(
+          mode: [2],
+          modes: [[2], [4, 5]],
+          min: 1,
+          max: 5,
+          mid_range: 3,
+          range_length: 4,
+          median: 3,
+          arithmetic_mean: 3,
+          expected_value: (28/9r),
+          variance: a_value_within(0.00000001).of(1.87654321),
+          standard_deviation: a_value_within(0.00000001).of(Math.sqrt(1.87654321)),
+          skewness: a_value_within(0.00000001).of(0.05869854),
+          kurtosis: a_value_within(0.00000001).of(1.61374654),
+          excess_kurtosis: a_value_within(0.00000001).of(-1.38625346)
+        )
+      end
+    end
+
     if RUBY_ENGINE == "ruby"
       # Hangs on JRuby, Complex+Rational raises on TruffleRuby
       context "when distribution is complex" do
@@ -88,6 +114,7 @@ module Dicey
         it "returns all properties which don't depend on ordering" do
           expect(properties).to include(
             mode: [2, 1 + 4i],
+            modes: [[2], [1 + 4i]],
             arithmetic_mean: (5/4r) + 2i,
             expected_value: (13/10r) + 2i,
             variance: (-219/100r) - (2/5r).i
@@ -100,16 +127,16 @@ module Dicey
     context "when distribution includes non-numeric values" do
       let(:distribution) { { "a" => 3, 2 => 2, "c" => 2, 4 => 3, "e" => 2, 6 => 3 } }
 
-      it "returns only mode" do
-        expect(properties).to eq(mode: ["a", 4, 6])
+      it "returns only mode(s)" do
+        expect(properties).to eq(mode: ["a", 4, 6], modes: [["a"], [4], [6]])
       end
     end
 
     context "when distribution includes non-sortable values" do
       let(:distribution) { { "a" => 1, {} => 2, 3 => 3 } }
 
-      it "returns only mode" do
-        expect(properties).to eq(mode: [3])
+      it "returns only mode(s)" do
+        expect(properties).to eq(mode: [3], modes: [[3]])
       end
     end
   end

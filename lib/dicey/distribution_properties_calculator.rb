@@ -8,7 +8,7 @@ module Dicey
   #
   # These are well-known properties such as:
   # - min, max, mid-range;
-  # - mode, median, arithmetic mean;
+  # - mode(s), median, arithmetic mean;
   # - important moments (expected value, variance, skewness, kurtosis).
   #
   # It is notable that most dice create symmetric distributions,
@@ -21,11 +21,13 @@ module Dicey
     # Calculate properties for a given distribution.
     #
     # Depending on values in the distribution, some properties may be undefined.
-    # In such cases, only mode is guaranteed to be present.
+    # In such cases, only mode(s) are guaranteed to be present.
     #
-    # @param distribution [Hash{Numeric => Numeric}
-    #   numeric distribution with pre-sorted keys
-    # @return [Hash{Symbol => Numeric, Array<Numeric>}]
+    # On empty distribution, returns an empty hash.
+    #
+    # @param distribution [Hash{Numeric => Numeric}, Hash{Any => Numeric}]
+    #   distribution with pre-sorted keys
+    # @return [Hash{Symbol => Numeric, Array<Numeric>, Array<Array<Numeric>>}]
     def call(distribution)
       return {} if distribution.empty?
 
@@ -40,6 +42,7 @@ module Dicey
 
       {
         mode: mode(outcomes, weights),
+        modes: modes(distribution),
         **range_characteristics(outcomes),
         **median(outcomes),
         **means(outcomes, weights),
@@ -52,13 +55,35 @@ module Dicey
       outcomes.select.with_index { |_, index| weights[index] == max_weight }
     end
 
+    def modes(distribution)
+      # Split into chunks with different weights,
+      # then select those with higher weights than their neighbors.
+      chunks = distribution.chunk_while { |(_, w_1), (_, w_2)| w_1 == w_2 }.to_a
+      return [chunks.first.map(&:first)] if chunks.size == 1
+
+      modes = []
+      add_local_mode(modes, nil, chunks[0], chunks[1])
+      chunks.each_cons(3).each do |chunk_before, chunk, chunk_after|
+        add_local_mode(modes, chunk_before, chunk, chunk_after)
+      end
+      add_local_mode(modes, chunks[-2], chunks[-1], nil)
+      modes
+    end
+
+    def add_local_mode(modes, chunk_before, chunk, chunk_after)
+      if (!chunk_before || chunk_before.first.last < chunk.first.last) &&
+         (!chunk_after || chunk_after.first.last < chunk.first.last)
+        modes << chunk.map(&:first)
+      end
+    end
+
     def range_characteristics(outcomes)
       min = outcomes.min
       max = outcomes.max
       {
         min: min,
         max: max,
-        total_range: max - min,
+        range_length: max - min,
         mid_range: rational_to_integer(Rational(min + max, 2)),
       }
     rescue ArgumentError, TypeError, NoMethodError

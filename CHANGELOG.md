@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Changed**
+- Rename `total_range` to `range_length` in `DistributionPropertiesCalculator` to differentiate it from `mid_range` better.
+- `DistributionPropertiesCalculator` now also returns `modes` with lists of local modes. This is useful for multi-modal distributions.
+
 [Compare v0.15.1...main](https://github.com/trinistr/dicey/compare/v0.15.1...main)
 
 ## [v0.15.1] — 2025-10-07

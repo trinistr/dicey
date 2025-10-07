@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 module Dicey
+  # @api private
   # Mix-in for converting rationals with denominator of 1 to integers.
   module RationalToInteger
+    private
+
     # Convert +value+ to +Integer+ if it's a +Rational+ with denominator of 1.
     # Otherwise, return +value+ as-is.
     #
