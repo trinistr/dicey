@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.15.1...main](https://github.com/trinistr/dicey/compare/v0.15.1...main)
+
+## [v0.15.1] — 2025-10-07
+
 **Added**
 - `DistributionPropertiesCalculator` for calculating mean, mode, expected value, standard deviation and other properties of discrete distributions (not population samples).
 
@@ -14,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `Rational` instead of `Float` for probabilities, maintaining precision.
 - Use `Rational` instead of `BigDecimal` for decimal sides. This removes soft dependency on `bigdecimal` gem which is important for online version.
 
-[Compare v0.15.0...main](https://github.com/trinistr/dicey/compare/v0.15.0...main)
+[Compare v0.15.0...v0.15.1](https://github.com/trinistr/dicey/compare/v0.15.0...v0.15.1)
 
 ## [v0.15.0] — 2025-09-22
 
@@ -223,6 +227,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.15.1]: https://github.com/trinistr/dicey/tree/v0.15.1
 [v0.15.0]: https://github.com/trinistr/dicey/tree/v0.15.0
 [v0.14.0]: https://github.com/trinistr/dicey/tree/v0.14.0
 [v0.13.1]: https://github.com/trinistr/dicey/tree/v0.13.1
