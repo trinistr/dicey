@@ -93,10 +93,21 @@ module Dicey
         it { is_expected.to be true }
       end
 
-      context "when called with a list of any dice" do
+      context "when called with a list of abstract dice" do
         let(:dice) { AbstractDie.from_list([1, 2, 3], ["a", 2, :"3"]) }
 
-        it { is_expected.to be true }
+        context "with available vector_number" do
+          it { is_expected.to be true }
+        end
+
+        context "when vector_number is not available" do
+          before { hide_const("VectorNumber") }
+
+          it "prints a warning and returns false" do
+            expect { validity }.to output(/`require "vector_number"`/).to_stderr
+            expect(validity).to be false
+          end
+        end
       end
     end
   end

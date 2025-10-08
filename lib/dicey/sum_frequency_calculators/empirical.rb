@@ -3,7 +3,7 @@
 # Try to load "vector_number" pre-emptively.
 begin
   require "vector_number"
-rescue
+rescue LoadError
   # VectorNumber not available, sad
 end
 
@@ -29,18 +29,23 @@ module Dicey
 
       private
 
+      def validate(dice)
+        if defined?(VectorNumber) || dice.all?(NumericDie)
+          true
+        else
+          warn <<~TEXT
+            Dice with non-numeric sides need gem "vector_number" to be present and available.
+            If this is intended, please call `require "vector_number"` before using the calculator.
+          TEXT
+          false
+        end
+      end
+
       def calculate(dice, rolls: N)
         dice = vectorize_dice(dice) if defined?(VectorNumber)
         statistics = rolls.times.with_object(Hash.new(0)) { |_, hash| hash[dice.sum(&:roll)] += 1 }
         total_results = dice.map(&:sides_num).reduce(:*)
         statistics.transform_values { Rational(_1 * total_results, rolls) }
-      rescue TypeError
-        warn <<~TEXT
-          Dice with non-numeric sides need gem "vector_number" to be present and available.
-          If this is intended, please call `require "vector_number"` before using the calculator.
-        TEXT
-        raise DiceyError, "attempted to calculate distribution on dice with non-numeric sides",
-              cause: nil
       end
 
       def vectorize_dice(dice)

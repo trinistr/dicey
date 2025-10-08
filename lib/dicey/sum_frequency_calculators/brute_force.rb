@@ -3,7 +3,7 @@
 # Try to load "vector_number" pre-emptively.
 begin
   require "vector_number"
-rescue
+rescue LoadError
   # VectorNumber not available, sad
 end
 
@@ -17,17 +17,22 @@ module Dicey
     class BruteForce < BaseCalculator
       private
 
+      def validate(dice)
+        if defined?(VectorNumber) || dice.all?(NumericDie)
+          true
+        else
+          warn <<~TEXT
+            Dice with non-numeric sides need gem "vector_number" to be present and available.
+            If this is intended, please call `require "vector_number"` before using the calculator.
+          TEXT
+          false
+        end
+      end
+
       def calculate(dice, **nil)
         side_lists = dice.map(&:sides_list)
         side_lists = vectorize_sides(side_lists) if defined?(VectorNumber)
         combine_dice_enumerators(side_lists).map(&:sum).tally
-      rescue TypeError
-        warn <<~TEXT
-          Dice with non-numeric sides need gem "vector_number" to be present and available.
-          If this is intended, please call `require "vector_number"` before using the calculator.
-        TEXT
-        raise DiceyError, "attempted to calculate distribution on dice with non-numeric sides",
-              cause: nil
       end
 
       def vectorize_sides(side_lists)
