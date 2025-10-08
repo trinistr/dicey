@@ -24,6 +24,7 @@ In seriousness, this program is mainly useful for calculating total frequency (p
   - [Example 2: Complex distribution with different dice](#example-2-complex-distribution-with-different-dice)
   - [Example 3: Custom dice](#example-3-custom-dice)
   - [Example 4: Rolling even more custom dice](#example-4-rolling-even-more-custom-dice)
+  - [Example 5: Non-numeric dice](#example-5-non-numeric-dice)
   - [All ways to define dice](#all-ways-to-define-dice)
 - [Usage: API](#usage-api)
   - [Dice](#dice)
@@ -63,10 +64,10 @@ gem install dicey
 
 Or, if using Bundler, add it to your `Gemfile`:
 ```rb
-gem "dicey", "~> 0.14"
+gem "dicey", "~> 0.16"
 ```
 
-If intending to work with non-numeric dice, install **vector_number** too:
+(Optional) If intending to work with non-numeric dice, install **vector_number** too:
 ```sh
 gem install vector_number
 ```
@@ -249,18 +250,35 @@ roll => 7/2 # You probably will get a different value here.
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format` option.
 
+### Example 5: Non-numeric dice
+
+You are a wizard and you have a spellbook with an elemental vortex spell that deals three instances of random elemental damage. Let's find out what you have for your enemies in store today:
+```sh
+$ dicey 3d❄️,🔥,⚡️,🌪,🌲 -m r
+# (❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)
+roll => 1⋅🌪 + 1⋅🌲 + 1⋅⚡️
+```
+
+Wind, wood and lightning in equal proportion it is! Your enemies will tremble!
+
+Regrettably, it is not possible to use elemental dice without installing **vector_number** gem first.
+
 ### All ways to define dice
 
-There are three *main* ways to define dice:
+There are four *main* ways to define dice:
 - *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
 - *"3-6", "-5..5", "(0-1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
   - Accepted separators: "-", "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
-- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes an arbitrary numeric die.
+- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
   - Lists can end in a comma, allowing single-number lists.
+- *"1,1.5,Two", "(💚,🧡,💙,💜)" or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
+  - Lists can end in a comma, allowing single-string lists.
+  - Single (') or double (") quotes can be used to use other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
+  - Quotes can also be used to treat numbers as strings.
 
-*"D6", "d(-1,3)", or "d2..4"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
+*"D6", "d(-1,3)", "d2..4", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
 
-*"2D6", "5d-1,3", or "277D(2..4)"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
+*"2D6", "5d-1,3", "277D(2..4)", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
 ## Usage: API
 

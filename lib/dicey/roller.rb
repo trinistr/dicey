@@ -26,8 +26,7 @@ module Dicey
       raise DiceyError, "no dice!" if arguments.empty?
 
       dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
-      dice = vectorize_dice(dice) if defined?(VectorNumber)
-      result = dice.sum(&:roll)
+      result = roll_dice(dice)
 
       format.call({ "roll" => rational_to_integer(result) }, AbstractDie.describe(dice))
     rescue TypeError
@@ -42,6 +41,11 @@ module Dicey
 
     def die_foundry
       @die_foundry ||= DieFoundry.new
+    end
+
+    def roll_dice(dice)
+      dice = vectorize_dice(dice) if defined?(VectorNumber)
+      dice.sum(&:roll)
     end
   end
 end
