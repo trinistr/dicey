@@ -8,8 +8,8 @@ module Dicey
 
     let(:dice) do
       [
-        NumericDie.new([0.1, 0.2, 0.3]),
-        NumericDie.new([-1, -5]),
+        NumericDie.new([0.25, 0.5, 0.75]),
+        AbstractDie.new([-1, -5]),
         RegularDie.new(3),
       ]
     end
@@ -17,24 +17,24 @@ module Dicey
     context "when called with valid no-overlap dice" do
       it "calculates frequencies correctly" do
         expect(result).to match({
-          -3.9 => a_value_within(0.5).of(1),
-          -3.8 => a_value_within(0.5).of(1),
-          -3.7 => a_value_within(0.5).of(1),
-          -2.9 => a_value_within(0.5).of(1),
-          -2.8 => a_value_within(0.5).of(1),
-          -2.7 => a_value_within(0.5).of(1),
-          -1.9 => a_value_within(0.5).of(1),
-          -1.8 => a_value_within(0.5).of(1),
-          -1.7 => a_value_within(0.5).of(1),
-          0.1 => a_value_within(0.5).of(1),
-          0.2 => a_value_within(0.5).of(1),
-          0.3 => a_value_within(0.5).of(1),
-          1.1 => a_value_within(0.5).of(1),
-          1.2 => a_value_within(0.5).of(1),
-          1.3 => a_value_within(0.5).of(1),
-          2.1 => a_value_within(0.5).of(1),
-          2.2 => a_value_within(0.5).of(1),
-          2.3 => a_value_within(0.5).of(1),
+          -3.75 => a_value_within(0.5).of(1),
+          -3.5 => a_value_within(0.5).of(1),
+          -3.25 => a_value_within(0.5).of(1),
+          -2.75 => a_value_within(0.5).of(1),
+          -2.5 => a_value_within(0.5).of(1),
+          -2.25 => a_value_within(0.5).of(1),
+          -1.75 => a_value_within(0.5).of(1),
+          -1.5 => a_value_within(0.5).of(1),
+          -1.25 => a_value_within(0.5).of(1),
+          0.25 => a_value_within(0.5).of(1),
+          0.5 => a_value_within(0.5).of(1),
+          0.75 => a_value_within(0.5).of(1),
+          1.25 => a_value_within(0.5).of(1),
+          1.50 => a_value_within(0.5).of(1),
+          1.75 => a_value_within(0.5).of(1),
+          2.25 => a_value_within(0.5).of(1),
+          2.5 => a_value_within(0.5).of(1),
+          2.75 => a_value_within(0.5).of(1),
         })
       end
     end
@@ -73,10 +73,31 @@ module Dicey
     end
 
     context "when called with non-numeric dice" do
-      before { dice << AbstractDie.new(%w[s n a k e]) }
+      before { dice[0] = AbstractDie.new(%w[s n a k]) }
 
-      it "rejects them" do
-        expect { result }.to raise_error(DiceyError)
+      context "with available vector_number" do
+        it "calculates results with VectorNumber" do
+          expect(result).to include(
+            VectorNumber["s", -4] => Rational,
+            VectorNumber["s", -3] => Rational,
+            VectorNumber["s", -2] => Rational,
+            VectorNumber["s"] => Rational,
+            VectorNumber["s", 1] => Rational,
+            VectorNumber["s", 2] => Rational
+          )
+          expect(result).to include(VectorNumber["n"] => Rational)
+          expect(result).to include(VectorNumber["a", 2] => Rational)
+          expect(result).to include(VectorNumber["k", -3] => Rational)
+        end
+      end
+
+      context "when vector_number is not available" do
+        before { hide_const("VectorNumber") }
+
+        it "raises an error and prints a warning" do
+          expect { result }.to raise_error(DiceyError)
+            .and output(/`require "vector_number"`/).to_stderr
+        end
       end
     end
 
@@ -92,7 +113,7 @@ module Dicey
       context "when called with a list of any dice" do
         let(:dice) { AbstractDie.from_list([1, 2, 3], ["a", 2, :"3"]) }
 
-        it { is_expected.to be false }
+        it { is_expected.to be true }
       end
     end
   end

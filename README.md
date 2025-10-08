@@ -66,6 +66,16 @@ Or, if using Bundler, add it to your `Gemfile`:
 gem "dicey", "~> 0.14"
 ```
 
+If intending to work with non-numeric dice, install **vector_number** too:
+```sh
+gem install vector_number
+```
+
+or add it to your `Gemfile`:
+```rb
+gem "vector_number"
+```
+
 > [!TIP]
 > Versions upto 0.12.1 were packaged as a single executable file. You can still download it from the [release](https://github.com/trinistr/dicey/releases/tag/v0.12.1).
 
@@ -76,6 +86,7 @@ gem "dicey", "~> 0.14"
 
 **Dicey** is tested to work on CRuby 3.0+, latest JRuby and TruffleRuby. Compatible implementations should work too.
 - JSON and YAML formatting require `json` and `yaml`.
+- Non-numeric dice require gem `vector_number` to be installed.
 
 Otherwise, there are no direct dependencies.
 
@@ -260,7 +271,7 @@ There are three *main* ways to define dice:
 ### Dice
 
 There are 3 classes of dice currently:
-- `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides. For now, it is *only* useful for rolling and can't be used for distribution calculations.
+- `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides.
 - `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie` (being its subclass), except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
 - `Dicey::RegularDie` is a specialized subclass of `Dicey::NumericDie`. It is defined by a single integer *N* which is expanded to a range (1..*N*).
 
@@ -338,8 +349,8 @@ die.roll
 Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
 - `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on a laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
-- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can in principle work with any dice. Currently, it is also limited to `Dicey::NumericDie`, as it's unclear how to handle other values.
-- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones.
+- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
 Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
 - `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
@@ -418,7 +429,7 @@ Dicey is in principle able to handle any real numeric dice and some abstract dic
 Currently, three algorithms for calculating frequencies are implemented, with different possibilities and trade-offs.
 
 > [!NOTE]
-> 💡 Complexity is listed for `n` dice with at most `m` sides and has not been rigorously proven.
+> 💡 Complexity is listed for **n** dice with at most **m** sides and has not been rigorously proven.
 
 ### Kronecker substitution
 
@@ -426,7 +437,7 @@ An algorithm based on fast polynomial multiplication. This is the default algori
 
 - Limitations: only **natural** dice are allowed, including **regular** dice.
 - Example: `dicey 5 3,4,1 0,`
-- Complexity: `O(m⋅n)` where `m` is the highest value
+- Complexity: **O(m⋅n)** where **m** is the highest value
 
 ### Multinomial coefficients
 
@@ -434,15 +445,15 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 - Limitations: only *equal* **arithmetic** dice are allowed.
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
-- Complexity: `O(m⋅n²)`
+- Complexity: **O(m⋅n²)**
 
 ### Brute force
 
 As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including aforementioned dice with complex numbers.
 
-- Limitations: objects on dice sides must be numbers.
+- Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 1,-1,1,-1,0`
-- Complexity: `O(mⁿ)`
+- Complexity: **O(mⁿ)**
 
 ## Development
 

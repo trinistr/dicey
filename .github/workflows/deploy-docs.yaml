@@ -14,10 +14,10 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: ${{ github.repository == 'trinistr/dicey' }}
+    if: ${{ github.repository_owner == 'trinistr' }}
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: "default documentation"
+      BUNDLE_ONLY: "default:documentation"
     steps:
       - name: Checkout
         uses: actions/checkout@v5

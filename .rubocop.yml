@@ -8,3 +8,8 @@ plugins:
   - rubocop-rspec
   - rubocop-thread_safety
   - rubocop-yard
+
+Gemspec/DevelopmentDependencies:
+  # I want to increase visibility of the dependency, without strictly requiring it.
+  AllowedGems:
+    - vector_number

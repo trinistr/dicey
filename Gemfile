@@ -54,3 +54,8 @@ group :development do
   # For console
   gem "irb", require: false
 end
+
+group :test, :linting, :development do
+  # Add dependency to all relevant groups
+  gem "vector_number", ">= 0.4.3"
+end

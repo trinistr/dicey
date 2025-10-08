@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vector_number"
+
 # Require coverage helper first to ensure it's loaded before any other files
 require_relative "support/coverage_helper"
 
@@ -24,4 +26,7 @@ RSpec.configure do |config|
 
   # Show detailed results for a single file, progress otherwise
   config.formatter = (config.files_to_run.size > 1) ? :progress : :documentation
+
+  # Auto-focus examples when present
+  config.filter_run_when_matching :focus
 end
