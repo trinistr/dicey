@@ -32,7 +32,7 @@ jobs:
     name: Rubocop
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: "default linting"
+      BUNDLE_ONLY: "default:linting"
     steps:
     - uses: actions/checkout@v5
       with:
@@ -47,7 +47,7 @@ jobs:
     name: RBS
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: "default linting"
+      BUNDLE_ONLY: "default:linting"
     steps:
     - uses: actions/checkout@v5
       with:
@@ -66,7 +66,7 @@ jobs:
     needs: CRuby
     runs-on: ubuntu-latest
     env:
-      BUNDLE_ONLY: "default test"
+      BUNDLE_ONLY: "default:test"
     permissions:
       pull-requests: write
     steps:

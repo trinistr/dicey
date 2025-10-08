@@ -27,7 +27,7 @@ jobs:
             rubygems: "3.3.26"
     continue-on-error: ${{ matrix.experimental }}
     env:
-      BUNDLE_ONLY: "default test"
+      BUNDLE_ONLY: "default:test"
     steps:
     - uses: actions/checkout@v5
       with:

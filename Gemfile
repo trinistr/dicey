@@ -55,7 +55,7 @@ group :development do
   gem "irb", require: false
 end
 
-group :test, :development do
-  # Add dependency to both groups
+group :test, :linting, :development do
+  # Add dependency to all relevant groups
   gem "vector_number", ">= 0.4.2"
 end
