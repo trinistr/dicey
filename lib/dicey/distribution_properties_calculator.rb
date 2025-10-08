@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "rational_to_integer"
+require_relative "mixins/rational_to_integer"
 
 module Dicey
   # Calculates distribution properties,
@@ -16,7 +16,7 @@ module Dicey
   # (median, mean, ...) are all equal.
   # Mode is often not unique, but includes this center.
   class DistributionPropertiesCalculator
-    include RationalToInteger
+    include Mixins::RationalToInteger
 
     # Calculate properties for a given distribution.
     #

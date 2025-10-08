@@ -9,6 +9,8 @@ end
 
 require_relative "base_calculator"
 
+require_relative "../mixins/vectorize_dice"
+
 module Dicey
   module SumFrequencyCalculators
     # "Calculator" for a collection of {AbstractDie} using empirically-obtained statistics.
@@ -24,6 +26,8 @@ module Dicey
     # *Options:*
     # - *rolls* (Integer) (_defaults_ _to:_ _N_) — number of rolls to perform
     class Empirical < BaseCalculator
+      include Mixins::VectorizeDice
+
       # Default number of rolls to perform.
       N = 10_000
 
@@ -35,7 +39,7 @@ module Dicey
         else
           warn <<~TEXT
             Dice with non-numeric sides need gem "vector_number" to be present and available.
-            If this is intended, please call `require "vector_number"` before using the calculator.
+            If this is intended, please install the gem.
           TEXT
           false
         end
@@ -46,15 +50,6 @@ module Dicey
         statistics = rolls.times.with_object(Hash.new(0)) { |_, hash| hash[dice.sum(&:roll)] += 1 }
         total_results = dice.map(&:sides_num).reduce(:*)
         statistics.transform_values { Rational(_1 * total_results, rolls) }
-      end
-
-      def vectorize_dice(dice)
-        dice.map do |die|
-          next die if NumericDie === die
-
-          sides = die.sides_list.map { |side| (Numeric === side) ? side : VectorNumber.new([side]) }
-          die.class.new(sides)
-        end
       end
 
       def verify_result(*)

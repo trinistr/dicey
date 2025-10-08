@@ -60,10 +60,7 @@ module Dicey
       before { hide_const("VectorNumber") }
 
       it "does not support AbstractDie" do
-        expect { result }.to(
-          output(/`require "vector_number"`/).to_stderr
-          .and(raise_error DiceyError)
-        )
+        expect { result }.to(output(/"vector_number"/).to_stderr.and(raise_error DiceyError))
       end
 
       it "supports NumericDie" do
@@ -112,8 +109,7 @@ module Dicey
         before { hide_const("VectorNumber") }
 
         it "raises an error and prints a warning" do
-          expect { result }.to raise_error(DiceyError)
-            .and output(/`require "vector_number"`/).to_stderr
+          expect { result }.to raise_error(DiceyError).and output(/"vector_number"/).to_stderr
         end
       end
     end
@@ -138,7 +134,7 @@ module Dicey
           before { hide_const("VectorNumber") }
 
           it "prints a warning and returns false" do
-            expect { validity }.to output(/`require "vector_number"`/).to_stderr
+            expect { validity }.to output(/"vector_number"/).to_stderr
             expect(validity).to be false
           end
         end

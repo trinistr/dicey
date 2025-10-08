@@ -9,12 +9,16 @@ end
 
 require_relative "base_calculator"
 
+require_relative "../mixins/vectorize_dice"
+
 module Dicey
   module SumFrequencyCalculators
     # Calculator for a collection of {AbstractDie} using exhaustive search (very slow).
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class BruteForce < BaseCalculator
+      include Mixins::VectorizeDice
+
       private
 
       def validate(dice)
@@ -23,24 +27,15 @@ module Dicey
         else
           warn <<~TEXT
             Dice with non-numeric sides need gem "vector_number" to be present and available.
-            If this is intended, please call `require "vector_number"` before using the calculator.
+            If this is intended, please install the gem.
           TEXT
           false
         end
       end
 
       def calculate(dice, **nil)
-        side_lists = dice.map(&:sides_list)
-        side_lists = vectorize_sides(side_lists) if defined?(VectorNumber)
-        combine_dice_enumerators(side_lists).map(&:sum).tally
-      end
-
-      def vectorize_sides(side_lists)
-        side_lists.map do |list|
-          list.map do |side|
-            (Numeric === side) ? side : VectorNumber.new([side])
-          end
-        end
+        dice = vectorize_dice(dice) if defined?(VectorNumber)
+        combine_dice_enumerators(dice.map(&:sides_list)).map(&:sum).tally
       end
 
       if defined?(Enumerator::Product)

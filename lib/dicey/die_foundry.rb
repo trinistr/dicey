@@ -3,12 +3,12 @@
 require_relative "numeric_die"
 require_relative "regular_die"
 
-require_relative "rational_to_integer"
+require_relative "mixins/rational_to_integer"
 
 module Dicey
   # Helper class to define die definitions and automatically select the best one.
   class DieFoundry
-    include RationalToInteger
+    include Mixins::RationalToInteger
 
     # Regexp for matching a possible count.
     PREFIX = /(?>(?<count>[1-9]\d*+)?d)?+/i

@@ -2,12 +2,14 @@
 
 require_relative "die_foundry"
 
-require_relative "rational_to_integer"
+require_relative "mixins/rational_to_integer"
+require_relative "mixins/vectorize_dice"
 
 module Dicey
   # Let the dice roll!
   class Roller
-    include RationalToInteger
+    include Mixins::RationalToInteger
+    include Mixins::VectorizeDice
 
     # @param arguments [Array<String>] die definitions
     # @param format [#call] formatter for output

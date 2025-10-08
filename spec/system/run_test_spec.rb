@@ -24,7 +24,7 @@ RSpec.describe "Running built-in tests via CLI" do
       # In reality, this won't be printed, as these test cases wouldn't be added at all.
       # But here we work with initially available VectorNumber, which then disappears.
       expect { test_run }.to(
-        output(/`require "vector_number"`/).to_stderr
+        output(/"vector_number"/).to_stderr
         .and(output(a_string_including(<<~TEXT)).to_stdout)
           (s,a,4)+(s,a,4):
             Dicey::SumFrequencyCalculators::KroneckerSubstitution: ☂
