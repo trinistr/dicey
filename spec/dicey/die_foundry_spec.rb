@@ -233,8 +233,68 @@ module Dicey
       end
     end
 
-    context "when called with a non-number" do
+    context "when called with a list of things" do
+      let(:die) { foundry.call("asd,1,2.5,'3',\"(')\"") }
+
+      it "returns an AbstractDie with the given sides" do
+        expect(die).to be_a AbstractDie
+        expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+      end
+
+      context "if list is surrounded with brackets" do
+        let(:die) { foundry.call("(asd,1,2.5,'3',\"(')\")") }
+
+        it "strips them before processing" do
+          expect(die).to be_a AbstractDie
+          expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+        end
+      end
+
+      context "and it's followed by a comma" do
+        let(:die) { foundry.call("asd,1,2.5,'3',\"(')\",") }
+
+        it "returns an AbstractDie with the given sides" do
+          expect(die).to be_a AbstractDie
+          expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+        end
+      end
+
+      context "when an unquoted string includes quotes or brackets" do
+        let(:die) { foundry.call(["asd)", "s'a", "(sad)", '"'].sample) }
+
+        it "raises DiceyError" do
+          expect { die }.to raise_error DiceyError
+        end
+      end
+
+      context "with shorthand notation" do
+        specify "dS produces a single AbstractDie" do
+          expect(foundry.call("d'asd',1,2.5")).to eq AbstractDie.new([:asd, 1, 2.5r])
+          expect(foundry.call("D'asd',1,2.5")).to eq AbstractDie.new([:asd, 1, 2.5r])
+        end
+
+        specify "1dS produces an array of 1 AbstractDie" do
+          expect(foundry.call("1d'asd',1,2.5")).to eq [AbstractDie.new([:asd, 1, 2.5r])]
+          expect(foundry.call("1D'asd',1,2.5")).to eq [AbstractDie.new([:asd, 1, 2.5r])]
+        end
+
+        specify "MdS produces an array of AbstractDie" do
+          expect(foundry.call("2d'asd',1,2.5")).to eq AbstractDie.from_count(2, [:asd, 1, 2.5r])
+          expect(foundry.call("3D'asd',1,2.5")).to eq AbstractDie.from_count(3, [:asd, 1, 2.5r])
+        end
+      end
+    end
+
+    context "when called with a single non-number" do
       let(:die) { foundry.call("a") }
+
+      it "raises DiceyError" do
+        expect { die }.to raise_error DiceyError
+      end
+    end
+
+    context "when called with a comma" do
+      let(:die) { foundry.call(",") }
 
       it "raises DiceyError" do
         expect { die }.to raise_error DiceyError
