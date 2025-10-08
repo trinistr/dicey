@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   TEXT
 
   # Library for doing math on arbitrary objects.
-  spec.add_development_dependency "vector_number", "> 0.2.0"
+  spec.add_development_dependency "vector_number", ">= 0.4.2"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"

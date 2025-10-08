@@ -350,7 +350,7 @@ Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There 
 - `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on a laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
-- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones.
+- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
 Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
 - `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`

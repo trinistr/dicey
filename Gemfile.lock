@@ -184,7 +184,7 @@ GEM
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     uri (1.0.3)
-    vector_number (0.4.1)
+    vector_number (0.4.2)
     yard (0.9.37)
 
 PLATFORMS
@@ -222,7 +222,7 @@ DEPENDENCIES
   simplecov_lcov_formatter
   stackprof
   steep
-  vector_number (> 0.2.0)
+  vector_number (>= 0.4.2)
   yard
 
 BUNDLED WITH

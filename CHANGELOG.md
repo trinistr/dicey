@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Next]
 
 **Changed**
-- If gem "**vector_number**" is available, `BruteForce` calculator will use it. This allows to work with *any* values on dice.
+- If gem **vector_number** is available, `BruteForce` and `Empirical` calculators will use it. This allows to work with *any* values on dice.
 
 [Compare v0.15.2...main](https://github.com/trinistr/dicey/compare/v0.15.2...main)
 

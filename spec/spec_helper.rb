@@ -26,4 +26,7 @@ RSpec.configure do |config|
 
   # Show detailed results for a single file, progress otherwise
   config.formatter = (config.files_to_run.size > 1) ? :progress : :documentation
+
+  # Auto-focus examples when present
+  config.filter_run_when_matching :focus
 end

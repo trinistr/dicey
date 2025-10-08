@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    if: ${{ github.repository == 'trinistr/dicey' }}
+    if: ${{ github.repository_owner == 'trinistr' }}
     runs-on: ubuntu-latest
     env:
       BUNDLE_ONLY: "default documentation"

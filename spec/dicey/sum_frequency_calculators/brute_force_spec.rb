@@ -58,16 +58,7 @@ module Dicey
     context "when called with non-numeric dice" do
       before { dice[0] = AbstractDie.new(%w[s n a k]) }
 
-      context "without `require`ing vector_number" do
-        before { hide_const("VectorNumber") }
-
-        it "raises an error and prints a warning" do
-          expect { result }.to raise_error(DiceyError)
-            .and output(/`require "vector_number"`/).to_stderr
-        end
-      end
-
-      context "with `require`d vector_number" do
+      context "with available vector_number" do
         it "calculates results with VectorNumber" do
           expect(result).to include(
             VectorNumber["s", -4] => 1,
@@ -80,6 +71,15 @@ module Dicey
           expect(result).to include(VectorNumber["n"] => 1)
           expect(result).to include(VectorNumber["a", 2] => 1)
           expect(result).to include(VectorNumber["k", -3] => 1)
+        end
+      end
+
+      context "when vector_number is not available" do
+        before { hide_const("VectorNumber") }
+
+        it "raises an error and prints a warning" do
+          expect { result }.to raise_error(DiceyError)
+            .and output(/`require "vector_number"`/).to_stderr
         end
       end
     end
