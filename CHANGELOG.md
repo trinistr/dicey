@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.15.2...main](https://github.com/trinistr/dicey/compare/v0.15.2...main)
+
+## [v0.15.2] — 2025-10-08
+
 **Changed**
 - Rename `total_range` to `range_length` in `DistributionPropertiesCalculator` to differentiate it from `mid_range` better.
 - `DistributionPropertiesCalculator` now also returns `modes` with lists of local modes. This is useful for multi-modal distributions.
 
-[Compare v0.15.1...main](https://github.com/trinistr/dicey/compare/v0.15.1...main)
+[Compare v0.15.1...v0.15.2](https://github.com/trinistr/dicey/compare/v0.15.1...v0.15.2)
 
 ## [v0.15.1] — 2025-10-07
 
@@ -231,6 +235,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.15.2]: https://github.com/trinistr/dicey/tree/v0.15.2
 [v0.15.1]: https://github.com/trinistr/dicey/tree/v0.15.1
 [v0.15.0]: https://github.com/trinistr/dicey/tree/v0.15.0
 [v0.14.0]: https://github.com/trinistr/dicey/tree/v0.14.0
