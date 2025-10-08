@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "vector_number"
+
 # Require coverage helper first to ensure it's loaded before any other files
 require_relative "support/coverage_helper"
 

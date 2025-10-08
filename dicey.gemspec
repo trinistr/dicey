@@ -20,6 +20,9 @@ Gem::Specification.new do |spec|
     for reproducible results.
   TEXT
 
+  # Library for doing math on arbitrary objects.
+  spec.add_development_dependency "vector_number", "> 0.2.0"
+
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["bug_tracker_uri"] = "#{spec.homepage}/issues"
   spec.metadata["documentation_uri"] = "https://rubydoc.info/gems/#{spec.name}/#{spec.version}"

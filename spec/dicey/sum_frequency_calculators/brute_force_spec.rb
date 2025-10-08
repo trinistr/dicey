@@ -8,7 +8,7 @@ module Dicey
 
     let(:dice) do
       [
-        NumericDie.new([0.1, 0.2, 0.3]),
+        NumericDie.new([0.25, 0.5, 0.75]),
         NumericDie.new([-1, -5]),
         RegularDie.new(3),
       ]
@@ -17,24 +17,24 @@ module Dicey
     context "when called with valid no-overlap dice" do
       it "calculates frequencies correctly" do
         expect(result).to eq({
-          -3.9 => 1,
-          -3.8 => 1,
-          -3.7 => 1,
-          -2.9 => 1,
-          -2.8 => 1,
-          -2.7 => 1,
-          -1.9 => 1,
-          -1.8 => 1,
-          -1.7 => 1,
-          0.1 => 1,
-          0.2 => 1,
-          0.3 => 1,
-          1.1 => 1,
-          1.2 => 1,
-          1.3 => 1,
-          2.1 => 1,
-          2.2 => 1,
-          2.3 => 1,
+          -3.75 => 1,
+          -3.5 => 1,
+          -3.25 => 1,
+          -2.75 => 1,
+          -2.5 => 1,
+          -2.25 => 1,
+          -1.75 => 1,
+          -1.5 => 1,
+          -1.25 => 1,
+          0.25 => 1,
+          0.5 => 1,
+          0.75 => 1,
+          1.25 => 1,
+          1.5 => 1,
+          1.75 => 1,
+          2.25 => 1,
+          2.5 => 1,
+          2.75 => 1,
         })
       end
     end
@@ -56,10 +56,31 @@ module Dicey
     end
 
     context "when called with non-numeric dice" do
-      before { dice << AbstractDie.new(%w[s n a k e]) }
+      before { dice[0] = AbstractDie.new(%w[s n a k]) }
 
-      it "rejects them" do
-        expect { result }.to raise_error(DiceyError)
+      context "without `require`ing vector_number" do
+        before { hide_const("VectorNumber") }
+
+        it "raises an error and prints a warning" do
+          expect { result }.to raise_error(DiceyError)
+            .and output(/`require "vector_number"`/).to_stderr
+        end
+      end
+
+      context "with `require`d vector_number" do
+        it "calculates results with VectorNumber" do
+          expect(result).to include(
+            VectorNumber["s", -4] => 1,
+            VectorNumber["s", -3] => 1,
+            VectorNumber["s", -2] => 1,
+            VectorNumber["s"] => 1,
+            VectorNumber["s", 1] => 1,
+            VectorNumber["s", 2] => 1
+          )
+          expect(result).to include(VectorNumber["n"] => 1)
+          expect(result).to include(VectorNumber["a", 2] => 1)
+          expect(result).to include(VectorNumber["k", -3] => 1)
+        end
       end
     end
 
@@ -75,7 +96,7 @@ module Dicey
       context "when called with a list of any dice" do
         let(:dice) { AbstractDie.from_list([1, 2, 3], ["a", 2, :"3"]) }
 
-        it { is_expected.to be false }
+        it { is_expected.to be true }
       end
     end
   end

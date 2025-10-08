@@ -69,9 +69,11 @@ module Dicey
     # @param sides_list [Enumerable<Any>]
     # @raise [DiceyError] if +sides_list+ is empty
     def initialize(sides_list)
-      @sides_list = (Array === sides_list) ? sides_list.dup.freeze : sides_list.to_a.freeze
+      @sides_list = sides_list.to_a
+      @sides_list = @sides_list.dup if @sides_list.equal?(sides_list)
       raise DiceyError, "dice must have at least one side!" if @sides_list.empty?
 
+      @sides_list.freeze
       @sides_num = @sides_list.size
       @current_side_index = 0
     end
