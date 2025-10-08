@@ -9,7 +9,7 @@ module Dicey
     let(:dice) do
       [
         NumericDie.new([0.25, 0.5, 0.75]),
-        NumericDie.new([-1, -5]),
+        AbstractDie.new([-1, -5]),
         RegularDie.new(3),
       ]
     end
