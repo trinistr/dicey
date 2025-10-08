@@ -19,6 +19,8 @@ module Dicey
     # Does a number of rolls and calculates approximate probabilities from that.
     # Even if frequencies are requested, results are non-integer.
     #
+    # If dice include non-numeric sides, gem +vector_number+ has to be installed.
+    #
     # *Options:*
     # - *rolls* (Integer) (_defaults_ _to:_ _N_) — number of rolls to perform
     class Empirical < BaseCalculator

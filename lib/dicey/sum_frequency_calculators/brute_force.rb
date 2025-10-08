@@ -13,7 +13,7 @@ module Dicey
   module SumFrequencyCalculators
     # Calculator for a collection of {AbstractDie} using exhaustive search (very slow).
     #
-    # If dice include non-numeric sides, gem +vector_number+ needs to be installed and required.
+    # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class BruteForce < BaseCalculator
       private
 
