@@ -17,6 +17,14 @@ module Dicey
     let(:dice) { AbstractDie.from_count(2, ["a", 2, :"3"]) }
     let(:result_type) { :frequencies }
 
+    context "when called on its own, not an implementation" do
+      let(:calculator) { described_class.new }
+
+      it "raises NotImplementedError" do
+        expect { result }.to raise_error(NotImplementedError)
+      end
+    end
+
     context "if dice list is empty" do
       let(:dice) { [] }
 

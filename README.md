@@ -503,13 +503,14 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 ### Brute force
 
-As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
+As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`
 - Complexity: **O(mⁿ)**
-  - 6d10 — 0.45 seconds
-  - 10d6 — 22 seconds
+- Running time examples:
+  - 6d10 — 0.25 seconds
+  - 10d6 — 9.5 seconds
 
 ## Development
 
