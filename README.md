@@ -385,8 +385,8 @@ die.roll
 ### Distribution calculators
 
 Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
-- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on a laptop.
-- `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
+- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *1000d6* in about 20 seconds on a laptop.
+- `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 - `Dicey::SumFrequencyCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
@@ -464,10 +464,10 @@ For a further discussion of calculations, it is important to understand which cl
 > [!TIP]
 > 💡 If you only need to roll **regular** dice, this section will not contain anything important.
 
-- **Natural** die has sides with only positive integers or 0. For example, (1,2,3,4,5,6), (5,1,6,5), (1,10000), (1,1,1,1,1,1,1,0).
+- **Integer** die has sides with only integers. For example, (1,2,3,4,5,6), (-5,0,5), (1,10000), (1,1,1,1,1,1,1,0).
 - **Arithmetic** die's sides form an arithmetic sequence. For example, (1,2,3,4,5,6), (1,0,-1), (2.6,2.1,1.6,1.1).
 - **Numeric** die is limited by having sides confined to ℝ (or ℂ if you are feeling particularly adventurous).
-- **Abstract** die is not limited by anything other than not having partial sides (and how would that work anyway?).
+- **Abstract** die is unlimited!
 
 > [!NOTE]
 > 💡 If your die definition starts with a negative number, it can be bracketed, prefixed with "d", or put after "--" pseudo-argument to avoid processing as an option.
@@ -483,17 +483,17 @@ Currently, three algorithms for calculating frequencies are implemented, with di
 
 An algorithm based on fast polynomial multiplication. This is the default algorithm, used for most reasonable dice.
 
-- Limitations: only **natural** dice are allowed, including **regular** dice.
+- Limitations: only **integer** dice are allowed, including **regular** dice.
 - Example: `dicey 5 3,4,1 0,`
-- Complexity: **O(m⋅n)** where **m** is the highest value
+- Complexity: **O(n⋅m)**
 
 ### Multinomial coefficients
 
-This algorithm is based on raising a univariate polynomial to a power and using the coefficients of the result, though certain restrictions are lifted as they don't actually matter for the calculation.
+This algorithm is based on raising a univariate polynomial to a power and using the coefficients of the result, though certain restrictions are lifted as they don't actually matter for the calculation. It is usually faster than Kronecker substitution for many dice with few sides.
 
 - Limitations: only *equal* **arithmetic** dice are allowed.
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
-- Complexity: **O(m⋅n²)**
+- Complexity: **O(n⋅m²)**
 
 ### Brute force
 

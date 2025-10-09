@@ -17,15 +17,15 @@ module Dicey
       private
 
       def validate(dice)
-        dice.all? { |die| die.sides_list.all? { _1.is_a?(Integer) && _1 >= 0 } }
+        dice.all? { |die| die.sides_list.all?(Integer) }
       end
 
       def calculate(dice, **nil)
-        polynomials = build_polynomials(dice)
+        polynomials, offset = build_polynomials(dice)
         evaluation_point = find_evaluation_point(polynomials)
         values = evaluate_polynomials(polynomials, evaluation_point)
         product = values.reduce(:*)
-        extract_coefficients(product, evaluation_point)
+        extract_coefficients(product, evaluation_point, offset, polynomials.count)
       end
 
       # Turn dice into hashes where keys are side values and values are numbers of those sides,
@@ -35,7 +35,8 @@ module Dicey
       # @param dice [Enumerable<NumericDie>]
       # @return [Array<Hash{Integer => Integer}>]
       def build_polynomials(dice)
-        dice.map { _1.sides_list.tally }
+        minimum = dice.map { |die| die.sides_list.min }.min
+        [dice.map { |die| die.sides_list.map { _1 - minimum }.tally }, minimum]
       end
 
       # Find a power of 2 which is larger in magnitude than any resulting polynomial coefficients,
@@ -67,13 +68,15 @@ module Dicey
       #
       # @param product [Integer]
       # @param evaluation_point [Integer]
+      # @param offset [Integer]
+      # @param number_of_dice [Integer]
       # @return [Hash{Integer => Integer}]
-      def extract_coefficients(product, evaluation_point)
+      def extract_coefficients(product, evaluation_point, offset, number_of_dice)
         window = evaluation_point - 1
         window_shift = window.bit_length
         (0..).each_with_object({}) do |power, result|
           coefficient = product & window
-          result[power] = coefficient unless coefficient.zero?
+          result[power + (offset * number_of_dice)] = coefficient unless coefficient.zero?
           product >>= window_shift
           break result if product.zero?
         end
