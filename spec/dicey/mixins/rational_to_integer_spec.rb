@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe RationalToInteger do
+  RSpec.describe Mixins::RationalToInteger do
     include described_class
 
     it "converts rationals with denominator of 1 to integers" do

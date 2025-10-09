@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**
+- Support for non-numeric dice sides in API and CLI, including calculating distributions and rolling.
+
 **Changed**
+- `DieFoundry` now supports lists of strings (and numbers) as input, producing `AbstractDie` objects.
 - If gem **vector_number** is available, `BruteForce` and `Empirical` calculators will use it. This allows to work with *any* values on dice.
+- The same for `Roller`: roll whatever you want.
+- If an `AbstractDie` is encountered without **vector_number** available, a warning will be printed, and calculation will raise an error. Additionally, calculators' `#valid_for?` will return `false` (and warn).
 
 [Compare v0.15.2...main](https://github.com/trinistr/dicey/compare/v0.15.2...main)
 

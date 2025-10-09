@@ -2,7 +2,7 @@
 
 module Dicey
   # Asbtract die which may have an arbitrary list of sides,
-  # not even neccessarily numbers (but preferably so).
+  # not even neccessarily numbers, but strings or other objects.
   class AbstractDie
     # rubocop:disable Style/ClassVars
 
@@ -99,7 +99,7 @@ module Dicey
     #
     # @return [Any] rolled side
     def roll
-      @current_side_index = self.class.rand(0...@sides_num)
+      @current_side_index = self.class.rand(@sides_num)
       current
     end
 

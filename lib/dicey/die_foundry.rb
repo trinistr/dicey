@@ -3,27 +3,37 @@
 require_relative "numeric_die"
 require_relative "regular_die"
 
-require_relative "rational_to_integer"
+require_relative "mixins/rational_to_integer"
 
 module Dicey
   # Helper class to define die definitions and automatically select the best one.
   class DieFoundry
-    include RationalToInteger
+    include Mixins::RationalToInteger
 
     # Regexp for matching a possible count.
-    PREFIX = /(?>(?<count>[1-9]\d*+)?d)?+/i
+    PREFIX = /(?:(?<count>[1-9]\d*+)?+d)?+/i
+    # Regexp for an integer number.
+    INTEGER = /(?:-?\d++)/
+    # Regexp for a (possibly) fractional number.
+    DECIMAL = /(?:-?\d++(?:\.\d++)?)/
+    # Regexp for an "arbitrary" string.
+    STRING = /(?:(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')/
 
     # Possible molds for the dice. They are matched in the order as written.
     MOLDS = [
       # Positive integer goes into the RegularDie mold.
       [/\A#{PREFIX}(?<sides>[1-9]\d*+)\z/, :regular_mold].freeze,
       # Integer range goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<begin>-?\d++)(?>[-–—…]|\.{2,3})(?<end>-?\d++)\)?\z/, :range_mold].freeze,
+      [/\A#{PREFIX}\(?(?<begin>#{INTEGER})(?:[-–—…]|\.{2,3})(?<end>#{INTEGER})\)?\z/,
+       :range_mold].freeze,
       # List of numbers goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<sides>-?\d++(?>,(?>-?\d++)?)+|,)\)?\z/, :weirdly_shaped_mold].freeze,
+      [/\A#{PREFIX}\(?(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))\)?\z/,
+       :weirdly_shaped_mold].freeze,
       # Non-integers require special handling for precision.
-      [/\A#{PREFIX}\(?(?<sides>-?\d++(?>\.\d++)?(?>,(?>-?\d++(?>\.\d++)?)?)+|,)\)?\z/,
+      [/\A#{PREFIX}\(?(?<sides>#{DECIMAL}(?:(?:,#{DECIMAL})++,?+|,))\)?\z/,
        :weirdly_precise_mold].freeze,
+      # Lists of stuff are broken into AbstractDie.
+      [/\A#{PREFIX}\(?(?<sides>#{STRING}(?:(?:,#{STRING})++,?+|,))\)?\z/, :cursed_mold].freeze,
       # Anything else is spilled on the floor.
     ].freeze
 
@@ -34,13 +44,16 @@ module Dicey
     # - integer range (like "3-6" or "(-5..5)"), which produces a {NumericDie};
     # - list of integers (like "3,4,5", "(-1,0,1)", or "2,"), which produces a {NumericDie};
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
-    #   but uses +Rational+ for values to maintain precise results.
+    #   but uses +Rational+ for values to maintain precise results;
+    # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),
+    #   which produces an {AbstractDie} with strings converted to Symbols
+    #   and numbers treated the same as in previous cases.
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d" without an explicit count is ignored instead, creating a single die.
     #
     # @param definition [String] die shape
-    # @return [NumericDie, RegularDie, Array<NumericDie>, Array<RegularDie>]
+    # @return [AbstractDie, Array<AbstractDie>]
     # @raise [DiceyError] if no mold fits the definition
     def call(definition)
       matched, name =
@@ -75,6 +88,21 @@ module Dicey
     def weirdly_precise_mold(definition)
       sides = definition[:sides].split(",").map { rational_to_integer(Rational(_1)) }
       build_dice(NumericDie, definition[:count], sides)
+    end
+
+    def cursed_mold(definition)
+      sides = definition[:sides].split(",")
+      sides.map! do |side|
+        case side
+        when /\A#{INTEGER}\z/o
+          side.to_i
+        when /\A#{DECIMAL}\z/o
+          rational_to_integer(Rational(side))
+        else
+          side.match(STRING)[:side].to_sym
+        end
+      end
+      build_dice(AbstractDie, definition[:count], sides)
     end
 
     def build_dice(die_class, count, sides)

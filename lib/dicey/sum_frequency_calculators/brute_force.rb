@@ -3,11 +3,13 @@
 # Try to load "vector_number" pre-emptively.
 begin
   require "vector_number"
-rescue
+rescue LoadError
   # VectorNumber not available, sad
 end
 
 require_relative "base_calculator"
+
+require_relative "../mixins/vectorize_dice"
 
 module Dicey
   module SumFrequencyCalculators
@@ -15,27 +17,25 @@ module Dicey
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class BruteForce < BaseCalculator
+      include Mixins::VectorizeDice
+
       private
 
-      def calculate(dice, **nil)
-        side_lists = dice.map(&:sides_list)
-        side_lists = vectorize_sides(side_lists) if defined?(VectorNumber)
-        combine_dice_enumerators(side_lists).map(&:sum).tally
-      rescue TypeError
-        warn <<~TEXT
-          Dice with non-numeric sides need gem "vector_number" to be present and available.
-          If this is intended, please call `require "vector_number"` before using the calculator.
-        TEXT
-        raise DiceyError, "attempted to calculate distribution on dice with non-numeric sides",
-              cause: nil
+      def validate(dice)
+        if defined?(VectorNumber) || dice.all?(NumericDie)
+          true
+        else
+          warn <<~TEXT
+            Dice with non-numeric sides need gem "vector_number" to be present and available.
+            If this is intended, please install the gem.
+          TEXT
+          false
+        end
       end
 
-      def vectorize_sides(side_lists)
-        side_lists.map do |list|
-          list.map do |side|
-            (Numeric === side) ? side : VectorNumber.new([side])
-          end
-        end
+      def calculate(dice, **nil)
+        dice = vectorize_dice(dice) if defined?(VectorNumber)
+        combine_dice_enumerators(dice.map(&:sides_list)).map(&:sum).tally
       end
 
       if defined?(Enumerator::Product)

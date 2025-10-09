@@ -10,7 +10,7 @@ gems:
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
 - name: vector_number
-  version: 0.4.2
+  version: 0.4.3
   source:
     type: rubygems
 gemfile_lock_path: Gemfile.lock

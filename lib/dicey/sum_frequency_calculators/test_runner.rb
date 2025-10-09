@@ -42,6 +42,25 @@ module Dicey
          { Complex(1, 1) => 1, Complex(2, 1) => 1, Complex(3, 1) => 1,
            Complex(1, 2) => 1, Complex(2, 2) => 1, Complex(3, 2) => 1,
            Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1 }],
+        *(
+          # :nocov:
+          if defined?(VectorNumber)
+            # :nocov:
+            [
+              [[["s", "a", "d", 33]],
+               { VectorNumber["s"] => 1, VectorNumber["a"] => 1, VectorNumber["d"] => 1, 33 => 1 }],
+              [[%w[s a d], [0, 1, 2]],
+               { VectorNumber["s"] => 1, VectorNumber["s", 1] => 1, VectorNumber["s", 2] => 1,
+                 VectorNumber["a"] => 1, VectorNumber["a", 1] => 1, VectorNumber["a", 2] => 1,
+                 VectorNumber["d"] => 1, VectorNumber["d", 1] => 1, VectorNumber["d", 2] => 1 }],
+              [Array.new(2) { ["s", "a", 4] },
+               {
+                 VectorNumber["s"] * 2 => 1, VectorNumber["a"] * 2 => 1, 8 => 1,
+                 VectorNumber["s", "a"] => 2, VectorNumber["s", 4] => 2, VectorNumber["a", 4] => 2,
+               }],
+            ]
+          end
+        ),
       ].freeze
 
       # Strings for displaying test results.
@@ -84,7 +103,15 @@ module Dicey
       # @param definition [Array<Integer, Array<Integer>>]
       # @return [Array<NumericDie>]
       def build_dice(definition)
-        definition.map { _1.is_a?(Integer) ? RegularDie.new(_1) : NumericDie.new(_1) }
+        definition.map do |die_def|
+          if die_def.is_a?(Integer)
+            RegularDie.new(die_def)
+          elsif die_def.all?(Numeric)
+            NumericDie.new(die_def)
+          else
+            AbstractDie.new(die_def)
+          end
+        end
       end
 
       # Determine test result for the selected calculator.

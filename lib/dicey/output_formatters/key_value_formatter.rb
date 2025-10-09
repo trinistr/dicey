@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "../rational_to_integer"
+require_relative "../mixins/rational_to_integer"
 
 module Dicey
   module OutputFormatters
@@ -8,7 +8,7 @@ module Dicey
     # Can add an optional description into the result.
     # @abstract
     class KeyValueFormatter
-      include RationalToInteger
+      include Mixins::RationalToInteger
 
       # @param hash [Hash{Object => Object}]
       # @param description [String] text to add as a comment.

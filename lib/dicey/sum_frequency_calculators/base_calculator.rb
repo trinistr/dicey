@@ -27,7 +27,8 @@ module Dicey
 
       # @param dice [Enumerable<AbstractDie>]
       # @param result_type [Symbol] one of {RESULT_TYPES}
-      # @param options [Hash{Symbol => Any}] calculator-specific options
+      # @param options [Hash{Symbol => Any}] calculator-specific options,
+      #   refer to the calculator's documentation to see what it accepts
       # @return [Hash{Numeric => Numeric}] frequencies or probabilities for each outcome
       # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if dice list is invalid for the calculator

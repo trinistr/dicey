@@ -24,6 +24,7 @@ In seriousness, this program is mainly useful for calculating total frequency (p
   - [Example 2: Complex distribution with different dice](#example-2-complex-distribution-with-different-dice)
   - [Example 3: Custom dice](#example-3-custom-dice)
   - [Example 4: Rolling even more custom dice](#example-4-rolling-even-more-custom-dice)
+  - [Example 5: Non-numeric dice](#example-5-non-numeric-dice)
   - [All ways to define dice](#all-ways-to-define-dice)
 - [Usage: API](#usage-api)
   - [Dice](#dice)
@@ -63,10 +64,10 @@ gem install dicey
 
 Or, if using Bundler, add it to your `Gemfile`:
 ```rb
-gem "dicey", "~> 0.14"
+gem "dicey", "~> 0.16"
 ```
 
-If intending to work with non-numeric dice, install **vector_number** too:
+(Optional) If intending to work with non-numeric dice, install **vector_number** too:
 ```sh
 gem install vector_number
 ```
@@ -249,18 +250,35 @@ roll => 7/2 # You probably will get a different value here.
 > [!NOTE]
 > 💡 Roll mode is compatible with `--format` option.
 
+### Example 5: Non-numeric dice
+
+You are a wizard and you have a spellbook with an elemental vortex spell that deals three instances of random elemental damage. Let's find out what you have for your enemies in store today:
+```sh
+$ dicey 3d❄️,🔥,⚡️,🌪,🌲 -m r
+# (❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)
+roll => 1⋅🌪 + 1⋅🌲 + 1⋅⚡️
+```
+
+Wind, wood and lightning in equal proportion it is! Your enemies will tremble!
+
+Regrettably, it is not possible to use elemental dice without installing **vector_number** gem first.
+
 ### All ways to define dice
 
-There are three *main* ways to define dice:
+There are four *main* ways to define dice:
 - *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
 - *"3-6", "-5..5", "(0-1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
   - Accepted separators: "-", "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
-- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes an arbitrary numeric die.
+- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
   - Lists can end in a comma, allowing single-number lists.
+- *"1,1.5,Two", "(💚,🧡,💙,💜)" or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
+  - Lists can end in a comma, allowing single-string lists.
+  - Single (') or double (") quotes can be used to use other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
+  - Quotes can also be used to treat numbers as strings.
 
-*"D6", "d(-1,3)", or "d2..4"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
+*"D6", "d(-1,3)", "d2..4", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
 
-*"2D6", "5d-1,3", or "277D(2..4)"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
+*"2D6", "5d-1,3", "277D(2..4)", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
 ## Usage: API
 
@@ -293,7 +311,7 @@ Dicey::DieFoundry.new.call("100")
 Dicey::DieFoundry.new.call("2d6")
   # same as Dicey::RegularDie.from_count(2, 6)
 Dicey::DieFoundry.new.call("1d1,2,4")
-  # same as Dicey::NumericDie.from_list([1,2,4])
+  # same as Dicey::NumericDie.from_count(1, [1,2,4])
 ```
 
 It only takes a single argument and may return both an array of dice and a single die. You will probably want to use `Enumerable#flat_map`:
@@ -350,17 +368,17 @@ Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There 
 - `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *100d6* in about 0.1 seconds on a laptop.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance only slightly worse. However, it is currently limited to dice with arithmetic sequences.
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
-- `Dicey::SumFrequencyCalculators::Empirical`. This is more of a tool than a calculator. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
+- `Dicey::SumFrequencyCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
 Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
 - `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
 
-See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations.
+See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
 
 ### Distribution properties
 
-While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` already provides this functionality:
+While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` provides this functionality:
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
   Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
@@ -369,18 +387,19 @@ Dicey::DistributionPropertiesCalculator.new.call(
 )
   # => 
   # {:mode=>[4],
-  # :min=>2,
-  # :max=>6,
-  # :total_range=>4,
-  # :mid_range=>4,
-  # :median=>4,
-  # :arithmetic_mean=>4,
-  # :expected_value=>4,
-  # :variance=>(4/3),
-  # :standard_deviation=>1.1547005383792515,
-  # :skewness=>0.0,
-  # :kurtosis=>(9/4),
-  # :excess_kurtosis=>(-3/4)}
+  #  :modes=>[[4]]
+  #  :min=>2,
+  #  :max=>6,
+  #  :total_range=>4,
+  #  :mid_range=>4,
+  #  :median=>4,
+  #  :arithmetic_mean=>4,
+  #  :expected_value=>4,
+  #  :variance=>(4/3),
+  #  :standard_deviation=>1.1547005383792515,
+  #  :skewness=>0.0,
+  #  :kurtosis=>(9/4),
+  #  :excess_kurtosis=>(-3/4)}
 ```
 
 Of course, for regular dice most properties are quite simple and predicatable due to symmetricity of distribution. It becomes more interesting with unfair, lopsided dice. Remember [Example 3](#example-3-custom-dice)?
@@ -392,21 +411,30 @@ Dicey::DistributionPropertiesCalculator.new.call(
 )
   # => 
   # {:mode=>[5],
-  # :min=>2,
-  # :max=>8,
-  # :total_range=>6,
-  # :mid_range=>5,
-  # :median=>5,
-  # :arithmetic_mean=>5,
-  # :expected_value=>(31/6),
-  # :variance=>(101/36),
-  # :standard_deviation=>1.674979270186815,
-  # :skewness=>-0.15762965389465178,
-  # :kurtosis=>(23145/10201),
-  # :excess_kurtosis=>(-7458/10201)}
+  #  :modes=>[[5]],
+  #  :min=>2,
+  #  :max=>8,
+  #  :total_range=>6,
+  #  :mid_range=>5,
+  #  :median=>5,
+  #  :arithmetic_mean=>5,
+  #  :expected_value=>(31/6),
+  #  :variance=>(101/36),
+  #  :standard_deviation=>1.674979270186815,
+  #  :skewness=>-0.15762965389465178,
+  #  :kurtosis=>(23145/10201),
+  #  :excess_kurtosis=>(-7458/10201)}
 ```
 
-This disitrubution is obviosuly skewed (as can be immediately seen from non-zero skewness), with expected value no longer equal to mean. This is a mild example. It is easily possible to create a distribution with multiple local maxima and high skewness.
+This disitrubution is obviosuly skewed (as can be immediately seen from non-zero skewness), with expected value no longer equal to mean. This is a mild example. It is easily possible to create a distribution with multiple local maxima or high skewness. For example, let's take two D2 and a weighted die to create a distribution with two peaks:
+```rb
+    [*Dicey::RegularDie.from_count(2, 2), Dicey::NumericDie.new([1,8,9])]
+  # => 
+  # {:mode=>[11, 12],
+  #  :modes=>[[4], [11, 12]],
+```
+
+You can see that 11 and 12 are the most likely outcomes, coming from a larger peak, but a smaller peak (with lower probability) is placed at 4.
 
 ## Diving deeper
 
