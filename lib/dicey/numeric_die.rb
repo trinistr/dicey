@@ -4,8 +4,12 @@ require_relative "abstract_die"
 
 module Dicey
   # A die which only has numeric sides, with no shenanigans.
+  #
+  # The only inherent difference in behavior compared to {AbstractDie} is
+  # that this class checks values for sides on initialization.
+  # However, other classes may reject {AbstractDie} even with all numeric sides.
   class NumericDie < AbstractDie
-    # @param sides_list [Enumerable<Numeric>]
+    # @param sides_list [Array<Numeric>, Range<Numeric>, Enumerable<Numeric>]
     # @raise [DiceyError] if +sides_list+ contains non-numerical values or is empty
     def initialize(sides_list)
       if Range === sides_list

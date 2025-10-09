@@ -14,6 +14,8 @@ require_relative "mixins/vectorize_dice"
 
 module Dicey
   # Let the dice roll!
+  #
+  # This is the implementation of roll mode for the CLI.
   class Roller
     include Mixins::RationalToInteger
     include Mixins::VectorizeDice

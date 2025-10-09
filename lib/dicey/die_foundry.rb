@@ -53,7 +53,7 @@ module Dicey
     # A plain "d" without an explicit count is ignored instead, creating a single die.
     #
     # @param definition [String] die shape
-    # @return [NumericDie, RegularDie, Array<NumericDie>, Array<RegularDie>]
+    # @return [AbstractDie, Array<AbstractDie>]
     # @raise [DiceyError] if no mold fits the definition
     def call(definition)
       matched, name =

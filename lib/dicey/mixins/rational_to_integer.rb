@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module Dicey
+  # @api private
+  # Various mixins with shared methods.
   module Mixins
-    # @api private
     # Mix-in for converting rationals with denominator of 1 to integers.
     module RationalToInteger
       private

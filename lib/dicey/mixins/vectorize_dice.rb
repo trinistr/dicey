@@ -2,7 +2,6 @@
 
 module Dicey
   module Mixins
-    # @api private
     # Mix-in for converting dice with non-numeric sides into dice with +VectorNumber+ sides.
     module VectorizeDice
       private

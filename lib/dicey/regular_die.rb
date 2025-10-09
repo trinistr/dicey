@@ -4,6 +4,8 @@ require_relative "numeric_die"
 
 module Dicey
   # Regular die, which has N sides with numbers from 1 to N.
+  #
+  # As a subclass of {NumericDie}, enjoys its treatment.
   class RegularDie < NumericDie
     # @param max [Integer] maximum side / number of sides
     def initialize(max)

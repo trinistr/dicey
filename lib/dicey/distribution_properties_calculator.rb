@@ -27,7 +27,7 @@ module Dicey
     #
     # @param distribution [Hash{Numeric => Numeric}, Hash{Any => Numeric}]
     #   distribution with pre-sorted keys
-    # @return [Hash{Symbol => Numeric, Array<Numeric>, Array<Array<Numeric>>}]
+    # @return [Hash{Symbol => Any}]
     def call(distribution)
       return {} if distribution.empty?
 

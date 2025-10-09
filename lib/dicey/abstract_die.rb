@@ -2,7 +2,7 @@
 
 module Dicey
   # Asbtract die which may have an arbitrary list of sides,
-  # not even neccessarily numbers (but preferably so).
+  # not even neccessarily numbers, but strings or other objects.
   class AbstractDie
     # rubocop:disable Style/ClassVars
 

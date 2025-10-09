@@ -11,6 +11,7 @@ module Dicey
     # Based on extension of Pascal's triangle for a higher number of coefficients.
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
+    # @see https://en.wikipedia.org/wiki/Multinomial_distribution
     class MultinomialCoefficients < BaseCalculator
       private
 
