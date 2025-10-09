@@ -4,9 +4,9 @@ require_relative "base_calculator"
 
 module Dicey
   module SumFrequencyCalculators
-    # Calculator for lists of dice with non-negative integer sides (fast).
+    # Calculator for lists of dice with integer sides (fast).
     #
-    # Example dice: (1,2,3,4), (0,1,5,6), (5,4,5,4,5).
+    # Example dice: (1,2,3,4), (0,1,-5,6), (5,4,5,4,5).
     #
     # Based on Kronecker substitution method for polynomial multiplication.
     # @see https://en.wikipedia.org/wiki/Kronecker_substitution

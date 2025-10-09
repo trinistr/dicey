@@ -385,7 +385,7 @@ die.roll
 ### Distribution calculators
 
 Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
-- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie`. It is very fast, calculating distribution for *1000d6* in about 20 seconds on a laptop.
+- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and more. It is very fast, though sometimes slower than the next one.
 - `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
 - `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 - `Dicey::SumFrequencyCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
@@ -486,6 +486,9 @@ An algorithm based on fast polynomial multiplication. This is the default algori
 - Limitations: only **integer** dice are allowed, including **regular** dice.
 - Example: `dicey 5 3,4,1 0,`
 - Complexity: **O(n⋅m)**
+- Running time examples:
+  - 6d1000 — 0.5 seconds
+  - 1000d6 — 18 seconds
 
 ### Multinomial coefficients
 
@@ -494,14 +497,19 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 - Limitations: only *equal* **arithmetic** dice are allowed.
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
 - Complexity: **O(n⋅m²)**
+- Running time examples:
+  - 6d1000 — 1.65 seconds
+  - 1000d6 — 10.5 seconds
 
 ### Brute force
 
-As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including aforementioned dice with complex numbers.
+As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace, it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
-- Example: `dicey 5 1,0.1,2 1,-1,1,-1,0`
+- Example: `dicey 5 1,0.1,2 A,B,C`
 - Complexity: **O(mⁿ)**
+  - 6d10 — 0.45 seconds
+  - 10d6 — 22 seconds
 
 ## Development
 
