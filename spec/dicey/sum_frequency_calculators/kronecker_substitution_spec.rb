@@ -8,12 +8,6 @@ module Dicey
 
     let(:dice) { NumericDie.from_list([0, 1, 2], [3, 13, 2]) }
 
-    context "when called with valid dice" do
-      it "calculates frequencies correctly" do
-        expect(result).to eq({ 2 => 1, 3 => 2, 4 => 2, 5 => 1, 13 => 1, 14 => 1, 15 => 1 })
-      end
-    end
-
     context "when called with an empty list of dice" do
       let(:dice) { [] }
 
@@ -22,11 +16,20 @@ module Dicey
       end
     end
 
-    context "when called with negative numeric dice" do
+    context "when called with non-negative integer dice" do
+      it "calculates frequencies correctly" do
+        expect(result).to eq({ 2 => 1, 3 => 2, 4 => 2, 5 => 1, 13 => 1, 14 => 1, 15 => 1 })
+      end
+    end
+
+    context "when called with negative integer dice" do
       before { dice << NumericDie.new([-1, 2, 3]) }
 
-      it "rejects them" do
-        expect { result }.to raise_error(DiceyError)
+      it "calculates frequencies correctly" do
+        expect(result).to eq(
+          { 1 => 1, 2 => 2, 3 => 2, 4 => 2, 5 => 3, 6 => 4, 7 => 3, 8 => 1,
+            12 => 1, 13 => 1, 14 => 1, 15 => 1, 16 => 2, 17 => 2, 18 => 1 }
+        )
       end
     end
 
@@ -55,8 +58,8 @@ module Dicey
         it { is_expected.to be true }
       end
 
-      context "when called with a list of non-negative integer dice" do
-        let(:dice) { NumericDie.from_list([0, 1, 2], [3, 13], [1, 768, 0]) }
+      context "when called with a list of integer dice" do
+        let(:dice) { NumericDie.from_list([0, 1, 2], [3, -13], [1, 768, 0]) }
 
         it { is_expected.to be true }
       end

@@ -1,5 +1,12 @@
 # frozen_string_literal: true
 
+# Try to load "vector_number" pre-emptively.
+begin
+  require "vector_number"
+rescue LoadError
+  # VectorNumber not available, sad
+end
+
 # A library for rolling dice and calculating roll frequencies.
 module Dicey
   # General error for Dicey.
