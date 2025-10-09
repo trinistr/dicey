@@ -11,29 +11,29 @@ module Dicey
     include Mixins::RationalToInteger
 
     # Regexp for matching a possible count.
-    PREFIX = /(?>(?<count>[1-9]\d*+)?d)?+/i
+    PREFIX = /(?:(?<count>[1-9]\d*+)?+d)?+/i
     # Regexp for an integer number.
-    INTEGER = /(?>-?\d++)/
+    INTEGER = /(?:-?\d++)/
     # Regexp for a (possibly) fractional number.
-    DECIMAL = /(?>-?\d++(?>\.\d++)?)/
+    DECIMAL = /(?:-?\d++(?:\.\d++)?)/
     # Regexp for an "arbitrary" string.
-    STRING = /(?>(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')/
+    STRING = /(?:(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')/
 
     # Possible molds for the dice. They are matched in the order as written.
     MOLDS = [
       # Positive integer goes into the RegularDie mold.
       [/\A#{PREFIX}(?<sides>[1-9]\d*+)\z/, :regular_mold].freeze,
       # Integer range goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<begin>#{INTEGER})(?>[-–—…]|\.{2,3})(?<end>#{INTEGER})\)?\z/,
+      [/\A#{PREFIX}\(?(?<begin>#{INTEGER})(?:[-–—…]|\.{2,3})(?<end>#{INTEGER})\)?\z/,
        :range_mold].freeze,
       # List of numbers goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<sides>#{INTEGER}(?>(?>,#{INTEGER})+,?|,))\)?\z/,
+      [/\A#{PREFIX}\(?(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))\)?\z/,
        :weirdly_shaped_mold].freeze,
       # Non-integers require special handling for precision.
-      [/\A#{PREFIX}\(?(?<sides>#{DECIMAL}(?>(?>,#{DECIMAL})+,?|,))\)?\z/,
+      [/\A#{PREFIX}\(?(?<sides>#{DECIMAL}(?:(?:,#{DECIMAL})++,?+|,))\)?\z/,
        :weirdly_precise_mold].freeze,
       # Lists of stuff are broken into AbstractDie.
-      [/\A#{PREFIX}\(?(?<sides>#{STRING}(?>(?>,#{STRING})+,?|,))\)?\z/, :cursed_mold].freeze,
+      [/\A#{PREFIX}\(?(?<sides>#{STRING}(?:(?:,#{STRING})++,?+|,))\)?\z/, :cursed_mold].freeze,
       # Anything else is spilled on the floor.
     ].freeze
 
