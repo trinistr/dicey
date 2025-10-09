@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed**
 - `KroneckerSubstitution` calculator now accepts dice with all integers (including negative). Additionally, performance now depends on the total range of numbers instead of the maximum number.
+- Rewrite `BruteForce` calculator again to reduce performance overhead, making it approximately 2 times faster.
 
 [Compare v0.16.0...main](https://github.com/trinistr/dicey/compare/v0.16.0...main)
 
