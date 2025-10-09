@@ -41,28 +41,23 @@ undef require_relative_with_tracking
 
 require "rake"
 
-$package = +""
+$package = +<<~RUBY
+  # frozen_string_literal: true
 
-Rake::Task.define_task(package: :package_header)
-
-# Write script's header as the first thing.
-Rake::Task.define_task(:package_header) do
-  $package << <<~RUBY
-    # frozen_string_literal: true
-
-    # Refinement for this file to skip `require_relative` calls.
-    # While generally not needed, some may slip through.
-    module RequireRelativeRefinement
-      refine Kernel do
-        # Do nothing as files are already included.
-        def require_relative(_path) = nil
-      end
+  # Refinement for this file to skip `require_relative` calls.
+  # While generally not needed, some may slip through.
+  module RequireRelativeRefinement
+    refine Kernel do
+      # Do nothing as files are already included.
+      def require_relative(_path) = nil
     end
+  end
 
-    using RequireRelativeRefinement
+  using RequireRelativeRefinement
 
-  RUBY
-end
+RUBY
+
+Rake::Task.define_task(package: [])
 
 # Helper to append files to package.
 Rake::Task.define_task(:_append_file, [:file]) do |_task, args|

@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-# Try to load "vector_number" pre-emptively.
-begin
-  require "vector_number"
-rescue LoadError
-  # VectorNumber not available, sad
-end
-
 require_relative "base_calculator"
 
 require_relative "../mixins/vectorize_dice"
