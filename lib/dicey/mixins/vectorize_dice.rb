@@ -17,7 +17,10 @@ module Dicey
         dice.map do |die|
           next die if NumericDie === die
 
-          sides = die.sides_list.map { |side| (Numeric === side) ? side : VectorNumber.new([side]) }
+          sides =
+            die.sides_list.map do |side|
+              (Numeric === side || VectorNumber === side) ? side : VectorNumber.new([side])
+            end
           die.class.new(sides)
         end
       end
