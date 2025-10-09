@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+Don't let the small number of changes fool you: this is a massive update, finally integrating **vector_number** gem (originally conceived for this exact purpose) to truly support abstract dice. Now you can use any values on dice, not just numbers, adding first-class support for true coins, symbolic dice or even playing cards.
+
 **Added**
 - Support for non-numeric dice sides in API and CLI, including calculating distributions and rolling.
 

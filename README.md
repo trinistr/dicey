@@ -321,6 +321,26 @@ foundry = Dicey::DieFoundry.new
   # same as [Dicey::RegularDie.new(8), *Dicey::RegularDie.from_count(2, 4)]
 ```
 
+#### Really custom dice
+
+It is easy enough to create numeric dice or dice with distinct symbols. However, what if a symbolic die is needed, but one which also has custom counts of symbols?
+
+For example, a game may have a die which can roll 1-3 💚 or a ♥️. You could just use completely different strings for the different numbers of hearts, but they would not be summable (what if you need to roll two such dice and add them together?). In this case, you can directly use `VectorNumber` to create summable strings:
+```rb
+# Using Symbols is not required, but they look nicer in output.
+# `DieFoundry` uses Symbols for this reason.
+heal = VectorNumber[:"💚"]
+regen = VectorNumber[:"♥️"]
+die = Dicey::AbstractDie.new([heal, heal * 2, heal * 3, regen])
+  # => #<Dicey::AbstractDie:0x00007f4a7c95efe8 @current_side_index=0, @sides_list=[(1⋅💚), (2⋅💚), (3⋅💚), (1⋅♥️)], @sides_num=4>
+```
+
+Now such dice can easily be rolled together and results summed:
+```rb
+die.roll + die.roll
+  # => (5⋅💚)
+```
+
 ### Rolling
 
 `Dicey::AbstractDie#roll` implements the rolling:
