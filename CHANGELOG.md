@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.16.0...main](https://github.com/trinistr/dicey/compare/v0.16.0...main)
+
+## [v0.16.0] — 2025-10-09
+
 Don't let the small number of changes fool you: this is a massive update, finally integrating **vector_number** gem (originally conceived for this exact purpose) to truly support abstract dice. Now you can use any values on dice, not just numbers, adding first-class support for true coins, symbolic dice or even playing cards.
 
 **Added**
@@ -18,7 +22,7 @@ Don't let the small number of changes fool you: this is a massive update, finall
 - The same for `Roller`: roll whatever you want.
 - If an `AbstractDie` is encountered without **vector_number** available, a warning will be printed, and calculation will raise an error. Additionally, calculators' `#valid_for?` will return `false` (and warn).
 
-[Compare v0.15.2...main](https://github.com/trinistr/dicey/compare/v0.15.2...main)
+[Compare v0.15.2...v0.16.0](https://github.com/trinistr/dicey/compare/v0.15.2...v0.16.0)
 
 ## [v0.15.2] — 2025-10-08
 
@@ -246,6 +250,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.16.0]: https://github.com/trinistr/dicey/tree/v0.16.0
 [v0.15.2]: https://github.com/trinistr/dicey/tree/v0.15.2
 [v0.15.1]: https://github.com/trinistr/dicey/tree/v0.15.1
 [v0.15.0]: https://github.com/trinistr/dicey/tree/v0.15.0
