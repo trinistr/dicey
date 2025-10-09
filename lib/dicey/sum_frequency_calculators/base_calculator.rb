@@ -66,9 +66,7 @@ module Dicey
       # Peform frequencies calculation.
       # (see #call)
       def calculate(dice, **nil)
-        # :nocov:
         raise NotImplementedError
-        # :nocov:
       end
 
       # Check that resulting frequencies actually add up to what they are supposed to be.
