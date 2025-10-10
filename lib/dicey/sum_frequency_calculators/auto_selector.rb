@@ -6,7 +6,11 @@ require_relative "multinomial_coefficients"
 
 module Dicey
   module SumFrequencyCalculators
-    # Tool to select a calculator for a given set of dice,
+    # Tool to automatically select a calculator for a given set of dice.
+    #
+    # Calculator is guaranteed to be compatible, with a strong chance of being the most performant.
+    #
+    # @see BaseCalculator#heuristic_complexity
     class AutoSelector
       # Calculators to consider when selecting a match.
       AVAILABLE_CALCULATORS = [
@@ -25,7 +29,7 @@ module Dicey
       # based on heuristics from the list of available calculators.
       #
       # @param dice [Enumerable<NumericDie>]
-      # @return [BaseCalculator, nil]
+      # @return [BaseCalculator, nil] +nil+ if no calculator is compatible
       def call(dice)
         compatible = @calculators.select { _1.valid_for?(dice) }
         return if compatible.empty?

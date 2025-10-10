@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Added**
 - `Dicey::SumFrequencyCalculators::AutoSelector` to automatically select the best (and valid) calculator for given dice.
 - `BaseCalculator#heuristic_complexity` to estimate the complexity of a calculator, with implementations for each calculator. Heuristics are based on real runtime data.
+- `NullFomatter` and "--format null" option to disable output in CLI.
 
 **Changed**
 - `KroneckerSubstitution` calculator now accepts dice with all integers (including negative). Additionally, performance now depends on the total range of numbers instead of the maximum number.

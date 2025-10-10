@@ -55,7 +55,9 @@ module Dicey
         dice.is_a?(Enumerable) && dice.all?(AbstractDie) && validate(dice)
       end
 
-      # Heuristic complexity of the calculator.
+      # Heuristic complexity of the calculator, used to determine best calculator.
+      #
+      # @see AutoSelector
       #
       # @param dice [Enumerable<AbstractDie>]
       # @return [Integer]

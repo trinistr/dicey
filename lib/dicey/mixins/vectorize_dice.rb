@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
+  # @api private
   module Mixins
     # Mix-in for converting dice with non-numeric sides into dice with +VectorNumber+ sides.
     module VectorizeDice
