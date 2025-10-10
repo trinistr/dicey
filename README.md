@@ -477,7 +477,7 @@ Dicey is in principle able to handle any real numeric dice and some abstract dic
 Currently, three algorithms for calculating frequencies are implemented, with different possibilities and trade-offs.
 
 > [!NOTE]
-> 💡 Complexity is listed for **n** dice with at most **m** sides and has not been rigorously proven.
+> 💡 Complexity is listed for **n** dice with at most **m** sides and is only an approximation.
 
 ### Kronecker substitution
 
@@ -485,7 +485,7 @@ An algorithm based on fast polynomial multiplication. This is the default algori
 
 - Limitations: only **integer** dice are allowed, including **regular** dice.
 - Example: `dicey 5 3,4,1 0,`
-- Complexity: **O(n⋅m)**
+- Complexity: **O(n<sup>3</sup>⋅m<sup>2</sup>)**
 - Running time examples:
   - 6d1000 — 0.5 seconds
   - 1000d6 — 18 seconds
@@ -496,7 +496,7 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 - Limitations: only *equal* **arithmetic** dice are allowed.
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
-- Complexity: **O(n⋅m²)**
+- Complexity: **O(n<sup>2</sup>⋅m<sup>2</sup>)**
 - Running time examples:
   - 6d1000 — 1.65 seconds
   - 1000d6 — 10.5 seconds
@@ -507,7 +507,7 @@ As a last resort, there is a brute force algorithm which goes through every poss
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`
-- Complexity: **O(mⁿ)**
+- Complexity: **O(m<sup>n</sup>)**
 - Running time examples:
   - 6d10 — 0.25 seconds
   - 10d6 — 9.5 seconds

@@ -38,6 +38,10 @@ module Dicey
         end
       end
 
+      def calculate_heuristic(dice_count, sides_count)
+        N * dice_count * Math.log2(sides_count)
+      end
+
       def calculate(dice, rolls: N)
         dice = vectorize_dice(dice) if defined?(VectorNumber)
         statistics = rolls.times.with_object(Hash.new(0)) { |_, hash| hash[dice.sum(&:roll)] += 1 }

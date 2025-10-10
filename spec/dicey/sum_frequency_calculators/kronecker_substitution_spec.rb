@@ -76,5 +76,25 @@ module Dicey
         it { is_expected.to be false }
       end
     end
+
+    describe "#heuristic_complexity" do
+      subject(:complexity) { calculator.heuristic_complexity(dice) }
+
+      let(:dice) { AbstractDie.from_list([-0.5, 1, 2.5], %w[1 2 5]) }
+
+      it "returns a positive integer" do
+        expect(complexity).to be_a(Integer).and be > 0
+      end
+
+      it "increases with number of dice" do
+        expect(complexity).to be > calculator.heuristic_complexity([dice.first])
+      end
+
+      it "increases with number of sides" do
+        expect(complexity).to be > calculator.heuristic_complexity(
+          dice.map { _1.class.new(_1.sides_list[1..]) }
+        )
+      end
+    end
   end
 end

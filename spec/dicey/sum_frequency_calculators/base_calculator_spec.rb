@@ -11,6 +11,12 @@ module Dicey
           # Fake calculation, add 1 result for each side.
           dice.map(&:sides_num).reduce(:*).times.to_h { |n| [n, 1] }
         end
+
+        private
+
+        def calculate_heuristic(dice_count, sides_count)
+          dice_count * sides_count
+        end
       end
     end
 
@@ -129,6 +135,20 @@ module Dicey
           let(:dice) { AbstractDie.from_count(3, ["a", 2, :"3"]) }
 
           it { is_expected.to be false }
+        end
+      end
+    end
+
+    describe "#heuristic_complexity" do
+      subject(:complexity) { calculator.heuristic_complexity(dice) }
+
+      it { is_expected.to be_a Integer }
+
+      context "when called on its own, not an implementation" do
+        let(:calculator) { described_class.new }
+
+        it "raises NotImplementedError" do
+          expect { complexity }.to raise_error(NotImplementedError)
         end
       end
     end

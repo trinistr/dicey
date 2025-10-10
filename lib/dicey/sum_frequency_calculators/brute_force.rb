@@ -26,6 +26,10 @@ module Dicey
         end
       end
 
+      def calculate_heuristic(dice_count, sides_count)
+        1000 * (sides_count**dice_count)
+      end
+
       def calculate(dice, **nil)
         dice = vectorize_dice(dice) if defined?(VectorNumber)
         dice.map(&:sides_list).reduce { |result, die|
