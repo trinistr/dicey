@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "auto_selector"
 require_relative "brute_force"
 require_relative "kronecker_substitution"
 require_relative "multinomial_coefficients"
@@ -8,6 +9,8 @@ module Dicey
   module SumFrequencyCalculators
     # A simple testing facility for roll frequency calculators.
     class TestRunner
+      AVAILABLE_CALCULATORS = AutoSelector::AVAILABLE_CALCULATORS
+
       # These are manually calculated frequencies,
       # with test cases for pretty much all variations of what this program can handle.
       TEST_DATA = [
@@ -70,12 +73,11 @@ module Dicey
 
       # Check all tests defined in {TEST_DATA} with every passed calculator.
       #
-      # @param roll_calculators [Array<BaseCalculator>]
       # @param report_style [Symbol] one of: +:full+, +:quiet+;
       #   +:quiet+ style does not output any text
       # @return [Boolean] whether there are no failing tests
-      def call(*, roll_calculators:, report_style:, **)
-        results = TEST_DATA.to_h { |test| run_test(test, roll_calculators) }
+      def call(*, report_style:, **)
+        results = TEST_DATA.to_h { |test| run_test(test) }
         full_report(results) if report_style == :full
         results.values.none? do |test_result|
           test_result.values.any? { FAILURE_RESULTS.include?(_1) }
@@ -86,13 +88,12 @@ module Dicey
 
       # @param test [Array(Array<Integer, Array<Numeric>>, Hash{Numeric => Integer})]
       #   pair of a dice list definition and expected results
-      # @param calculators [Array<BaseCalculator>]
       # @return [Array(Array<NumericDie>, Hash{BaseCalculator => Symbol})]
       #   result of running the test in a format suitable for +#to_h+
-      def run_test(test, calculators)
+      def run_test(test)
         dice = build_dice(test.first)
         test_result =
-          calculators.each_with_object({}) do |calculator, hash|
+          AVAILABLE_CALCULATORS.each_with_object({}) do |calculator, hash|
             hash[calculator] = run_test_on_calculator(calculator, dice, test.last)
           end
         [dice, test_result]

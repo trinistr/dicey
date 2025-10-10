@@ -2,14 +2,14 @@
 
 module Dicey
   RSpec.describe SumFrequencyCalculators::Runner do
-    subject(:call_result) do
-      described_class.new.call(dice, roll_calculators: calculators, format: format, result: result)
-    end
+    subject(:call_result) { described_class.new.call(dice, format: format, result: result) }
 
     let(:dice) { %w[2d2 1,5,] } # rubocop:disable Lint/PercentStringArray
     let(:calculators) { [SumFrequencyCalculators::KroneckerSubstitution.new] }
     let(:format) { OutputFormatters::JSONFormatter.new }
     let(:result) { :frequencies }
+
+    before { stub_const("Dicey::SumFrequencyCalculators::AutoSelector::AVAILABLE_CALCULATORS", calculators) }
 
     it "returns a formatted string with dice description and calculation result" do
       expect(call_result).to eq <<~TEXT.chomp
