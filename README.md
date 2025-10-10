@@ -396,6 +396,8 @@ Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and pr
 
 See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
 
+When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::SumFrequencyCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
+
 ### Distribution properties
 
 While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` provides this functionality:
