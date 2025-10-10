@@ -34,6 +34,12 @@ module Dicey
         true
       end
 
+      def calculate_heuristic(dice_count, sides_count)
+        # Fitting shows both coefficients to be around 500,
+        # but empirical runtime doesn't agree, so 150 it is.
+        150 * (dice_count**2.2) * 500 * (sides_count**1.9)
+      end
+
       def calculate(dice, **nil)
         first_die = dice.first
         number_of_sides = first_die.sides_num

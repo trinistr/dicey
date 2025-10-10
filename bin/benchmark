@@ -13,8 +13,8 @@ require "benchmark/ips"
 require "stackprof"
 
 # Load this gem
-gem_entry = Dir["#{__dir__}/../lib/*.rb"].first
-require_relative gem_entry
+require_relative "../lib/dicey"
+require_relative "../lib/dicey/cli/blender"
 
 # Set up test data
 # ...
@@ -26,8 +26,9 @@ report_path = "tmp/benchmark #{Time.now.iso8601} " \
               "(commit #{`git rev-parse HEAD`.chomp[0..7]}).json"
 StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
   Benchmark.ips do |ips|
-    ips.report("Brute") { Dicey::SumFrequencyCalculators::BruteForce.new.call(Dicey::RegularDie.from_count(6, 6)) }
+    ips.report("BruteForce") { Dicey::SumFrequencyCalculators::BruteForce.new.call(Dicey::RegularDie.from_count(6, 6)) }
     ips.report("Rolling") { Dicey::RegularDie.new(10_000).roll }
+    ips.report("full run") { Dicey::CLI::Blender.new.call(["100d6", "--format", "null"]) }
 
     ips.json!(report_path)
   end

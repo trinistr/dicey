@@ -55,12 +55,31 @@ module Dicey
         dice.is_a?(Enumerable) && dice.all?(AbstractDie) && validate(dice)
       end
 
+      # Heuristic complexity of the calculator, used to determine best calculator.
+      #
+      # @see AutoSelector
+      #
+      # @param dice [Enumerable<AbstractDie>]
+      # @return [Integer]
+      def heuristic_complexity(dice)
+        calculate_heuristic(dice.length, dice.map(&:sides_num).max).to_i
+      end
+
       private
 
       # Do additional validation on the dice list.
       # (see #valid_for?)
       def validate(_dice)
         true
+      end
+
+      # Calculate heuristic complexity of the calculator.
+      #
+      # @param dice_count [Integer]
+      # @param sides_count [Integer] maximum number of sides
+      # @return [Numeric]
+      def calculate_heuristic(dice_count, sides_count)
+        raise NotImplementedError
       end
 
       # Peform frequencies calculation.

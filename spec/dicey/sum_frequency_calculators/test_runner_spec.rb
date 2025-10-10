@@ -2,14 +2,15 @@
 
 module Dicey
   RSpec.describe SumFrequencyCalculators::TestRunner do
-    subject(:call_result) do
-      described_class.new.call(dice, roll_calculators: calculators, report_style: :full)
-    end
+    subject(:call_result) { described_class.new.call(dice, report_style: :full) }
 
     let(:dice) { %w[2d2 -2] }
     let(:calculators) { [SumFrequencyCalculators::BruteForce.new] }
 
-    before { stub_const("Dicey::SumFrequencyCalculators::TestRunner::TEST_DATA", [[[1], { 1 => 1 }]]) }
+    before do
+      stub_const("Dicey::SumFrequencyCalculators::TestRunner::TEST_DATA", [[[1], { 1 => 1 }]])
+      stub_const("Dicey::SumFrequencyCalculators::TestRunner::AVAILABLE_CALCULATORS", calculators)
+    end
 
     it "returns true if all tests pass" do
       expect { call_result }.to output(<<~TEXT).to_stdout

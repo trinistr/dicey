@@ -10,13 +10,6 @@ module Dicey
     # Slice and dice everything in the Dicey module to produce a useful result.
     # This is the entry point for the CLI.
     class Blender
-      # List of calculators to use, ordered by efficiency.
-      ROLL_FREQUENCY_CALCULATORS = [
-        SumFrequencyCalculators::KroneckerSubstitution.new,
-        SumFrequencyCalculators::MultinomialCoefficients.new,
-        SumFrequencyCalculators::BruteForce.new,
-      ].freeze
-
       # How to transform option values from command-line arguments
       # to internally significant objects.
       OPTION_TRANSFORMATIONS = {
@@ -27,6 +20,7 @@ module Dicey
           "gnuplot" => OutputFormatters::GnuplotFormatter.new,
           "yaml" => OutputFormatters::YAMLFormatter.new,
           "json" => OutputFormatters::JSONFormatter.new,
+          "null" => OutputFormatters::NullFormatter.new,
         }.freeze,
       }.freeze
 
@@ -47,7 +41,6 @@ module Dicey
       def call(argv = ARGV)
         options, arguments = get_options_and_arguments(argv)
         require_optional_libraries(options)
-        options[:roll_calculators] = ROLL_FREQUENCY_CALCULATORS
         return_value = RUNNERS[options.delete(:mode)].call(arguments, **options)
         print return_value if return_value.is_a?(String)
         !!return_value

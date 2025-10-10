@@ -20,6 +20,10 @@ module Dicey
         dice.all? { |die| die.sides_list.all?(Integer) }
       end
 
+      def calculate_heuristic(dice_count, sides_count)
+        (dice_count**3.2) * 100 * (sides_count**1.9)
+      end
+
       def calculate(dice, **nil)
         polynomials, offset = build_polynomials(dice)
         evaluation_point = find_evaluation_point(polynomials)
