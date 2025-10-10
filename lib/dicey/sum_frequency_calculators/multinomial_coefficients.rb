@@ -36,8 +36,8 @@ module Dicey
 
       def calculate_heuristic(dice_count, sides_count)
         # Fitting shows both coefficients to be around 500,
-        # but empirical runtime doesn't agree, so 5 it is.
-        5 * (dice_count**2.2) * 500 * (sides_count**1.9)
+        # but empirical runtime doesn't agree, so 150 it is.
+        150 * (dice_count**2.2) * 500 * (sides_count**1.9)
       end
 
       def calculate(dice, **nil)
