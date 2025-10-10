@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Fixed**
+- Allow calling `BaseCalculator#heuristic_complexity` with an empty list of dice, returning 0.
+
 [Compare v0.16.1...main](https://github.com/trinistr/dicey/compare/v0.16.1...main)
 
 ## [v0.16.1] — 2025-10-10

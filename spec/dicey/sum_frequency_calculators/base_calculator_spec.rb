@@ -144,6 +144,12 @@ module Dicey
 
       it { is_expected.to be_a Integer }
 
+      context "when called with an empty list of dice" do
+        let(:dice) { [] }
+
+        it { is_expected.to be 0 }
+      end
+
       context "when called on its own, not an implementation" do
         let(:calculator) { described_class.new }
 
