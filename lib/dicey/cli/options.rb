@@ -11,7 +11,7 @@ module Dicey
       # Allowed result types (--result).
       RESULT_TYPES = %w[frequencies probabilities].freeze
       # Allowed output formats (--format).
-      FORMATS = %w[list gnuplot json yaml].freeze
+      FORMATS = %w[list gnuplot json yaml null].freeze
 
       # Default values for initial values of the options.
       DEFAULT_OPTIONS = { mode: "frequencies", format: "list", result: "frequencies" }.freeze

@@ -20,6 +20,7 @@ module Dicey
           "gnuplot" => OutputFormatters::GnuplotFormatter.new,
           "yaml" => OutputFormatters::YAMLFormatter.new,
           "json" => OutputFormatters::JSONFormatter.new,
+          "null" => OutputFormatters::NullFormatter.new,
         }.freeze,
       }.freeze
 
