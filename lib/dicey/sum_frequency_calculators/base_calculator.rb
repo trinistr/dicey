@@ -25,6 +25,10 @@ module Dicey
       # Possible values for +result_type+ argument in {#call}.
       RESULT_TYPES = %i[frequencies probabilities].freeze
 
+      # Calculate distribution (probability mass function) for the list of dice.
+      #
+      # Returns empty hash for an empty list of dice.
+      #
       # @param dice [Enumerable<AbstractDie>]
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @param options [Hash{Symbol => Any}] calculator-specific options,
@@ -57,11 +61,15 @@ module Dicey
 
       # Heuristic complexity of the calculator, used to determine best calculator.
       #
+      # Returns 0 for an empty list of dice.
+      #
       # @see AutoSelector
       #
       # @param dice [Enumerable<AbstractDie>]
       # @return [Integer]
       def heuristic_complexity(dice)
+        return 0 if dice.empty?
+
         calculate_heuristic(dice.length, dice.map(&:sides_num).max).to_i
       end
 
