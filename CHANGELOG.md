@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.16.1...main](https://github.com/trinistr/dicey/compare/v0.16.1...main)
+
+## [v0.16.1] — 2025-10-10
+
+This is small update to improve efficiency and ergonomics of using calculators.
+
 **Added**
 - `Dicey::SumFrequencyCalculators::AutoSelector` to automatically select the best (and valid) calculator for given dice.
 - `BaseCalculator#heuristic_complexity` to estimate the complexity of a calculator, with implementations for each calculator. Heuristics are based on real runtime data.
@@ -16,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `KroneckerSubstitution` calculator now accepts dice with all integers (including negative). Additionally, performance now depends on the total range of numbers instead of the maximum number.
 - Rewrite `BruteForce` calculator again to reduce performance overhead, making it approximately 2 times faster.
 
-[Compare v0.16.0...main](https://github.com/trinistr/dicey/compare/v0.16.0...main)
+[Compare v0.16.0...v0.16.1](https://github.com/trinistr/dicey/compare/v0.16.0...v0.16.1)
 
 ## [v0.16.0] — 2025-10-09
 
@@ -259,6 +265,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.16.1]: https://github.com/trinistr/dicey/tree/v0.16.1
 [v0.16.0]: https://github.com/trinistr/dicey/tree/v0.16.0
 [v0.15.2]: https://github.com/trinistr/dicey/tree/v0.15.2
 [v0.15.1]: https://github.com/trinistr/dicey/tree/v0.15.1
