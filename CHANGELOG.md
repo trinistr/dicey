@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.16.2...main](https://github.com/trinistr/dicey/compare/v0.16.2...main)
+
+## [v0.16.2] — 2025-10-10
+
 **Fixed**
 - Allow calling `BaseCalculator#heuristic_complexity` with an empty list of dice, returning 0.
 
-[Compare v0.16.1...main](https://github.com/trinistr/dicey/compare/v0.16.1...main)
+[Compare v0.16.1...v0.16.2](https://github.com/trinistr/dicey/compare/v0.16.1...v0.16.2)
 
 ## [v0.16.1] — 2025-10-10
 
@@ -268,6 +272,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.16.2]: https://github.com/trinistr/dicey/tree/v0.16.2
 [v0.16.1]: https://github.com/trinistr/dicey/tree/v0.16.1
 [v0.16.0]: https://github.com/trinistr/dicey/tree/v0.16.0
 [v0.15.2]: https://github.com/trinistr/dicey/tree/v0.15.2
