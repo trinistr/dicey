@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed**
 - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`. No longer `require` them by default.
+- Rename `HashFormatter` to `BaseMapFormatter` and `KeyValueFormatter` to `BaseListFormatter`.
 
 [Compare v0.16.2...main](https://github.com/trinistr/dicey/compare/v0.16.2...main)
 

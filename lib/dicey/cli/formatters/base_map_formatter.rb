@@ -4,10 +4,10 @@ module Dicey
   module CLI
     # Processors which turn data to text.
     module Formatters
-      # Base formatter for outputting in formats which can be converted from a Hash directly.
+      # Base formatter for outputting in formats which are map- (or object-) like.
       # Can add an optional description into the result.
       # @abstract
-      class HashFormatter
+      class BaseMapFormatter
         # @param hash [Hash{Object => Object}]
         # @param description [String] text to add to result as an extra key
         # @return [String]

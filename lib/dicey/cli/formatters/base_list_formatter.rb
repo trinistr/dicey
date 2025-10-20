@@ -8,7 +8,7 @@ module Dicey
       # Base formatter for outputting lists of key-value pairs separated by newlines.
       # Can add an optional description into the result.
       # @abstract
-      class KeyValueFormatter
+      class BaseListFormatter
         include Mixins::RationalToInteger
 
         # @param hash [Hash{Object => Object}]
