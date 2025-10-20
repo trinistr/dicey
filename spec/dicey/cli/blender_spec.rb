@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dicey/cli/blender"
+require "dicey/cli"
 
 module Dicey
   RSpec.describe CLI::Blender do

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe "Formatting results" do
-  require "dicey/cli/blender"
+  require "dicey/cli"
 
-  subject(:blender_call) { Dicey::CLI::Blender.new.call(arguments) }
+  subject(:cli_call) { Dicey::CLI.call(arguments) }
 
   let(:arguments) { [*mode, *format, *dice] }
   let(:dice) { %w[2 3] }
@@ -17,14 +17,14 @@ RSpec.describe "Formatting results" do
       let(:format) { [nil, %w[-f list], %w[-f l], %w[--format list], %w[--for li]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           # D2+D3
           2 => 1
           3 => 2
           4 => 2
           5 => 1
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -33,14 +33,14 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f gnuplot], %w[-f gnu], %w[--format gnuplot], %w[--fo g]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           # D2+D3
           2 1
           3 2
           4 2
           5 1
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -49,10 +49,10 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f json], %w[-f j], %w[--format json], %w[--form j]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT.chomp).to_stdout
+        expect { cli_call }.to output(<<~TEXT.chomp).to_stdout
           {"description":"D2+D3","results":{"2":1,"3":2,"4":2,"5":1}}
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -61,7 +61,7 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f yaml], %w[-f y], %w[--format yaml], %w[--f ya]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           ---
           description: D2+D3
           results:
@@ -70,7 +70,7 @@ RSpec.describe "Formatting results" do
             4: 2
             5: 1
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
   end
@@ -91,11 +91,11 @@ RSpec.describe "Formatting results" do
       let(:format) { [nil, %w[-f list], %w[-f l], %w[--format list], %w[--for li]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           # D2+D3
           roll => #{roll}
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -104,11 +104,11 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f gnuplot], %w[-f gnu], %w[--format gnuplot], %w[--fo g]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           # D2+D3
           roll #{roll}
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -117,10 +117,10 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f json], %w[-f j], %w[--format json], %w[--form j]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT.chomp).to_stdout
+        expect { cli_call }.to output(<<~TEXT.chomp).to_stdout
           {"description":"D2+D3","results":{"roll":#{roll}}}
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
 
@@ -129,13 +129,13 @@ RSpec.describe "Formatting results" do
       let(:format) { [%w[-f yaml], %w[-f y], %w[--format yaml], %w[--f ya]].sample }
 
       it "prints expected text" do
-        expect { blender_call }.to output(<<~TEXT).to_stdout
+        expect { cli_call }.to output(<<~TEXT).to_stdout
           ---
           description: D2+D3
           results:
             roll: #{roll}
         TEXT
-        expect(blender_call).to be true
+        expect(cli_call).to be true
       end
     end
   end

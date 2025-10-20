@@ -12,7 +12,15 @@ module Dicey
   # General error for Dicey.
   class DiceyError < StandardError; end
 
-  Dir["dicey/mixins/*.rb", base: __dir__].each { require_relative _1 }
-  Dir["dicey/*.rb", base: __dir__].each { require_relative _1 }
+  require_relative "dicey/abstract_die"
+  require_relative "dicey/numeric_die"
+  require_relative "dicey/regular_die"
+
+  require_relative "dicey/die_foundry"
+
+  require_relative "dicey/distribution_properties_calculator"
+  require_relative "dicey/roller"
   Dir["dicey/sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
+
+  require_relative "dicey/version"
 end

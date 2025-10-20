@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe "Running built-in tests via CLI" do
-  require "dicey/cli/blender"
+  require "dicey/cli"
 
-  subject(:test_run) { blender.call(%w[--test]) }
-
-  let(:blender) { Dicey::CLI::Blender.new }
+  subject(:test_run) { Dicey::CLI.call(%w[--test]) }
 
   it "exits with true and outputs test results" do
     expect { test_run }.to output(a_string_including(<<~TEXT)).to_stdout
@@ -37,7 +35,7 @@ RSpec.describe "Running built-in tests via CLI" do
   end
 
   context "with 'quiet' report" do
-    subject(:test_run) { blender.call(%w[--test quiet]) }
+    subject(:test_run) { Dicey::CLI.call(%w[--test quiet]) }
 
     it "doesn't output anything" do
       expect { test_run }.not_to output.to_stdout

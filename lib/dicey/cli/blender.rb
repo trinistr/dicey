@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-module Dicey
-  # Classes pertaining to CLI.
-  # NOT loaded by default, use +require "dicey/cli/blender"+ as needed.
-  module CLI
-    require_relative "../../dicey"
-    require_relative "options"
-    Dir["*.rb", base: "#{__dir__}/formatters"].each { require_relative "formatters/#{_1}" }
+require_relative "../../dicey"
+require_relative "options"
+Dir["*.rb", base: "#{__dir__}/formatters"].each { require_relative "formatters/#{_1}" }
 
+module Dicey
+  module CLI
     # Slice and dice everything in the Dicey module to produce a useful result.
     # This is the entry point for the CLI.
     class Blender
