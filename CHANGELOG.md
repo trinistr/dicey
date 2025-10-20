@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Changed**
+- Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`. No longer `require` them by default.
+
 [Compare v0.16.2...main](https://github.com/trinistr/dicey/compare/v0.16.2...main)
 
 ## [v0.16.2] — 2025-10-10

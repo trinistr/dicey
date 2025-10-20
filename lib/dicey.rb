@@ -14,6 +14,5 @@ module Dicey
 
   Dir["dicey/mixins/*.rb", base: __dir__].each { require_relative _1 }
   Dir["dicey/*.rb", base: __dir__].each { require_relative _1 }
-  Dir["dicey/output_formatters/*.rb", base: __dir__].each { require_relative _1 }
   Dir["dicey/sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
 end

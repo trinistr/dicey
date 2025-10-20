@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require "dicey/cli/formatters/null_formatter"
+
 module Dicey
-  RSpec.describe OutputFormatters::NullFormatter do
+  RSpec.describe CLI::Formatters::NullFormatter do
     subject(:formatter) { described_class.new }
 
     context "without `description` argument" do

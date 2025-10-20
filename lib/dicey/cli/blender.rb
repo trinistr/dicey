@@ -6,6 +6,7 @@ module Dicey
   module CLI
     require_relative "../../dicey"
     require_relative "options"
+    Dir["*.rb", base: "#{__dir__}/formatters"].each { require_relative "formatters/#{_1}" }
 
     # Slice and dice everything in the Dicey module to produce a useful result.
     # This is the entry point for the CLI.
@@ -16,11 +17,11 @@ module Dicey
         mode: lambda(&:to_sym),
         result: lambda(&:to_sym),
         format: {
-          "list" => OutputFormatters::ListFormatter.new,
-          "gnuplot" => OutputFormatters::GnuplotFormatter.new,
-          "yaml" => OutputFormatters::YAMLFormatter.new,
-          "json" => OutputFormatters::JSONFormatter.new,
-          "null" => OutputFormatters::NullFormatter.new,
+          "list" => Formatters::ListFormatter.new,
+          "gnuplot" => Formatters::GnuplotFormatter.new,
+          "yaml" => Formatters::YAMLFormatter.new,
+          "json" => Formatters::JSONFormatter.new,
+          "null" => Formatters::NullFormatter.new,
         }.freeze,
       }.freeze
 
@@ -61,9 +62,9 @@ module Dicey
       # Require libraries only when needed, to cut on run time.
       def require_optional_libraries(options)
         case options[:format]
-        when OutputFormatters::YAMLFormatter
+        when Formatters::YAMLFormatter
           require "yaml"
-        when OutputFormatters::JSONFormatter
+        when Formatters::JSONFormatter
           require "json"
         else
           # No additional libraries needed
