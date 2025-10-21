@@ -30,7 +30,16 @@ module Dicey
 
       it "prints version info and exits" do
         expect { options.read(argv) }
-          .to output("dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
+          .to output("Dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
+      end
+    end
+
+    context "with -V/--version" do
+      let(:argv) { [%w[-V --version --ver].sample] }
+
+      it "prints version info and exits" do
+        expect { options.read(argv) }
+          .to output("Dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
       end
     end
 
