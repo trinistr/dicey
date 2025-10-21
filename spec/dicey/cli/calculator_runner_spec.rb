@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require "dicey/cli/calculator_runner"
+
 module Dicey
-  RSpec.describe SumFrequencyCalculators::Runner do
+  RSpec.describe CLI::CalculatorRunner do
     subject(:call_result) { described_class.new.call(dice, format: format, result: result) }
 
     let(:dice) { %w[2d2 1,5,] } # rubocop:disable Lint/PercentStringArray

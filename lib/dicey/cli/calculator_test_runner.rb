@@ -1,15 +1,12 @@
 # frozen_string_literal: true
 
-require_relative "auto_selector"
-require_relative "brute_force"
-require_relative "kronecker_substitution"
-require_relative "multinomial_coefficients"
+Dir["../sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
 
 module Dicey
-  module SumFrequencyCalculators
+  module CLI
     # A simple testing facility for roll frequency calculators.
-    class TestRunner
-      AVAILABLE_CALCULATORS = AutoSelector::AVAILABLE_CALCULATORS
+    class CalculatorTestRunner
+      AVAILABLE_CALCULATORS = SumFrequencyCalculators::AutoSelector::AVAILABLE_CALCULATORS
 
       # These are manually calculated frequencies,
       # with test cases for pretty much all variations of what this program can handle.

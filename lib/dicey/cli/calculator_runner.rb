@@ -2,20 +2,18 @@
 
 require_relative "../die_foundry"
 
-require_relative "brute_force"
-require_relative "kronecker_substitution"
-require_relative "multinomial_coefficients"
+Dir["../sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
 
 module Dicey
-  module SumFrequencyCalculators
+  module CLI
     # The defaultest runner which calculates roll frequencies from command-line dice.
-    class Runner
+    class CalculatorRunner
       # Transform die definitions to roll frequencies.
       #
       # @param arguments [Array<String>] die definitions
       # @param format [#call] formatter for output
       # @param result [Symbol] result type selector
-      # @return [nil]
+      # @return [String]
       # @raise [DiceyError]
       def call(arguments, format:, result:, **)
         raise DiceyError, "no dice!" if arguments.empty?
@@ -36,7 +34,7 @@ module Dicey
       end
 
       def calculator_selector
-        @calculator_selector ||= AutoSelector.new
+        @calculator_selector ||= SumFrequencyCalculators::AutoSelector.new
       end
     end
   end

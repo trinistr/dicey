@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require "dicey/cli/roller"
+
 module Dicey
-  RSpec.describe Roller do
+  RSpec.describe CLI::Roller do
     subject(:result) { described_class.new.call(dice, format: format) }
 
     let(:dice) { %w[2 (1,5) 2D3] }

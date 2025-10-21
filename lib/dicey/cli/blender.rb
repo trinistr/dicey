@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "../../dicey"
+
 require_relative "options"
-Dir["*.rb", base: "#{__dir__}/formatters"].each { require_relative "formatters/#{_1}" }
+
+require_relative "calculator_runner"
+require_relative "calculator_test_runner"
+require_relative "roller"
+
+Dir["formatters/*.rb", base: __dir__].each { require_relative _1 }
 
 module Dicey
   module CLI
@@ -28,8 +34,8 @@ module Dicey
       # and return +true+, +false+ or a String.
       RUNNERS = {
         roll: Roller.new,
-        frequencies: SumFrequencyCalculators::Runner.new,
-        test: SumFrequencyCalculators::TestRunner.new,
+        frequencies: CLI::CalculatorRunner.new,
+        test: CLI::CalculatorTestRunner.new,
       }.freeze
 
       # Run the program, blending everything together.
