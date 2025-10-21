@@ -9,7 +9,7 @@ module Dicey
     let(:dice) { NumericDie.from_count(2, [-0.5, 1, 2.5]) }
 
     context "when called with valid dice" do
-      it "calculates frequencies correctly" do
+      it "calculates weights correctly" do
         expect(result).to eq({ -1.0 => 1, 0.5 => 2, 2.0 => 3, 3.5 => 2, 5.0 => 1 })
       end
     end

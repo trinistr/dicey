@@ -9,7 +9,7 @@ module Dicey
     let(:dice) { %w[2d2 1,5,] } # rubocop:disable Lint/PercentStringArray
     let(:calculators) { [DistributionCalculators::KroneckerSubstitution.new] }
     let(:format) { CLI::Formatters::JSONFormatter.new }
-    let(:result) { :frequencies }
+    let(:result) { :weights }
 
     before { stub_const("Dicey::DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS", calculators) }
 

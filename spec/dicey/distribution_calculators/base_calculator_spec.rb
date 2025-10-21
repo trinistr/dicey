@@ -21,7 +21,7 @@ module Dicey
     end
 
     let(:dice) { AbstractDie.from_count(2, ["a", 2, :"3"]) }
-    let(:result_type) { :frequencies }
+    let(:result_type) { :weights }
 
     context "when called on its own, not an implementation" do
       let(:calculator) { described_class.new }
@@ -39,8 +39,8 @@ module Dicey
       end
     end
 
-    context "when frequencies are requested" do
-      it "calcualtes frequencies for each outcome" do
+    context "when weights are requested" do
+      it "calcualtes weights for each outcome" do
         expect(result).to eq(
           { 0 => 1, 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1, 7 => 1, 8 => 1 }
         )

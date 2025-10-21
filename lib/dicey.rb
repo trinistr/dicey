@@ -7,7 +7,7 @@ rescue LoadError
   # VectorNumber not available, sad
 end
 
-# A library for rolling dice and calculating roll frequencies.
+# A library for rolling dice and calculating roll distributions.
 module Dicey
   # General error for Dicey.
   class DiceyError < StandardError; end

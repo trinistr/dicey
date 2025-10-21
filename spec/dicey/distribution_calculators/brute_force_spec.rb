@@ -15,7 +15,7 @@ module Dicey
     end
 
     context "when called with valid no-overlap dice" do
-      it "calculates frequencies correctly" do
+      it "calculates weights correctly" do
         expect(result).to eq({
           -3.75 => 1,
           -3.5 => 1,
@@ -42,7 +42,7 @@ module Dicey
     context "when called with valid overlap dice" do
       before { dice[0] = RegularDie.new(2) }
 
-      it "calculates frequencies correctly" do
+      it "calculates weights correctly" do
         expect(result).to eq({ -3 => 1, -2 => 2, -1 => 2, 0 => 1, 1 => 1, 2 => 2, 3 => 2, 4 => 1 })
       end
     end

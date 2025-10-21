@@ -15,7 +15,7 @@ module Dicey
     end
 
     context "when called with valid no-overlap dice" do
-      it "calculates frequencies correctly" do
+      it "calculates weights correctly" do
         expect(result).to match({
           -3.75 => a_value_within(0.5).of(1),
           -3.5 => a_value_within(0.5).of(1),
@@ -42,7 +42,7 @@ module Dicey
     context "when called with valid overlap dice" do
       before { dice[0] = RegularDie.new(2) }
 
-      it "calculates frequencies correctly" do
+      it "calculates weights correctly" do
         expect(result).to match({
           -3 => a_value_within(0.5).of(1),
           -2 => a_value_within(0.5).of(2),

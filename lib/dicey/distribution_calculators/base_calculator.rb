@@ -3,13 +3,13 @@
 module Dicey
   # Calculators for probability distributions of dice.
   module DistributionCalculators
-    # Base frequencies calculator.
+    # Base distribution calculator.
     #
     # *Result types:*
-    # - +:frequencies+ (default)
+    # - +:weights+ (default)
     # - +:probabilities+
     #
-    # By default, returns frequencies as they are easier to calculate and
+    # By default, returns weights as they are easier to calculate and
     # can be represented with integers.
     # Probabilities are calculated using +Rational+ numbers to return exact results.
     #
@@ -23,7 +23,7 @@ module Dicey
     # @abstract
     class BaseCalculator
       # Possible values for +result_type+ argument in {#call}.
-      RESULT_TYPES = %i[frequencies probabilities].freeze
+      RESULT_TYPES = %i[weights probabilities].freeze
 
       # Calculate distribution (probability mass function) for the list of dice.
       #
@@ -33,11 +33,11 @@ module Dicey
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @param options [Hash{Symbol => Any}] calculator-specific options,
       #   refer to the calculator's documentation to see what it accepts
-      # @return [Hash{Numeric => Numeric}] frequencies or probabilities for each outcome
+      # @return [Hash{Numeric => Numeric}] weights or probabilities for each outcome
       # @raise [DiceyError] if +result_type+ is invalid
       # @raise [DiceyError] if dice list is invalid for the calculator
       # @raise [DiceyError] if calculator returned obviously wrong results
-      def call(dice, result_type: :frequencies, **options)
+      def call(dice, result_type: :weights, **options)
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
         end
@@ -45,10 +45,10 @@ module Dicey
         return {} if dice.empty?
         raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
-        frequencies = calculate(dice, **options)
-        verify_result(frequencies, dice)
-        frequencies = sort_result(frequencies)
-        transform_result(frequencies, result_type)
+        distribution = calculate(dice, **options)
+        verify_result(distribution, dice)
+        distribution = sort_result(distribution)
+        transform_result(distribution, result_type)
       end
 
       # Whether this calculator can be used for the list of dice.
@@ -90,43 +90,43 @@ module Dicey
         raise NotImplementedError
       end
 
-      # Peform frequencies calculation.
+      # Peform weights calculation.
       # (see #call)
       def calculate(dice, **nil)
         raise NotImplementedError
       end
 
-      # Check that resulting frequencies actually add up to what they are supposed to be.
+      # Check that resulting weights actually add up to what they are supposed to be.
       #
-      # @param frequencies [Hash{Numeric => Integer}]
+      # @param distribution [Hash{Numeric => Integer}]
       # @param dice [Enumerable<AbstractDie>]
       # @return [void]
       # @raise [DiceyError] if result is wrong
-      def verify_result(frequencies, dice)
-        valid = frequencies.values.sum == (dice.map(&:sides_num).reduce(:*) || 0)
+      def verify_result(distribution, dice)
+        valid = distribution.values.sum == (dice.map(&:sides_num).reduce(:*) || 0)
         raise DiceyError, "calculator #{self.class} returned invalid results!" unless valid
       end
 
       # Depending on the order of sides, result may not be in an ascending order,
       # so it's best to fix that for presentation (if possible).
-      def sort_result(frequencies)
-        frequencies.sort.to_h
+      def sort_result(distribution)
+        distribution.sort.to_h
       rescue
         # Probably Complex numbers got into the mix, leave as is.
-        frequencies
+        distribution
       end
 
-      # Transform calculated frequencies to requested result_type, if needed.
+      # Transform calculated weights to requested result_type, if needed.
       #
-      # @param frequencies [Hash{Numeric => Integer}]
+      # @param distribution [Hash{Numeric => Integer}]
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @return [Hash{Numeric => Numeric}]
-      def transform_result(frequencies, result_type)
-        if result_type == :frequencies
-          frequencies
+      def transform_result(distribution, result_type)
+        if result_type == :weights
+          distribution
         else
-          total = frequencies.values.sum
-          frequencies.transform_values { Rational(_1, total) }
+          total = distribution.values.sum
+          distribution.transform_values { Rational(_1, total) }
         end
       end
     end

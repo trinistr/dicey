@@ -8,9 +8,11 @@ RSpec.describe "Formatting results" do
   let(:arguments) { [*mode, *format, *dice] }
   let(:dice) { %w[2 3] }
 
-  context "if running in frequencies mode" do
+  context "if running in distribution mode" do
     # `nil` is for default mode.
-    let(:mode) { [nil, %w[-m frequencies], %w[-m fr], %w[--mode frequencies], %w[--mo f]].sample }
+    let(:mode) do
+      [nil, %w[-m distribution], %w[-m dist], %w[--mode distribution], %w[--mo dist]].sample
+    end
 
     context "with list format" do
       # `nil` is for default format.

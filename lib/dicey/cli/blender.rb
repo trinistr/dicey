@@ -34,7 +34,7 @@ module Dicey
       # and return +true+, +false+ or a String.
       RUNNERS = {
         roll: Roller.new,
-        frequencies: CLI::CalculatorRunner.new,
+        distribution: CLI::CalculatorRunner.new,
         test: CLI::CalculatorTestRunner.new,
       }.freeze
 
