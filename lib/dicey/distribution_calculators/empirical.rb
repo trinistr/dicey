@@ -3,6 +3,7 @@
 require_relative "base_calculator"
 
 require_relative "../mixins/vectorize_dice"
+require_relative "../mixins/warn_about_vector_number"
 
 module Dicey
   module DistributionCalculators
@@ -20,6 +21,7 @@ module Dicey
     # - *rolls* (Integer) (_defaults_ _to:_ _N_) — number of rolls to perform
     class Empirical < BaseCalculator
       include Mixins::VectorizeDice
+      include Mixins::WarnAboutVectorNumber
 
       # Default number of rolls to perform.
       N = 10_000
@@ -30,10 +32,7 @@ module Dicey
         if defined?(VectorNumber) || dice.all?(NumericDie)
           true
         else
-          warn <<~TEXT
-            Dice with non-numeric sides need gem "vector_number" to be present and available.
-            If this is intended, please install the gem.
-          TEXT
+          warn_about_vector_number
           false
         end
       end
