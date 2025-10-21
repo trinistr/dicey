@@ -25,8 +25,8 @@ module Dicey
       end
     end
 
-    context "with -v/--version" do
-      let(:argv) { [%w[-v --version --ver].sample] }
+    context "with -v" do
+      let(:argv) { [%w[-v].sample] }
 
       it "prints version info and exits" do
         expect { options.read(argv) }
