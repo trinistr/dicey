@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dicey/cli/blender"
+require "dicey/cli"
 
 module Dicey
   RSpec.describe CLI::Blender do
@@ -23,12 +23,12 @@ module Dicey
       end
     end
 
-    context "with -v/--version" do
-      let(:argv) { [%w[-v --version --ver].sample] }
+    context "with -V/--version" do
+      let(:argv) { [%w[-V --version --ver].sample] }
 
       it "prints version info and exits" do
         expect { blender_call }
-          .to output("dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
+          .to output("Dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
       end
     end
 

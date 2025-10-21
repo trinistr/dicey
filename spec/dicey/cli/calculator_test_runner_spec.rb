@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
+require "dicey/cli/calculator_test_runner"
+
 module Dicey
-  RSpec.describe SumFrequencyCalculators::TestRunner do
+  RSpec.describe CLI::CalculatorTestRunner do
     subject(:call_result) { described_class.new.call(dice, report_style: :full) }
 
     let(:dice) { %w[2d2 -2] }
     let(:calculators) { [SumFrequencyCalculators::BruteForce.new] }
 
     before do
-      stub_const("Dicey::SumFrequencyCalculators::TestRunner::TEST_DATA", [[[1], { 1 => 1 }]])
-      stub_const("Dicey::SumFrequencyCalculators::TestRunner::AVAILABLE_CALCULATORS", calculators)
+      stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", [[[1], { 1 => 1 }]])
+      stub_const("Dicey::CLI::CalculatorTestRunner::AVAILABLE_CALCULATORS", calculators)
     end
 
     it "returns true if all tests pass" do

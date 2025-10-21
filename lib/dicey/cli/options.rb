@@ -19,7 +19,7 @@ module Dicey
       def initialize(initial_options = DEFAULT_OPTIONS.dup)
         @options = initial_options
         @parser = ::OptionParser.new
-        @parser.program_name = "dicey"
+        @parser.program_name = "Dicey"
         @parser.version = Dicey::VERSION
 
         add_banner_and_version
@@ -53,9 +53,9 @@ module Dicey
 
       def add_banner_and_version
         @parser.banner = <<~TEXT
-          Usage: #{@parser.program_name} [options] <die> [<die> ...]
-                 #{@parser.program_name} [options] -- <die> [<die> ...]
-                 #{@parser.program_name} --test [full|quiet]
+          Usage: dicey [options] <die> [<die> ...]
+                 dicey [options] -- <die> [<die> ...]
+                 dicey --test [full|quiet]
           All option names and arguments can be abbreviated if abbreviation is unambiguous.
           A lone "--" separates options and die definitions, allowing definitions to start with "-".
         TEXT
@@ -84,7 +84,11 @@ module Dicey
           puts @parser.help
           exit
         end
-        @parser.on_tail("-v", "--version", "Show program version and exit.") do
+        @parser.on_tail("-V", "--version", "Show program version and exit.") do
+          puts @parser.ver
+          exit
+        end
+        @parser.on_tail("-v", "--version", "(Deprecated) Show program version and exit.") do
           puts @parser.ver
           exit
         end

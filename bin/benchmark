@@ -14,7 +14,7 @@ require "stackprof"
 
 # Load this gem
 require_relative "../lib/dicey"
-require_relative "../lib/dicey/cli/blender"
+require_relative "../lib/dicey/cli"
 
 # Set up test data
 # ...
@@ -28,7 +28,7 @@ StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
   Benchmark.ips do |ips|
     ips.report("BruteForce") { Dicey::SumFrequencyCalculators::BruteForce.new.call(Dicey::RegularDie.from_count(6, 6)) }
     ips.report("Rolling") { Dicey::RegularDie.new(10_000).roll }
-    ips.report("full run") { Dicey::CLI::Blender.new.call(["100d6", "--format", "null"]) }
+    ips.report("full run") { Dicey::CLI.call(["100d6", "--format", "null"]) }
 
     ips.json!(report_path)
   end

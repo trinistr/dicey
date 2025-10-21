@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
-module Dicey
-  # Classes pertaining to CLI.
-  # NOT loaded by default, use +require "dicey/cli/blender"+ as needed.
-  module CLI
-    require_relative "../../dicey"
-    require_relative "options"
+require_relative "../../dicey"
 
+require_relative "options"
+
+require_relative "calculator_runner"
+require_relative "calculator_test_runner"
+require_relative "roller"
+
+Dir["formatters/*.rb", base: __dir__].each { require_relative _1 }
+
+module Dicey
+  module CLI
     # Slice and dice everything in the Dicey module to produce a useful result.
     # This is the entry point for the CLI.
     class Blender
@@ -16,11 +21,11 @@ module Dicey
         mode: lambda(&:to_sym),
         result: lambda(&:to_sym),
         format: {
-          "list" => OutputFormatters::ListFormatter.new,
-          "gnuplot" => OutputFormatters::GnuplotFormatter.new,
-          "yaml" => OutputFormatters::YAMLFormatter.new,
-          "json" => OutputFormatters::JSONFormatter.new,
-          "null" => OutputFormatters::NullFormatter.new,
+          "list" => Formatters::ListFormatter.new,
+          "gnuplot" => Formatters::GnuplotFormatter.new,
+          "yaml" => Formatters::YAMLFormatter.new,
+          "json" => Formatters::JSONFormatter.new,
+          "null" => Formatters::NullFormatter.new,
         }.freeze,
       }.freeze
 
@@ -29,8 +34,8 @@ module Dicey
       # and return +true+, +false+ or a String.
       RUNNERS = {
         roll: Roller.new,
-        frequencies: SumFrequencyCalculators::Runner.new,
-        test: SumFrequencyCalculators::TestRunner.new,
+        frequencies: CLI::CalculatorRunner.new,
+        test: CLI::CalculatorTestRunner.new,
       }.freeze
 
       # Run the program, blending everything together.
@@ -61,9 +66,9 @@ module Dicey
       # Require libraries only when needed, to cut on run time.
       def require_optional_libraries(options)
         case options[:format]
-        when OutputFormatters::YAMLFormatter
+        when Formatters::YAMLFormatter
           require "yaml"
-        when OutputFormatters::JSONFormatter
+        when Formatters::JSONFormatter
           require "json"
         else
           # No additional libraries needed

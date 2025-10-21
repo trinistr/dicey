@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+require "dicey/cli/formatters/gnuplot_formatter"
+
 module Dicey
-  RSpec.describe OutputFormatters::GnuplotFormatter do
+  RSpec.describe CLI::Formatters::GnuplotFormatter do
     subject(:formatter) { described_class.new }
 
     context "without `description` argument" do

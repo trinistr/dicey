@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
+require "dicey/cli/formatters/json_formatter"
 require "json"
 
 module Dicey
-  RSpec.describe OutputFormatters::JSONFormatter do
+  RSpec.describe CLI::Formatters::JSONFormatter do
     subject(:formatter) { described_class.new }
 
     context "without `description` argument" do

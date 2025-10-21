@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**
+- CLI can now be enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI calls can be made with `Dicey::CLI.call([argv])`.
+
+**Changed**
+- Move classes which were intended for use with CLI under `Dicey::CLI` namespace:
+  - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`. Rename `HashFormatter` to `BaseMapFormatter` and `KeyValueFormatter` to `BaseListFormatter`.
+  - Move `Runner`, `TestRunner` and `Roller` to `Dicey::CLI`. Rename `Runner` to `CalculatorRunner` and `TestRunner` to `CalculatorTestRunner`.
+- No longer `require` formatters or runners by default, only for CLI support.
+
+**Deprecated**
+- "-v" option is deprecated in favor of "-V". "-v" will be changed to "--verbose" in the future.
+
 [Compare v0.16.2...main](https://github.com/trinistr/dicey/compare/v0.16.2...main)
 
 ## [v0.16.2] — 2025-10-10
