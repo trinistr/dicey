@@ -6,7 +6,8 @@ require_relative "regular_die"
 require_relative "mixins/rational_to_integer"
 
 module Dicey
-  # Helper class to define die definitions and automatically select the best one.
+  # Helper to create dice from string definitions.
+  # See {#call} and constants for available formats.
   class DieFoundry
     include Mixins::RationalToInteger
 
@@ -42,7 +43,7 @@ module Dicey
     # Following definitions are recognized:
     # - positive integer (like "6" or "20"), which produces a {RegularDie};
     # - integer range (like "3-6" or "(-5..5)"), which produces a {NumericDie};
-    # - list of integers (like "3,4,5", "(-1,0,1)", or "2,"), which produces a {NumericDie};
+    # - list of integers (like "(3,4,5)", "-1,0,1", or "2,"), which produces a {NumericDie};
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
     #   but uses +Rational+ for values to maintain precise results;
     # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),

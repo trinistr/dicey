@@ -11,8 +11,11 @@ module Dicey
   # - mode(s), median, arithmetic mean;
   # - important moments (expected value, variance, skewness, kurtosis).
   #
+  # Distributions are assumed to be complete populations,
+  # i.e. this class is unsuitable for samples.
+  #
   # It is notable that common dice create symmetric distributions,
-  # which means that skewness is 0, while properties denoting center in some way
+  # which means that skewness is 0, while measures of central tendency
   # (median, mean, ...) are all equal.
   # Mode is often not unique, but includes this center.
   class DistributionPropertiesCalculator

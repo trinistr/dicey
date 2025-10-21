@@ -1,17 +1,13 @@
 # frozen_string_literal: true
 
 module Dicey
-  # Calculators for probability distributions of dice.
   module DistributionCalculators
-    # Base distribution calculator.
+    # Base class for implementing distribution calculators.
     #
-    # *Result types:*
-    # - +:weights+ (default)
-    # - +:probabilities+
-    #
-    # By default, returns weights as they are easier to calculate and
+    # By default, all calculators return weights as they are easier to calculate and
     # can be represented with integers.
-    # Probabilities are calculated using +Rational+ numbers to return exact results.
+    # If probabilities are requested, they are calculated using +Rational+ numbers
+    # to produce exact results.
     #
     # *Options:*
     #
