@@ -2,6 +2,7 @@
 
 module Dicey
   module Mixins
+    # @api private
     # Mix-in for warning about missing VectorNumber gem.
     module WarnAboutVectorNumber
       private
