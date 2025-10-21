@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe SumFrequencyCalculators::Empirical do
+  RSpec.describe DistributionCalculators::Empirical do
     subject(:result) { calculator.call(dice, rolls: 1000) }
 
     let(:calculator) { described_class.new }

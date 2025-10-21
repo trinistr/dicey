@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-Dir["../sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
+Dir["../distribution_calculators/*.rb", base: __dir__].each { require_relative _1 }
 
 module Dicey
   module CLI
     # A simple testing facility for roll frequency calculators.
     class CalculatorTestRunner
-      AVAILABLE_CALCULATORS = SumFrequencyCalculators::AutoSelector::AVAILABLE_CALCULATORS
+      AVAILABLE_CALCULATORS = DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS
 
       # These are manually calculated frequencies,
       # with test cases for pretty much all variations of what this program can handle.

@@ -7,7 +7,7 @@ module Dicey
     subject(:call_result) { described_class.new.call(dice, report_style: :full) }
 
     let(:dice) { %w[2d2 -2] }
-    let(:calculators) { [SumFrequencyCalculators::BruteForce.new] }
+    let(:calculators) { [DistributionCalculators::BruteForce.new] }
 
     before do
       stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", [[[1], { 1 => 1 }]])
@@ -17,16 +17,16 @@ module Dicey
     it "returns true if all tests pass" do
       expect { call_result }.to output(<<~TEXT).to_stdout
         D1:
-          Dicey::SumFrequencyCalculators::BruteForce: ✔
+          Dicey::DistributionCalculators::BruteForce: ✔
       TEXT
       expect(call_result).to be true
     end
 
     context "if a calculator raises an error" do
-      let(:calculators) { [custom_calculator.new, SumFrequencyCalculators::BruteForce.new] }
+      let(:calculators) { [custom_calculator.new, DistributionCalculators::BruteForce.new] }
 
       let(:custom_calculator) do
-        Class.new(SumFrequencyCalculators::BaseCalculator) do
+        Class.new(DistributionCalculators::BaseCalculator) do
           def call(*)
             raise DiceyError, "oh no!"
           end
@@ -37,17 +37,17 @@ module Dicey
         expect { call_result }.to output(<<~TEXT).to_stdout
           D1:
             #{custom_calculator}: ⛐ 🠐 crash!
-            Dicey::SumFrequencyCalculators::BruteForce: ✔
+            Dicey::DistributionCalculators::BruteForce: ✔
         TEXT
         expect(call_result).to be false
       end
     end
 
     context "if a calculator returns unexpected results" do
-      let(:calculators) { [custom_calculator.new, SumFrequencyCalculators::BruteForce.new] }
+      let(:calculators) { [custom_calculator.new, DistributionCalculators::BruteForce.new] }
 
       let(:custom_calculator) do
-        Class.new(SumFrequencyCalculators::BaseCalculator) do
+        Class.new(DistributionCalculators::BaseCalculator) do
           def call(*) = { 1 => 2 }
         end
       end
@@ -56,7 +56,7 @@ module Dicey
         expect { call_result }.to output(<<~TEXT).to_stdout
           D1:
             #{custom_calculator}: ✘ 🠐 failure!
-            Dicey::SumFrequencyCalculators::BruteForce: ✔
+            Dicey::DistributionCalculators::BruteForce: ✔
         TEXT
         expect(call_result).to be false
       end

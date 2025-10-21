@@ -5,7 +5,7 @@ require_relative "base_calculator"
 require_relative "../mixins/vectorize_dice"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Calculator for a collection of {AbstractDie} using exhaustive search (very slow).
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.

@@ -3,7 +3,7 @@
 require_relative "base_calculator"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Calculator for lists of dice with integer sides (fast).
     #
     # Example dice: (1,2,3,4), (0,1,-5,6), (5,4,5,4,5).

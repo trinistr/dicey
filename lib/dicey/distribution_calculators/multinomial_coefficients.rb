@@ -3,7 +3,7 @@
 require_relative "base_calculator"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Calculator for multiple equal dice with sides forming an arithmetic sequence (fast).
     #
     # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).

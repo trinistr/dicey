@@ -5,7 +5,7 @@ require_relative "base_calculator"
 require_relative "../mixins/vectorize_dice"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # "Calculator" for a collection of {AbstractDie} using empirically-obtained statistics.
     #
     # @note This calculator is mostly a joke. It can be useful for educational purposes,

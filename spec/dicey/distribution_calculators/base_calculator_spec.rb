@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe SumFrequencyCalculators::BaseCalculator do
+  RSpec.describe DistributionCalculators::BaseCalculator do
     subject(:result) { calculator.call(dice, result_type: result_type) }
 
     let(:calculator) { implementation.new }

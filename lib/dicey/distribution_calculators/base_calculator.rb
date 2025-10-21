@@ -2,7 +2,7 @@
 
 module Dicey
   # Calculators for probability distributions of dice.
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Base frequencies calculator.
     #
     # *Result types:*

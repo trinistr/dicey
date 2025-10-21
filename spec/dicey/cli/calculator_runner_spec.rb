@@ -7,11 +7,11 @@ module Dicey
     subject(:call_result) { described_class.new.call(dice, format: format, result: result) }
 
     let(:dice) { %w[2d2 1,5,] } # rubocop:disable Lint/PercentStringArray
-    let(:calculators) { [SumFrequencyCalculators::KroneckerSubstitution.new] }
+    let(:calculators) { [DistributionCalculators::KroneckerSubstitution.new] }
     let(:format) { CLI::Formatters::JSONFormatter.new }
     let(:result) { :frequencies }
 
-    before { stub_const("Dicey::SumFrequencyCalculators::AutoSelector::AVAILABLE_CALCULATORS", calculators) }
+    before { stub_const("Dicey::DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS", calculators) }
 
     it "returns a formatted string with dice description and calculation result" do
       expect(call_result).to eq <<~TEXT.chomp

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe SumFrequencyCalculators::AutoSelector do
+  RSpec.describe DistributionCalculators::AutoSelector do
     subject(:selected_calculator) { selector.call(dice) }
 
     let(:selector) { described_class.new }
@@ -10,7 +10,7 @@ module Dicey
       let(:dice) { RegularDie.from_count(2, 600) }
 
       it "returns KroneckerSubstitution" do
-        expect(selected_calculator).to be_a SumFrequencyCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
       end
     end
 
@@ -18,7 +18,7 @@ module Dicey
       let(:dice) { RegularDie.from_count(800, 2) }
 
       it "returns MultinomialCoefficients" do
-        expect(selected_calculator).to be_a SumFrequencyCalculators::MultinomialCoefficients
+        expect(selected_calculator).to be_a DistributionCalculators::MultinomialCoefficients
       end
     end
 
@@ -26,7 +26,7 @@ module Dicey
       let(:dice) { NumericDie.from_list([1, 2, 3], [3, 5, 6]) }
 
       it "returns KroneckerSubstitution" do
-        expect(selected_calculator).to be_a SumFrequencyCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
       end
     end
 
@@ -35,7 +35,7 @@ module Dicey
 
       it "returns KroneckerSubstitution" do
         # Check that we don't accidentally pick BruteForce due to small heuristic complexity.
-        expect(selected_calculator).to be_a SumFrequencyCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
       end
     end
 
@@ -43,7 +43,7 @@ module Dicey
       let(:dice) { [AbstractDie.new([1, "a", :c])] }
 
       it "returns BruteForce" do
-        expect(selected_calculator).to be_a SumFrequencyCalculators::BruteForce
+        expect(selected_calculator).to be_a DistributionCalculators::BruteForce
       end
 
       context "when vector_number is not available" do
@@ -57,11 +57,11 @@ module Dicey
     end
 
     context "if initialized with a custom list of calculators" do
-      let(:selector) { described_class.new([SumFrequencyCalculators::KroneckerSubstitution.new]) }
+      let(:selector) { described_class.new([DistributionCalculators::KroneckerSubstitution.new]) }
       let(:dice) { RegularDie.from_count(2, 2) }
 
       it "considers only the given calculators" do
-        expect(selected_calculator).to be_a SumFrequencyCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
       end
 
       context "if no calculators are compatible" do

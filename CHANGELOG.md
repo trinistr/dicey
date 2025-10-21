@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI can now be enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI calls can be made with `Dicey::CLI.call([argv])`.
 
 **Changed**
+- Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace.
 - Move classes which were intended for use with CLI under `Dicey::CLI` namespace:
   - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`. Rename `HashFormatter` to `BaseMapFormatter` and `KeyValueFormatter` to `BaseListFormatter`.
   - Move `Runner`, `TestRunner` and `Roller` to `Dicey::CLI`. Rename `Runner` to `CalculatorRunner` and `TestRunner` to `CalculatorTestRunner`.

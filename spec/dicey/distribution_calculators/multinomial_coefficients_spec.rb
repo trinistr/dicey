@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe SumFrequencyCalculators::MultinomialCoefficients do
+  RSpec.describe DistributionCalculators::MultinomialCoefficients do
     subject(:result) { calculator.call(dice) }
 
     let(:calculator) { described_class.new }

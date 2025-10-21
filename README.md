@@ -384,26 +384,26 @@ die.roll
 
 ### Distribution calculators
 
-Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
-- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and more. It is very fast, though sometimes slower than the next one.
-- `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
-- `Dicey::SumFrequencyCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
+Distribution calculators live in `Dicey::DistributionCalculators` module. There are four calculators currently:
+- `Dicey::DistributionCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and more. It is very fast, though sometimes slower than the next one.
+- `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
+- `Dicey::DistributionCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
-Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
+Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and provide the following public interface:
 - `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
 
 See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
 
-When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::SumFrequencyCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
+When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 
 ### Distribution properties
 
 While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` provides this functionality:
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
     Dicey::RegularDie.from_count(2, 3)
   )
 )
@@ -427,7 +427,7 @@ Dicey::DistributionPropertiesCalculator.new.call(
 Of course, for regular dice most properties are quite simple and predicatable due to symmetricity of distribution. It becomes more interesting with unfair, lopsided dice. Remember [Example 3](#example-3-custom-dice)?
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
     [Dicey::RegularDie.new(4), Dicey::NumericDie.new([1,3,4])]
   )
 )
