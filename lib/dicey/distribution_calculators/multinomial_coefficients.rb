@@ -3,7 +3,7 @@
 require_relative "base_calculator"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Calculator for multiple equal dice with sides forming an arithmetic sequence (fast).
     #
     # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).
@@ -45,8 +45,8 @@ module Dicey
         number_of_sides = first_die.sides_num
         number_of_dice = dice.size
 
-        frequencies = multinomial_coefficients(number_of_dice, number_of_sides)
-        result_sums_list(first_die.sides_list, number_of_dice).zip(frequencies).to_h
+        weights = multinomial_coefficients(number_of_dice, number_of_sides)
+        outcomes_list(first_die.sides_list, number_of_dice).zip(weights).to_h
       end
 
       # Calculate coefficients for a multinomial of the form
@@ -80,18 +80,18 @@ module Dicey
         length = (row_index * window_size) + 1
         (0...length).map do |col_index|
           # Have to clamp to 0 to prevent accessing array from the end.
-          # BUG: TruffleRuby can't handle endless range in #clamp (see https://github.com/oracle/truffleruby/issues/3945)
+          # TruffleRuby can't handle endless range in #clamp (see https://github.com/oracle/truffleruby/issues/3945).
           window_range = ((col_index - window_size).clamp(0..col_index)..col_index)
           window_range.sum { |i| previous_row.fetch(i, 0) }
         end
       end
 
-      # Get sequence of sums which correspond to calculated frequencies.
+      # Get sequence of outcomes which correspond to calculated weights.
       #
       # @param sides_list [Enumerable<Numeric>]
       # @param number_of_dice [Integer]
       # @return [Array<Numeric>]
-      def result_sums_list(sides_list, number_of_dice)
+      def outcomes_list(sides_list, number_of_dice)
         first = number_of_dice * sides_list.first
         last = number_of_dice * sides_list.last
         return [first] if first == last

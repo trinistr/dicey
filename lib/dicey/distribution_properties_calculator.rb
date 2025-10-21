@@ -11,7 +11,7 @@ module Dicey
   # - mode(s), median, arithmetic mean;
   # - important moments (expected value, variance, skewness, kurtosis).
   #
-  # It is notable that most dice create symmetric distributions,
+  # It is notable that common dice create symmetric distributions,
   # which means that skewness is 0, while properties denoting center in some way
   # (median, mean, ...) are all equal.
   # Mode is often not unique, but includes this center.

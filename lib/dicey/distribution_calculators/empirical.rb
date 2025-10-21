@@ -5,14 +5,14 @@ require_relative "base_calculator"
 require_relative "../mixins/vectorize_dice"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # "Calculator" for a collection of {AbstractDie} using empirically-obtained statistics.
     #
     # @note This calculator is mostly a joke. It can be useful for educational purposes,
     #   or to verify results of {BruteForce} when in doubt. It is not used by default.
     #
     # Does a number of rolls and calculates approximate probabilities from that.
-    # Even if frequencies are requested, results are non-integer.
+    # Even if weights are requested, results are non-integer.
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     #

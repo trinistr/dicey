@@ -7,7 +7,7 @@ module Dicey
   #
   # The only inherent difference in behavior compared to {AbstractDie} is
   # that this class checks values for sides on initialization.
-  # However, other classes may reject {AbstractDie} even with all numeric sides.
+  # {AbstractDie} may be rejected where only numeric dice are expected.
   class NumericDie < AbstractDie
     # @param sides_list [Array<Numeric>, Range<Numeric>, Enumerable<Numeric>]
     # @raise [DiceyError] if +sides_list+ contains non-numerical values or is empty

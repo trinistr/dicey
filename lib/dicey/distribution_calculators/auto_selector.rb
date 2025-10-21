@@ -5,7 +5,7 @@ require_relative "kronecker_substitution"
 require_relative "multinomial_coefficients"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Tool to automatically select a calculator for a given set of dice.
     #
     # Calculator is guaranteed to be compatible, with a strong chance of being the most performant.

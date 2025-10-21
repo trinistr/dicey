@@ -3,16 +3,16 @@
 Gem::Specification.new do |spec|
   spec.name = File.basename(__FILE__, ".gemspec")
   spec.version = File.read("lib/#{spec.name}/version.rb")[/(?<=VERSION = ")[\d.]+/]
-  spec.authors = ["Alexandr Bulancov"]
+  spec.authors = ["Alexander Bulancov"]
 
   spec.homepage = "https://github.com/trinistr/#{spec.name}"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
-  spec.summary = "Calculator for dice roll frequency/probability distributions. Also rolls dice."
+  spec.summary = "Dice roll weights/probabilities distribution calculator. Also rolls dice."
   spec.description = <<~TEXT
     Dicey provides a CLI executable and a Ruby API for fast calculation of
-    frequency/probability distributions of dice rolls,
-    with support for all kinds of numeric dice, even Complex ones!
+    distribution of weights or probabilities of dice rolls,
+    with support for all kinds of numeric dice, and non-numeric ones too!
     Results can be exported as JSON, YAML or a gnuplot data file.
 
     It can also be used to roll dice. While not the primary focus,

@@ -7,14 +7,14 @@ module Dicey
     # Helper class for parsing command-line options and generating help.
     class Options
       # Allowed modes (--mode) (only directly selectable).
-      MODES = %w[frequencies roll].freeze
+      MODES = %w[distribution roll].freeze
       # Allowed result types (--result).
-      RESULT_TYPES = %w[frequencies probabilities].freeze
+      RESULT_TYPES = %w[weights probabilities].freeze
       # Allowed output formats (--format).
       FORMATS = %w[list gnuplot json yaml null].freeze
 
       # Default values for initial values of the options.
-      DEFAULT_OPTIONS = { mode: "frequencies", format: "list", result: "frequencies" }.freeze
+      DEFAULT_OPTIONS = { mode: "distribution", format: "list", result: "weights" }.freeze
 
       def initialize(initial_options = DEFAULT_OPTIONS.dup)
         @options = initial_options
@@ -64,7 +64,7 @@ module Dicey
       def add_common_options
         easy_option("-m", "--mode MODE", MODES, "What kind of action or calculation to perform.")
         easy_option("-r", "--result RESULT_TYPE", RESULT_TYPES,
-                    "Select type of result to calculate (only for frequencies).")
+                    "Select type of result to calculate (only for distribution).")
         easy_option("-f", "--format FORMAT", FORMATS, "Select output format for results.")
       end
 
@@ -88,7 +88,7 @@ module Dicey
           puts @parser.ver
           exit
         end
-        @parser.on_tail("-v", "--version", "(Deprecated) Show program version and exit.") do
+        @parser.on_tail("-v", "(Deprecated) Show program version and exit.") do
           puts @parser.ver
           exit
         end

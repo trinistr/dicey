@@ -8,9 +8,9 @@ RSpec.describe "Running built-in tests via CLI" do
   it "exits with true and outputs test results" do
     expect { test_run }.to output(a_string_including(<<~TEXT)).to_stdout
       D1:
-        Dicey::SumFrequencyCalculators::KroneckerSubstitution: ✔
-        Dicey::SumFrequencyCalculators::MultinomialCoefficients: ✔
-        Dicey::SumFrequencyCalculators::BruteForce: ✔
+        Dicey::DistributionCalculators::KroneckerSubstitution: ✔
+        Dicey::DistributionCalculators::MultinomialCoefficients: ✔
+        Dicey::DistributionCalculators::BruteForce: ✔
     TEXT
     expect(test_run).to be true
   end
@@ -25,9 +25,9 @@ RSpec.describe "Running built-in tests via CLI" do
         output(/"vector_number"/).to_stderr
         .and(output(a_string_including(<<~TEXT)).to_stdout)
           (s,a,4)+(s,a,4):
-            Dicey::SumFrequencyCalculators::KroneckerSubstitution: ☂
-            Dicey::SumFrequencyCalculators::MultinomialCoefficients: ☂
-            Dicey::SumFrequencyCalculators::BruteForce: ☂
+            Dicey::DistributionCalculators::KroneckerSubstitution: ☂
+            Dicey::DistributionCalculators::MultinomialCoefficients: ☂
+            Dicey::DistributionCalculators::BruteForce: ☂
         TEXT
       )
       expect(test_run).to be true

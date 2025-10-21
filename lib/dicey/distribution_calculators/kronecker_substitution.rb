@@ -3,7 +3,7 @@
 require_relative "base_calculator"
 
 module Dicey
-  module SumFrequencyCalculators
+  module DistributionCalculators
     # Calculator for lists of dice with integer sides (fast).
     #
     # Example dice: (1,2,3,4), (0,1,-5,6), (5,4,5,4,5).
@@ -32,9 +32,9 @@ module Dicey
         extract_coefficients(product, evaluation_point, offset, polynomials.count)
       end
 
-      # Turn dice into hashes where keys are side values and values are numbers of those sides,
+      # Turn dice into hashes where keys are side values and values are counts of those sides,
       # representing corresponding polynomials where
-      # side values are powers and numbers are coefficients.
+      # side values are powers and counts are coefficients.
       #
       # @param dice [Enumerable<NumericDie>]
       # @return [Array<Hash{Integer => Integer}>]
@@ -56,7 +56,7 @@ module Dicey
         1 << coefficient_magnitude
       end
 
-      # Get values of polynomials if +evaluation_point+ is substituted for the variable.
+      # Calculate values of polynomials at +evaluation_point+.
       #
       # @param polynomials [Array<Hash{Integer => Integer}>]
       # @param evaluation_point [Integer]

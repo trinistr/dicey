@@ -10,7 +10,7 @@
 
 The premier solution in total paradigm shift for resolving dicey problems of tomorrow, today, used by industry-leading professionals around the world!
 
-In seriousness, this program is mainly useful for calculating total frequency (probability) distributions of all possible dice rolls for a given set of dice. Dice in such a set can be different or even have arbitrary numbers on the sides. It can also be used to roll any dice that it supports.
+In seriousness, this program is mainly useful for calculating distributions of weights (or probabilities) of all possible dice rolls for a given set of dice. Dice in such a set can be different, have arbitrary numbers, or even be non-numeric altogether. It can also be used to roll any dice that it supports.
 
 ## Table of contents
 
@@ -49,11 +49,11 @@ It does not provide quite all features, but it's easy to use and quick to get st
 Thanks to the efforts of Ruby developers, you can run full **Dicey** online!
 1. Head over to the prepared [RunRuby page](https://runruby.dev/gist/476679a55c24520782613d9ceb89d9a3).
 2. Make sure that "*-main.rb*" is open.
-3. Input arguments between "ARGUMENTS" lines, separated by spaces. Refer to [Usage / CLI](#usage--cli-command-line) section.
+3. Input arguments between "ARGUMENTS" lines, separated by spaces. Refer to [Usage: CLI](#usage-cli-command-line) section.
 4. Click "**Run code**" button below the editor.
 5. Results will be printed to the "Logs" tab.
 
-If familiar with Ruby, you can also use **RunRuby** to explore the API. Refer to [Usage / API](#usage--api) section for documentation.
+If familiar with Ruby, you can also use **RunRuby** to explore the API. Refer to [Usage: API](#usage-api) section for documentation.
 
 ## Installation
 
@@ -117,7 +117,7 @@ It should output the following:
 8 => 1
 ```
 
-First line is a comment telling you that calculation ran for two D4s. Every line after that has the form `roll sum => frequency`, where frequency is the number of different rolls which result in this sum. As can be seen, 5 is the most common result with 4 possible different rolls.
+First line is a comment telling you that calculation ran for two D4s. Every line after that has the form `outcome => weight`, where weight is the number of distinct rolls which result in this outcome. As can be seen, 5 is the most common result with 4 possible different rolls.
 
 If probability is preferred, there is an option for that:
 ```sh
@@ -168,7 +168,7 @@ $ dicey 8 2d4 -f g | dicey-to-gnuplot
 ```
 
 This will create a PNG image named "*D8+D4+D4.png*":
-![Graph of damage roll frequencies for Burning Sword](D8+D4+D4.png)
+![Graph of damage roll weights for Burning Sword](D8+D4+D4.png)
 
 #### Example 2.2: JSON and YAML
 
@@ -217,7 +217,7 @@ $ dicey 1,2,4 4
 8 => 1
 ```
 
-Hmm, this looks normal, doesn't it? But wait, why are there two 2s in a row? Turns out that not having one of the sides just causes the roll frequencies to slightly dip in the middle. Good to know.
+Hmm, this looks normal, doesn't it? But wait, why are there two 2s in a row? Turns out that not having one of the sides just causes the roll weights to slightly dip in the middle. Good to know.
 
 But what if you had TWO weird D4s?
 ```sh
@@ -273,7 +273,7 @@ There are four *main* ways to define dice:
   - Lists can end in a comma, allowing single-number lists.
 - *"1,1.5,Two", "(💚,🧡,💙,💜)" or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
   - Lists can end in a comma, allowing single-string lists.
-  - Single (') or double (") quotes can be used to use other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
+  - Single (') or double (") quotes can be used to include other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
   - Quotes can also be used to treat numbers as strings.
 
 *"D6", "d(-1,3)", "d2..4", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
@@ -384,26 +384,26 @@ die.roll
 
 ### Distribution calculators
 
-Distribution calculators live in `Dicey::SumFrequencyCalculators` module. There are four calculators currently:
-- `Dicey::SumFrequencyCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and more. It is very fast, though sometimes slower than the next one.
-- `Dicey::SumFrequencyCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::SumFrequencyCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
-- `Dicey::SumFrequencyCalculators::Empirical`... this is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequencies of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
+Distribution calculators live in `Dicey::DistributionCalculators` module. There are four calculators currently:
+- `Dicey::DistributionCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
+- `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
+- `Dicey::DistributionCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
-Calculators inherit from `Dicey::SumFrequencyCalculators::BaseCalculator` and provide the following public interface:
-- `#call(dice, result_type: {:frequencies | :probabilities}, **options) : Hash`
+Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and provide the following public interface:
+- `#call(dice, result_type: {:weights | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
 
 See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
 
-When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::SumFrequencyCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
+When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 
 ### Distribution properties
 
 While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` provides this functionality:
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
     Dicey::RegularDie.from_count(2, 3)
   )
 )
@@ -427,7 +427,7 @@ Dicey::DistributionPropertiesCalculator.new.call(
 Of course, for regular dice most properties are quite simple and predicatable due to symmetricity of distribution. It becomes more interesting with unfair, lopsided dice. Remember [Example 3](#example-3-custom-dice)?
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::SumFrequencyCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
     [Dicey::RegularDie.new(4), Dicey::NumericDie.new([1,3,4])]
   )
 )
@@ -460,7 +460,7 @@ You can see that 11 and 12 are the most likely outcomes, coming from a larger pe
 
 ## Diving deeper
 
-For a further discussion of calculations, it is important to understand which classes of dice exist.
+For a further discussion of calculations, it is important to understand which classes of dice are distinguished in **Dicey**.
 - **Regular** die — a die with N sides with sequential integers from 1 to N, like a classic cubic D6, D20, or even a coin if you assume that it rolls 1 and 2. These are dice used for many tabletop games, including role-playing games. Most probably, you will only ever need these and not anything beyond.
 
 > [!TIP]
@@ -474,23 +474,21 @@ For a further discussion of calculations, it is important to understand which cl
 > [!NOTE]
 > 💡 If your die definition starts with a negative number, it can be bracketed, prefixed with "d", or put after "--" pseudo-argument to avoid processing as an option.
 
-Dicey is in principle able to handle any real numeric dice and some abstract dice with well-defined summation (tested on complex numbers), though not every possibility is exposed through command-line interface: that is limited to floating-point values.
-
-Currently, three algorithms for calculating frequencies are implemented, with different possibilities and trade-offs.
+Currently, three algorithms for calculating distributions are implemented, with different possibilities and trade-offs.
 
 > [!NOTE]
 > 💡 Complexity is listed for **n** dice with at most **m** sides and is only an approximation.
 
 ### Kronecker substitution
 
-An algorithm based on fast polynomial multiplication. This is the default algorithm, used for most reasonable dice.
+An algorithm based on fast polynomial multiplication. This is the algorithm which probably will be used by auto-selector for most reasonable dice.
 
 - Limitations: only **integer** dice are allowed, including **regular** dice.
 - Example: `dicey 5 3,4,1 0,`
 - Complexity: **O(n<sup>3</sup>⋅m<sup>2</sup>)**
 - Running time examples:
   - 6d1000 — 0.5 seconds
-  - 1000d6 — 18 seconds
+  - 1000d6 — 20 seconds
 
 ### Multinomial coefficients
 
@@ -500,8 +498,8 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
 - Complexity: **O(n<sup>2</sup>⋅m<sup>2</sup>)**
 - Running time examples:
-  - 6d1000 — 1.65 seconds
-  - 1000d6 — 10.5 seconds
+  - 6d1000 — 1.5 seconds
+  - 1000d6 — 10 seconds
 
 ### Brute force
 
@@ -512,7 +510,7 @@ As a last resort, there is a brute force algorithm which goes through every poss
 - Complexity: **O(m<sup>n</sup>)**
 - Running time examples:
   - 6d10 — 0.25 seconds
-  - 10d6 — 9.5 seconds
+  - 10d6 — 10 seconds
 
 ## Development
 

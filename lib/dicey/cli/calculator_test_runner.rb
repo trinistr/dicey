@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-Dir["../sum_frequency_calculators/*.rb", base: __dir__].each { require_relative _1 }
+Dir["../distribution_calculators/*.rb", base: __dir__].each { require_relative _1 }
 
 module Dicey
   module CLI
-    # A simple testing facility for roll frequency calculators.
+    # A simple testing facility for roll distribution calculators.
     class CalculatorTestRunner
-      AVAILABLE_CALCULATORS = SumFrequencyCalculators::AutoSelector::AVAILABLE_CALCULATORS
+      AVAILABLE_CALCULATORS = DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS
 
-      # These are manually calculated frequencies,
+      # These are manually calculated weights,
       # with test cases for pretty much all variations of what this program can handle.
       TEST_DATA = [
         [[1], { 1 => 1 }],
@@ -85,7 +85,7 @@ module Dicey
 
       # @param test [Array(Array<Integer, Array<Numeric>>, Hash{Numeric => Integer})]
       #   pair of a dice list definition and expected results
-      # @return [Array(Array<NumericDie>, Hash{BaseCalculator => Symbol})]
+      # @return [Array(Array<AbstractDie>, Hash{BaseCalculator => Symbol})]
       #   result of running the test in a format suitable for +#to_h+
       def run_test(test)
         dice = build_dice(test.first)
@@ -96,10 +96,10 @@ module Dicey
         [dice, test_result]
       end
 
-      # Build a list of {NumericDie} objects from a plain definition.
+      # Build a list of dice from a plain definition.
       #
       # @param definition [Array<Integer, Array<Integer>>]
-      # @return [Array<NumericDie>]
+      # @return [Array<AbstractDie>]
       def build_dice(definition)
         definition.map do |die_def|
           if die_def.is_a?(Integer)
