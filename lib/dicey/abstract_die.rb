@@ -3,11 +3,29 @@
 module Dicey
   # Asbtract die which may have an arbitrary list of sides,
   # not even neccessarily numbers but strings or other objects.
+  #
+  # As the base class for all dice, defines their API.
+  #
+  # Dice can be created through several methods:
+  # - basic +.new+ ({#initialize}), creating one die from an appropriate definition;
+  # - {.from_list}, creating an array of dice from a list of definitions;
+  # - {.from_count}, creating a number of equal dice from one definition.
+  #
+  # Rolling a die is done through {#roll}. {#current} returns the current side of the die.
+  #
+  # {.srand} can be used to (re)set the internal randomizer's state for all dice,
+  # allowing to reproduce the same sequence of rolls (if it was done with a known state).
   class AbstractDie
+    # Yes, class variable is actually useful here.
+    # TODO: Allow supplying a custom Random.
     # rubocop:disable Style/ClassVars
 
     # @api private
     # Get a random value using a private instance of Random.
+    #
+    # Do not use this method directly.
+    # Reproducible rolls depend on it being called only internally.
+    #
     # @see Random#rand
     def self.rand(...)
       @@random.rand(...)
@@ -18,9 +36,6 @@ module Dicey
     def self.srand(...)
       @@random = Random.new(...)
     end
-
-    # Yes, class variable is actually useful here.
-    # TODO: Allow supplying a custom Random.
 
     # Shared randomness source, accessed through {.rand} and {.srand}.
     @@random = Random.new
@@ -37,7 +52,7 @@ module Dicey
       dice.to_a.join("+")
     end
 
-    # Create a bunch of different dice at once.
+    # Create a bunch of different dice at once from a list of definitions.
     #
     # @param definitions [Array<Enumerable<Any>>, Array<Any>]
     #   list of definitions suitable for the dice class
@@ -46,7 +61,7 @@ module Dicey
       definitions.map { new(_1) }
     end
 
-    # Create a number of equal dice.
+    # Create a number of equal dice from one definition.
     #
     # @param count [Integer] number of dice to create
     # @param definition [Enumerable<Any>, Any]
@@ -115,6 +130,8 @@ module Dicey
     # Determine if this die and the other one have the same list of sides.
     # Be aware that differently ordered sides are not considered equal.
     #
+    # @see #eql?
+    #
     # @param other [AbstractDie, Any]
     # @return [Boolean]
     def ==(other)
@@ -126,6 +143,8 @@ module Dicey
     # Be aware that differently ordered sides are not considered equal.
     #
     # +die_1.eql?(die_2)+ implies +die_1.hash == die_2.hash+.
+    #
+    # @see #hash
     #
     # @param other [AbstractDie, Any]
     # @return [Boolean]

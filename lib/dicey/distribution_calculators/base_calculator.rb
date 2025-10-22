@@ -1,17 +1,21 @@
 # frozen_string_literal: true
 
 module Dicey
-  # Calculators for probability distributions of dice.
   module DistributionCalculators
-    # Base distribution calculator.
+    # Base class for implementing distribution calculators.
     #
-    # *Result types:*
-    # - +:weights+ (default)
-    # - +:probabilities+
+    # Calculators have the following methods, each taking an array of dice:
+    # - {#call} to actually calculate the distribution;
+    # - {#valid_for?} to check if the calculator can handle the dice;
+    # - {#heuristic_complexity} to determine the complexity of calculation,
+    #   mostly useful for {AutoSelector}.
     #
-    # By default, returns weights as they are easier to calculate and
-    # can be represented with integers.
-    # Probabilities are calculated using +Rational+ numbers to return exact results.
+    # By default, {#call} returns weights as they are easier to calculate and
+    # can be represented with integers (except for {Empirical} calculator).
+    # If probabilities are requested, they are calculated using +Rational+ numbers
+    # to produce exact results.
+    #
+    # An empty list of dice is considered a degenerate case, always valid for any calculator.
     #
     # *Options:*
     #
@@ -33,10 +37,12 @@ module Dicey
       # @param result_type [Symbol] one of {RESULT_TYPES}
       # @param options [Hash{Symbol => Any}] calculator-specific options,
       #   refer to the calculator's documentation to see what it accepts
-      # @return [Hash{Numeric => Numeric}] weights or probabilities for each outcome
+      # @return [Hash{Any => Numeric}] weight or probability for each outcome,
+      #   sorted by outcome if possible
       # @raise [DiceyError] if +result_type+ is invalid
-      # @raise [DiceyError] if dice list is invalid for the calculator
+      # @raise [DiceyError] if +dice+ list is invalid for the calculator
       # @raise [DiceyError] if calculator returned obviously wrong results
+      #   (should not happen in released versions)
       def call(dice, result_type: :weights, **options)
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
@@ -56,7 +62,7 @@ module Dicey
       # @param dice [Enumerable<AbstractDie>]
       # @return [Boolean]
       def valid_for?(dice)
-        dice.is_a?(Enumerable) && dice.all?(AbstractDie) && validate(dice)
+        dice.is_a?(Enumerable) && (dice.empty? || (dice.all?(AbstractDie) && validate(dice)))
       end
 
       # Heuristic complexity of the calculator, used to determine best calculator.
@@ -90,7 +96,7 @@ module Dicey
         raise NotImplementedError
       end
 
-      # Peform weights calculation.
+      # Calculate weights of outcomes for the dice.
       # (see #call)
       def calculate(dice, **nil)
         raise NotImplementedError
@@ -112,11 +118,11 @@ module Dicey
       def sort_result(distribution)
         distribution.sort.to_h
       rescue
-        # Probably Complex numbers got into the mix, leave as is.
+        # Sort failed, leave as is.
         distribution
       end
 
-      # Transform calculated weights to requested result_type, if needed.
+      # Transform calculated weights to requested result type, if needed.
       #
       # @param distribution [Hash{Numeric => Integer}]
       # @param result_type [Symbol] one of {RESULT_TYPES}

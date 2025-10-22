@@ -3,6 +3,7 @@
 require_relative "base_calculator"
 
 require_relative "../mixins/vectorize_dice"
+require_relative "../mixins/warn_about_vector_number"
 
 module Dicey
   module DistributionCalculators
@@ -11,6 +12,7 @@ module Dicey
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class BruteForce < BaseCalculator
       include Mixins::VectorizeDice
+      include Mixins::WarnAboutVectorNumber
 
       private
 
@@ -18,10 +20,7 @@ module Dicey
         if defined?(VectorNumber) || dice.all?(NumericDie)
           true
         else
-          warn <<~TEXT
-            Dice with non-numeric sides need gem "vector_number" to be present and available.
-            If this is intended, please install the gem.
-          TEXT
+          warn_about_vector_number
           false
         end
       end

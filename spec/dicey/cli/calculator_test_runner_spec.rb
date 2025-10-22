@@ -10,8 +10,8 @@ module Dicey
     let(:calculators) { [DistributionCalculators::BruteForce.new] }
 
     before do
-      stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", [[[1], { 1 => 1 }]])
-      stub_const("Dicey::CLI::CalculatorTestRunner::AVAILABLE_CALCULATORS", calculators)
+      stub_const("#{described_class}::TEST_DATA", [[[1], { 1 => 1 }]])
+      stub_const("#{described_class}::AVAILABLE_CALCULATORS", calculators)
     end
 
     it "returns true if all tests pass" do

@@ -5,6 +5,24 @@ require_relative "kronecker_substitution"
 require_relative "multinomial_coefficients"
 
 module Dicey
+  # Calculators for probability distributions of dice.
+  #
+  # All calculators are subclasses of {BaseCalculator} which implements
+  # the core logic and public methods.
+  #
+  # Following calculators are available:
+  # - {BruteForce}
+  # - {KroneckerSubstitution}
+  # - {MultinomialCoefficients}
+  # - {Empirical} (manual selection only)
+  #
+  # You will probably want to use {AutoSelector} and not bother
+  # with selecting a calculator manually.
+  #
+  # @example
+  #   dice = Dicey::NumericDie.from_list([1, 4, 6], [2, 3, 5])
+  #   calculator = Dicey::DistributionCalculators::AutoSelector.call(dice)
+  #   calculator&.call(dice) or raise
   module DistributionCalculators
     # Tool to automatically select a calculator for a given set of dice.
     #
@@ -19,11 +37,21 @@ module Dicey
         BruteForce.new,
       ].freeze
 
+      # (see #call)
+      # Uses shared {INSTANCE} for calls.
+      def self.call(dice)
+        INSTANCE.call(dice)
+      end
+
       # @param calculators [Array<BaseCalculator>]
       #   calculators which this instance will consider
       def initialize(calculators = AVAILABLE_CALCULATORS)
         @calculators = calculators
       end
+
+      # Instance to be used through {.call}.
+      INSTANCE = new.freeze # rubocop:disable Layout/ClassStructure
+      # Have to call .new after defining #initialize.
 
       # Determine best (or adequate) calculator for a given set of dice
       # based on heuristics from the list of available calculators.

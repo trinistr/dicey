@@ -22,16 +22,8 @@ module Dicey
       end
     end
 
-    context "with a large list of small irregular dice" do
+    context "with a small list of small irregular dice" do
       let(:dice) { NumericDie.from_list([1, 2, 3], [3, 5, 6]) }
-
-      it "returns KroneckerSubstitution" do
-        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
-      end
-    end
-
-    context "with a small list of small numeric dice" do
-      let(:dice) { RegularDie.from_count(2, 2) }
 
       it "returns KroneckerSubstitution" do
         # Check that we don't accidentally pick BruteForce due to small heuristic complexity.
@@ -57,11 +49,11 @@ module Dicey
     end
 
     context "if initialized with a custom list of calculators" do
-      let(:selector) { described_class.new([DistributionCalculators::KroneckerSubstitution.new]) }
+      let(:selector) { described_class.new([DistributionCalculators::MultinomialCoefficients.new]) }
       let(:dice) { RegularDie.from_count(2, 2) }
 
       it "considers only the given calculators" do
-        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::MultinomialCoefficients
       end
 
       context "if no calculators are compatible" do
@@ -70,6 +62,21 @@ module Dicey
         it "returns nil" do
           expect(selected_calculator).to be nil
         end
+      end
+    end
+
+    describe ".call" do
+      subject(:selected_calculator) { described_class.call(dice) }
+
+      let(:dice) { [] }
+      let(:best_calculator) { described_class::AVAILABLE_CALCULATORS.sample }
+      let(:instance) { instance_double(described_class, call: best_calculator) }
+
+      before { stub_const("#{described_class}::INSTANCE", instance) }
+
+      it "calls #call on the shared instance" do
+        expect(described_class::INSTANCE).to receive(:call)
+        expect(selected_calculator).to be best_calculator
       end
     end
   end
