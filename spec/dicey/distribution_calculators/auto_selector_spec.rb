@@ -26,7 +26,7 @@ module Dicey
       let(:dice) { NumericDie.from_list([1, 2, 3], [3, 5, 6]) }
 
       it "returns PolynomialConvolution" do
-        # Check that we don't accidentally pick BruteForce due to small heuristic complexity.
+        # Check that we don't accidentally pick Iterative due to small heuristic complexity.
         expect(selected_calculator).to be_a DistributionCalculators::PolynomialConvolution
       end
     end
@@ -34,8 +34,8 @@ module Dicey
     context "with a list of non-numeric dice" do
       let(:dice) { [AbstractDie.new([1, "a", :c])] }
 
-      it "returns BruteForce" do
-        expect(selected_calculator).to be_a DistributionCalculators::BruteForce
+      it "returns Iterative" do
+        expect(selected_calculator).to be_a DistributionCalculators::Iterative
       end
 
       context "when vector_number is not available" do

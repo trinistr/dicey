@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "brute_force"
+require_relative "iterative"
 require_relative "multinomial_coefficients"
 require_relative "polynomial_convolution"
 
@@ -11,7 +11,7 @@ module Dicey
   # the core logic and public methods.
   #
   # Following calculators are available:
-  # - {BruteForce}
+  # - {Iterative}
   # - {PolynomialConvolution}
   # - {MultinomialCoefficients}
   # - {Empirical} (manual selection only)
@@ -34,7 +34,7 @@ module Dicey
       AVAILABLE_CALCULATORS = [
         PolynomialConvolution.new,
         MultinomialCoefficients.new,
-        BruteForce.new,
+        Iterative.new,
       ].freeze
 
       # (see #call)

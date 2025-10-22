@@ -26,7 +26,7 @@ report_path = "tmp/benchmark #{Time.now.iso8601} " \
               "(commit #{`git rev-parse HEAD`.chomp[0..7]}).json"
 StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
   Benchmark.ips do |ips|
-    ips.report("BruteForce") { Dicey::DistributionCalculators::BruteForce.new.call(Dicey::RegularDie.from_count(6, 6)) }
+    ips.report("Iterative") { Dicey::DistributionCalculators::Iterative.new.call(Dicey::RegularDie.from_count(6, 6)) }
     ips.report("Rolling") { Dicey::RegularDie.new(10_000).roll }
     ips.report("full run") { Dicey::CLI.call(["100d6", "--format", "null"]) }
 

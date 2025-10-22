@@ -387,7 +387,7 @@ die.roll
 Distribution calculators live in `Dicey::DistributionCalculators` module. There are four calculators currently:
 - `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
 - `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::DistributionCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::Iterative` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 - `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
 Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and provide the following public interface:
@@ -501,9 +501,9 @@ This algorithm is based on raising a univariate polynomial to a power and using 
   - 6d1000 — 1.5 seconds
   - 1000d6 — 10 seconds
 
-### Brute force
+### Iterative
 
-As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
+As a last resort, there is an almost brute-force iterative algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`

@@ -7,10 +7,12 @@ require_relative "../mixins/warn_about_vector_number"
 
 module Dicey
   module DistributionCalculators
-    # Calculator for a collection of {AbstractDie} using exhaustive iteration (very slow).
+    # Calculator for a collection of {AbstractDie} which goes through
+    # every possible combination of dice, being almost a brute-force
+    # approach (very slow).
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
-    class BruteForce < BaseCalculator
+    class Iterative < BaseCalculator
       include Mixins::VectorizeDice
       include Mixins::WarnAboutVectorNumber
 

@@ -10,7 +10,7 @@ RSpec.describe "Running built-in tests via CLI" do
       D1:
         Dicey::DistributionCalculators::PolynomialConvolution: ✔
         Dicey::DistributionCalculators::MultinomialCoefficients: ✔
-        Dicey::DistributionCalculators::BruteForce: ✔
+        Dicey::DistributionCalculators::Iterative: ✔
     TEXT
     expect(test_run).to be true
   end
@@ -27,7 +27,7 @@ RSpec.describe "Running built-in tests via CLI" do
           (s,a,4)+(s,a,4):
             Dicey::DistributionCalculators::PolynomialConvolution: ☂
             Dicey::DistributionCalculators::MultinomialCoefficients: ☂
-            Dicey::DistributionCalculators::BruteForce: ☂
+            Dicey::DistributionCalculators::Iterative: ☂
         TEXT
       )
       expect(test_run).to be true
