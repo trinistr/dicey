@@ -19,7 +19,7 @@ module Dicey
         raise DiceyError, "no dice!" if arguments.empty?
 
         dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
-        calculator = calculator_selector.call(dice)
+        calculator = DistributionCalculators::AutoSelector.call(dice)
         raise DiceyError, "no calculator could handle these dice!" unless calculator
 
         distribution = calculator.call(dice, result_type: result)
@@ -31,10 +31,6 @@ module Dicey
 
       def die_foundry
         @die_foundry ||= DieFoundry.new
-      end
-
-      def calculator_selector
-        @calculator_selector ||= DistributionCalculators::AutoSelector.new
       end
     end
   end

@@ -396,7 +396,7 @@ Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and pr
 
 See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
 
-When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `#call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
+When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `.call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 
 ### Distribution properties
 

@@ -7,17 +7,17 @@ require_relative "multinomial_coefficients"
 module Dicey
   # Calculators for probability distributions of dice.
   #
-  # You will probably want to use {AutoSelector} and not bother
-  # with selecting a calculator manually.
+  # All calculators are subclasses of {BaseCalculator} which implements
+  # the core logic and public methods.
   #
-  # All calculators are subclasses of {BaseCalculator}.
-  # Following calculators are implemented:
+  # Following calculators are available:
   # - {BruteForce}
   # - {KroneckerSubstitution}
   # - {MultinomialCoefficients}
-  # - {Empirical} (for manual selection)
+  # - {Empirical} (manual selection only)
   #
-  # All calculators respond to +#call(dice)+, +#valid_for?(dice)+ and +#heuristic_complexity(dice)+.
+  # You will probably want to use {AutoSelector} and not bother
+  # with selecting a calculator manually.
   #
   # @example
   #   dice = Dicey::NumericDie.from_list([1, 4, 6], [2, 3, 5])
