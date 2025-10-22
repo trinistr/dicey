@@ -4,16 +4,23 @@ require_relative "base_calculator"
 
 module Dicey
   module DistributionCalculators
-    # Calculator for lists of dice with integer sides (fast).
+    # Calculator for lists of dice with integer sides (fast),
+    # using polynomial convolution.
     #
     # Example dice: (1,2,3,4), (0,1,-5,6), (5,4,5,4,5).
     #
-    # Based on Kronecker substitution method for polynomial multiplication.
+    # Discrete random variables can be represented as polynomials,
+    # while probability mass function of a sum of independent random variables
+    # is a convolution of their probability mass functions,
+    # which corresponds to multiplication of polynomials.
+    #
+    # Uses Kronecker substitution method for polynomial multiplication.
+    # @see https://en.wikipedia.org/wiki/Convolution#Discrete_convolution
     # @see https://en.wikipedia.org/wiki/Kronecker_substitution
     # @see https://arxiv.org/pdf/0712.4046v1.pdf
     #   David Harvey, Faster polynomial multiplication via multi-point Kronecker substitution
     #   (in particular section 3)
-    class KroneckerSubstitution < BaseCalculator
+    class PolynomialConvolution < BaseCalculator
       private
 
       def validate(dice)

@@ -9,8 +9,8 @@ module Dicey
     context "with a small list of large regular dice" do
       let(:dice) { RegularDie.from_count(2, 600) }
 
-      it "returns KroneckerSubstitution" do
-        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
+      it "returns PolynomialConvolution" do
+        expect(selected_calculator).to be_a DistributionCalculators::PolynomialConvolution
       end
     end
 
@@ -25,9 +25,9 @@ module Dicey
     context "with a small list of small irregular dice" do
       let(:dice) { NumericDie.from_list([1, 2, 3], [3, 5, 6]) }
 
-      it "returns KroneckerSubstitution" do
+      it "returns PolynomialConvolution" do
         # Check that we don't accidentally pick BruteForce due to small heuristic complexity.
-        expect(selected_calculator).to be_a DistributionCalculators::KroneckerSubstitution
+        expect(selected_calculator).to be_a DistributionCalculators::PolynomialConvolution
       end
     end
 

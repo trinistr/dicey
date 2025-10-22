@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "brute_force"
-require_relative "kronecker_substitution"
 require_relative "multinomial_coefficients"
+require_relative "polynomial_convolution"
 
 module Dicey
   # Calculators for probability distributions of dice.
@@ -12,7 +12,7 @@ module Dicey
   #
   # Following calculators are available:
   # - {BruteForce}
-  # - {KroneckerSubstitution}
+  # - {PolynomialConvolution}
   # - {MultinomialCoefficients}
   # - {Empirical} (manual selection only)
   #
@@ -32,7 +32,7 @@ module Dicey
     class AutoSelector
       # Calculators to consider when selecting a match.
       AVAILABLE_CALCULATORS = [
-        KroneckerSubstitution.new,
+        PolynomialConvolution.new,
         MultinomialCoefficients.new,
         BruteForce.new,
       ].freeze
