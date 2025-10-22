@@ -67,6 +67,14 @@ module Dicey
       end
     end
 
+    context "when `dice` is not a collection" do
+      let(:dice) { "not a collection" }
+
+      it "raises DiceyError" do
+        expect { result }.to raise_error(DiceyError)
+      end
+    end
+
     context "if implementation is invalid for dice given" do
       let(:implementation) do
         Class.new(described_class) do
