@@ -6,11 +6,29 @@ module Dicey
 
     let(:selector) { described_class.new }
 
+    context "with a single die" do
+      let(:dice) do
+        [[RegularDie.new(6), NumericDie.new([1, 5, 1]), AbstractDie.new(%w[a b c])].sample]
+      end
+
+      it "returns Trivial" do
+        expect(selected_calculator).to be_a DistributionCalculators::Trivial
+      end
+    end
+
     context "with a small list of large regular dice" do
-      let(:dice) { RegularDie.from_count(2, 600) }
+      let(:dice) { RegularDie.from_count(3, 600) }
 
       it "returns PolynomialConvolution" do
         expect(selected_calculator).to be_a DistributionCalculators::PolynomialConvolution
+      end
+
+      context "when there are only two dice" do
+        let(:dice) { RegularDie.from_count(2, 600) }
+
+        it "returns Trivial" do
+          expect(selected_calculator).to be_a DistributionCalculators::Trivial
+        end
       end
     end
 
@@ -32,7 +50,7 @@ module Dicey
     end
 
     context "with a list of non-numeric dice" do
-      let(:dice) { [AbstractDie.new([1, "a", :c])] }
+      let(:dice) { AbstractDie.from_list([1, "a", :c], [1, 2, 3]) }
 
       it "returns Iterative" do
         expect(selected_calculator).to be_a DistributionCalculators::Iterative

@@ -3,6 +3,7 @@
 require_relative "iterative"
 require_relative "multinomial_coefficients"
 require_relative "polynomial_convolution"
+require_relative "trivial"
 
 module Dicey
   # Calculators for probability distributions of dice.
@@ -32,6 +33,7 @@ module Dicey
     class AutoSelector
       # Calculators to consider when selecting a match.
       AVAILABLE_CALCULATORS = [
+        Trivial.new,
         PolynomialConvolution.new,
         MultinomialCoefficients.new,
         Iterative.new,

@@ -6,8 +6,9 @@ RSpec.describe "Running built-in tests via CLI" do
   subject(:test_run) { Dicey::CLI.call(%w[--test]) }
 
   it "exits with true and outputs test results" do
-    expect { test_run }.to output(a_string_including(<<~TEXT)).to_stdout
+    expect { test_run }.to output(/\A#{<<~TEXT}.+^\(s,a,4\)\+\(s,a,4\):/m).to_stdout
       D1:
+        Dicey::DistributionCalculators::Trivial: ✔
         Dicey::DistributionCalculators::PolynomialConvolution: ✔
         Dicey::DistributionCalculators::MultinomialCoefficients: ✔
         Dicey::DistributionCalculators::Iterative: ✔
@@ -16,20 +17,13 @@ RSpec.describe "Running built-in tests via CLI" do
   end
 
   context "if vector_number is not available" do
-    before { hide_const("VectorNumber") }
+    before do
+      hide_const("VectorNumber")
+      stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", Dicey::CLI::CalculatorTestRunner::TEST_DATA[...-3])
+    end
 
     it "completes successfully, skipping non-numeric dice tests" do
-      # In reality, this won't be printed, as these test cases wouldn't be added at all.
-      # But here we work with initially available VectorNumber, which then disappears.
-      expect { test_run }.to(
-        output(/"vector_number"/).to_stderr
-        .and(output(a_string_including(<<~TEXT)).to_stdout)
-          (s,a,4)+(s,a,4):
-            Dicey::DistributionCalculators::PolynomialConvolution: ☂
-            Dicey::DistributionCalculators::MultinomialCoefficients: ☂
-            Dicey::DistributionCalculators::Iterative: ☂
-        TEXT
-      )
+      expect { test_run }.not_to output(a_string_including("(s,a,4)+(s,a,4):")).to_stdout
       expect(test_run).to be true
     end
   end
