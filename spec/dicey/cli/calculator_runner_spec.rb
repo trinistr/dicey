@@ -11,7 +11,12 @@ module Dicey
     let(:format) { CLI::Formatters::JSONFormatter.new }
     let(:result) { :weights }
 
-    before { stub_const("Dicey::DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS", calculators) }
+    before do
+      stub_const(
+        "Dicey::DistributionCalculators::AutoSelector::INSTANCE",
+        DistributionCalculators::AutoSelector.new(calculators)
+      )
+    end
 
     it "returns a formatted string with dice description and calculation result" do
       expect(call_result).to eq <<~TEXT.chomp
