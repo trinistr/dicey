@@ -12,6 +12,7 @@ module Dicey
           Dice with non-numeric sides need gem "vector_number" to be present and available.
           If this is intended, please install the gem.
         TEXT
+        false
       end
     end
   end
