@@ -25,11 +25,19 @@ module Dicey
     end
 
     context "when called with two equal regular dice" do
-      let(:dice) { [RegularDie.new(6), RegularDie.new(6)] }
+      let(:dice) { RegularDie.from_count(2, 6) }
 
       it "calculates weights correctly" do
         expect(result).to eq({ 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 5, 7 => 6, 8 => 5, 9 => 4,
                                10 => 3, 11 => 2, 12 => 1 })
+      end
+    end
+
+    context "when called with three equal regular dice" do
+      let(:dice) { RegularDie.from_count(3, 6) }
+
+      it "raises DiceyError" do
+        expect { result }.to raise_error(DiceyError)
       end
     end
 

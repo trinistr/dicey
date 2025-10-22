@@ -28,16 +28,13 @@ module Dicey
       end
 
       def calculate(dice, **nil)
-        case dice.size
-        when 1
+        if dice.size == 1
           # Categorical distribution.
           dice = vectorize_dice(dice) if defined?(VectorNumber)
           dice.first.sides_list.tally
-        when 2
+        else
           # Simplest multinomial distribution.
           bimultinomial(dice.first)
-        else
-          # Can't happen.
         end
       end
 
