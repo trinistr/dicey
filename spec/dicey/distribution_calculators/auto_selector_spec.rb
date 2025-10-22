@@ -35,8 +35,8 @@ module Dicey
     context "with a large list of small regular dice" do
       let(:dice) { RegularDie.from_count(800, 3) }
 
-      it "returns MultinomialCoefficients" do
-        expect(selected_calculator).to be_a DistributionCalculators::MultinomialCoefficients
+      it "returns RegularMultinomialCoefficients" do
+        expect(selected_calculator).to be_a DistributionCalculators::RegularMultinomialCoefficients
       end
     end
 
@@ -83,11 +83,11 @@ module Dicey
     end
 
     context "if initialized with a custom list of calculators" do
-      let(:selector) { described_class.new([DistributionCalculators::MultinomialCoefficients.new]) }
+      let(:selector) { described_class.new([DistributionCalculators::RegularMultinomialCoefficients.new]) }
       let(:dice) { RegularDie.from_count(2, 2) }
 
       it "considers only the given calculators" do
-        expect(selected_calculator).to be_a DistributionCalculators::MultinomialCoefficients
+        expect(selected_calculator).to be_a DistributionCalculators::RegularMultinomialCoefficients
       end
 
       context "if no calculators are compatible" do

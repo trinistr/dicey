@@ -4,69 +4,50 @@ require_relative "base_calculator"
 
 module Dicey
   module DistributionCalculators
-    # Calculator for multiple equal dice with sides forming an arithmetic sequence,
-    # including all regular dice (fast).
+    # Calculator for multiple equal regular dice (fast).
     #
-    # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).
+    # Example dice: D6, D4, etc.
     #
     # Rolling multiple of the same dice is the same thing as rolling a single die
     # multiple times and summing the results.
     # This arrangement corresponds to a multinomial distribution.
     #
     # The usual way to calculate probabilities for such distribution involves
-    # way too many factorials for large numbers for comfort.
+    # way too many factorials of large numbers for comfort.
     # (`Math.gamma` doesn't even handle large enough numbers, and produces Floats anyway).
     # Instead, we use a Pascal's triangle extension for a higher number of coefficients.
-    # Currently, algorithm is limited to arithmetic sequences as I'm not sure
-    # how to calculate values for other cases.
+    # This calculator uses a simplified algorithm for regular dice.
     #
     # @see https://en.wikipedia.org/wiki/Multinomial_distribution
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
-    class MultinomialCoefficients < BaseCalculator
+    class RegularMultinomialCoefficients < BaseCalculator
       private
 
       def validate(dice)
         first_die = dice.first
-        return false unless first_die.is_a?(NumericDie)
-        return false unless dice.all? { _1 == first_die }
-        return true if first_die.sides_num == 1
-
-        arithmetic_sequence?(first_die.sides_list)
-      end
-
-      # @param sides_list [Array<Numeric>]
-      # @return [false, Array<Numeric>]
-      def arithmetic_sequence?(sides_list)
-        increment = sides_list[1] - sides_list[0]
-        return false if increment.zero?
-
-        sides_list.each_cons(2) { return false if _1 + increment != _2 }
-        true
+        first_die.is_a?(RegularDie) && dice.all? { _1.eql?(first_die) }
       end
 
       def calculate_heuristic(dice_count, sides_count)
-        # Fitting shows both coefficients to be around 500,
-        # but empirical runtime doesn't agree, so 150 it is.
-        150 * (dice_count**2.2) * 500 * (sides_count**1.9)
+        100 * (dice_count**2.2) * 500 * (sides_count**1.9)
       end
 
       def calculate(dice, **nil)
-        first_die = dice.first
-        number_of_sides = first_die.sides_num
-        number_of_dice = dice.size
+        dice_count = dice.size
+        sides_count = dice.first.sides_num
 
-        weights = multinomial_coefficients(number_of_dice, number_of_sides)
-        outcomes_list(first_die.sides_list, number_of_dice).zip(weights).to_h
+        weights = multinomial_coefficients(dice_count, sides_count)
+        outcomes_list(dice_count, sides_count).zip(weights).to_h
       end
 
       # Calculate coefficients for a multinomial of the form
       # <tt>(x^1 +...+ x^m)^n</tt>, where +m+ is the number of sides and +n+ is the number of dice.
       #
-      # @param dice [Integer] number of dice, must be positive
-      # @param sides [Integer] number of sides, must be positive
+      # @param dice_count [Integer] number of dice, must be positive
+      # @param sides_count [Integer] number of sides, must be positive
       # @return [Array<Integer>]
-      def multinomial_coefficients(dice, sides)
+      def multinomial_coefficients(dice_count, sides_count)
         # This builds a triangular matrix where first elements are always 1s
         # and other elements are sums of +sides+ elements in the previous row
         # with indices less or equal, with out-of-bounds indices corresponding to 0s.
@@ -76,9 +57,9 @@ module Dicey
         # 1 2 3 2 1
         # 1 3 6 7 6 3 1, etc.
         # We start directly from second row, which corresponds to 1 die.
-        coefficients = Array.new(sides, 1)
-        (2..dice).each do |row_index|
-          coefficients = next_row_of_coefficients(row_index, sides - 1, coefficients)
+        coefficients = Array.new(sides_count, 1)
+        (2..dice_count).each do |row_index|
+          coefficients = next_row_of_coefficients(row_index, sides_count - 1, coefficients)
         end
         coefficients
       end
@@ -99,18 +80,11 @@ module Dicey
 
       # Get sequence of outcomes which correspond to calculated weights.
       #
-      # @param sides_list [Enumerable<Numeric>]
-      # @param number_of_dice [Integer]
+      # @param dice_count [Integer]
+      # @param sides_count [Integer]
       # @return [Array<Numeric>]
-      def outcomes_list(sides_list, number_of_dice)
-        first = number_of_dice * sides_list.first
-        last = number_of_dice * sides_list.last
-        return [first] if first == last
-
-        increment = sides_list[1] - sides_list[0]
-        Enumerator
-          .produce(first) { _1 + increment }
-          .take_while { (_1 < last) == (first < last) || _1 == last }
+      def outcomes_list(dice_count, sides_count)
+        (dice_count..(dice_count * sides_count)).to_a
       end
     end
   end

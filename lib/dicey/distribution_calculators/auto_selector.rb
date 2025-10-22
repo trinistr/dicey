@@ -2,8 +2,8 @@
 
 require_relative "binomial"
 require_relative "iterative"
-require_relative "multinomial_coefficients"
 require_relative "polynomial_convolution"
+require_relative "regular_multinomial_coefficients"
 require_relative "trivial"
 
 module Dicey
@@ -15,7 +15,7 @@ module Dicey
   # Following calculators are available:
   # - {Iterative}
   # - {PolynomialConvolution}
-  # - {MultinomialCoefficients}
+  # - {RegularMultinomialCoefficients}
   # - {Empirical} (manual selection only)
   #
   # You will probably want to use {AutoSelector} and not bother
@@ -36,8 +36,8 @@ module Dicey
       AVAILABLE_CALCULATORS = [
         Trivial.new,
         Binomial.new,
+        RegularMultinomialCoefficients.new,
         PolynomialConvolution.new,
-        MultinomialCoefficients.new,
         Iterative.new,
       ].freeze
 

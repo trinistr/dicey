@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe DistributionCalculators::MultinomialCoefficients do
+  RSpec.describe DistributionCalculators::RegularMultinomialCoefficients do
     subject(:result) { calculator.call(dice) }
 
     let(:calculator) { described_class.new }
 
-    let(:dice) { NumericDie.from_count(2, [-0.5, 1, 2.5]) }
+    let(:dice) { RegularDie.from_count(2, 3) }
 
     context "when called with valid dice" do
       it "calculates weights correctly" do
-        expect(result).to eq({ -1.0 => 1, 0.5 => 2, 2.0 => 3, 3.5 => 2, 5.0 => 1 })
+        expect(result).to eq({ 2 => 1, 3 => 2, 4 => 3, 5 => 2, 6 => 1 })
       end
     end
 
@@ -23,7 +23,7 @@ module Dicey
     end
 
     context "when called with different numeric dice" do
-      before { dice << NumericDie.new([1, 2, 3]) }
+      before { dice << RegularDie.new(4) }
 
       it "rejects them" do
         expect { result }.to raise_error(DiceyError)
@@ -41,14 +41,14 @@ module Dicey
     describe "#valid_for?" do
       subject(:validity) { calculator.valid_for?(dice) }
 
-      context "when called with a list of equal arithmetic dice" do
-        let(:dice) { NumericDie.from_count(2, [-0.5, 1, 2.5]) }
+      context "when called with a list of equal regular dice" do
+        let(:dice) { RegularDie.from_count(2, 3) }
 
         it { is_expected.to be true }
       end
 
-      context "when called with a list of arbitrary numeric dice" do
-        let(:dice) { NumericDie.from_count(2, [-0.5, 1, 3]) }
+      context "when called with a list of arbitrary regular dice" do
+        let(:dice) { [RegularDie.new(4), RegularDie.new(6)] }
 
         it { is_expected.to be false }
       end
