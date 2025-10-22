@@ -4,14 +4,25 @@ require_relative "base_calculator"
 
 module Dicey
   module DistributionCalculators
-    # Calculator for multiple equal dice with sides forming an arithmetic sequence (fast).
+    # Calculator for multiple equal dice with sides forming an arithmetic sequence,
+    # including all regular dice (fast).
     #
     # Example dice: (1,2,3,4), (-2,-1,0,1,2), (0,0.2,0.4,0.6), (-1,-2,-3).
     #
-    # Based on extension of Pascal's triangle for a higher number of coefficients.
+    # Rolling multiple of the same dice is the same thing as rolling a single die
+    # multiple times and summing the results.
+    # This arrangement corresponds to a multinomial distribution.
+    #
+    # The usual way to calculate probabilities for such distribution involves
+    # way too many factorials for large numbers for comfort.
+    # (`Math.gamma` doesn't even handle large enough numbers, and produces Floats anyway).
+    # Instead, we use a Pascal's triangle extension for a higher number of coefficients.
+    # Currently, algorithm is limited to arithmetic sequences as I'm not sure
+    # how to calculate values for other cases.
+    #
+    # @see https://en.wikipedia.org/wiki/Multinomial_distribution
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
-    # @see https://en.wikipedia.org/wiki/Multinomial_distribution
     class MultinomialCoefficients < BaseCalculator
       private
 

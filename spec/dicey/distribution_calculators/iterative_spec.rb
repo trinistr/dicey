@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe DistributionCalculators::BruteForce do
+  RSpec.describe DistributionCalculators::Iterative do
     subject(:result) { calculator.call(dice) }
 
     let(:calculator) { described_class.new }

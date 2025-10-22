@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dicey
-  RSpec.describe DistributionCalculators::KroneckerSubstitution do
+  RSpec.describe DistributionCalculators::PolynomialConvolution do
     subject(:result) { calculator.call(dice) }
 
     let(:calculator) { described_class.new }

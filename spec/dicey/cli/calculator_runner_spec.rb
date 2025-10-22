@@ -7,7 +7,7 @@ module Dicey
     subject(:call_result) { described_class.new.call(dice, format: format, result: result) }
 
     let(:dice) { %w[2d2 1,5,] } # rubocop:disable Lint/PercentStringArray
-    let(:calculators) { [DistributionCalculators::KroneckerSubstitution.new] }
+    let(:calculators) { [DistributionCalculators::PolynomialConvolution.new] }
     let(:format) { CLI::Formatters::JSONFormatter.new }
     let(:result) { :weights }
 

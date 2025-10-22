@@ -385,9 +385,9 @@ die.roll
 ### Distribution calculators
 
 Distribution calculators live in `Dicey::DistributionCalculators` module. There are four calculators currently:
-- `Dicey::DistributionCalculators::KroneckerSubstitution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
+- `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
 - `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::DistributionCalculators::BruteForce` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::Iterative` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 - `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 
 Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and provide the following public interface:
@@ -403,7 +403,7 @@ When in doubt which calculator to use (and if a given one *can* be used), use `D
 While distribution itself is already enough in most cases (we are talking just dice here, after all). it may be of interest to calculate properties of it: mode, mean, expected value, standard deviation, etc. `Dicey::DistributionPropertiesCalculator` provides this functionality:
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::PolynomialConvolution.new.call(
     Dicey::RegularDie.from_count(2, 3)
   )
 )
@@ -427,7 +427,7 @@ Dicey::DistributionPropertiesCalculator.new.call(
 Of course, for regular dice most properties are quite simple and predicatable due to symmetricity of distribution. It becomes more interesting with unfair, lopsided dice. Remember [Example 3](#example-3-custom-dice)?
 ```rb
 Dicey::DistributionPropertiesCalculator.new.call(
-  Dicey::DistributionCalculators::KroneckerSubstitution.new.call(
+  Dicey::DistributionCalculators::PolynomialConvolution.new.call(
     [Dicey::RegularDie.new(4), Dicey::NumericDie.new([1,3,4])]
   )
 )
@@ -479,7 +479,7 @@ Currently, three algorithms for calculating distributions are implemented, with 
 > [!NOTE]
 > 💡 Complexity is listed for **n** dice with at most **m** sides and is only an approximation.
 
-### Kronecker substitution
+### Polynomial convolution
 
 An algorithm based on fast polynomial multiplication. This is the algorithm which probably will be used by auto-selector for most reasonable dice.
 
@@ -492,7 +492,7 @@ An algorithm based on fast polynomial multiplication. This is the algorithm whic
 
 ### Multinomial coefficients
 
-This algorithm is based on raising a univariate polynomial to a power and using the coefficients of the result, though certain restrictions are lifted as they don't actually matter for the calculation. It is usually faster than Kronecker substitution for many dice with few sides.
+This algorithm is based on raising a univariate polynomial to a power and using the coefficients of the result, though certain restrictions are lifted as they don't actually matter for the calculation. It is usually faster than polynomial convolution for many dice with few sides.
 
 - Limitations: only *equal* **arithmetic** dice are allowed.
 - Example: `dicey 1.5,3,4.5,6 1.5,3,4.5,6 1.5,3,4.5,6`
@@ -501,9 +501,9 @@ This algorithm is based on raising a univariate polynomial to a power and using 
   - 6d1000 — 1.5 seconds
   - 1000d6 — 10 seconds
 
-### Brute force
+### Iterative
 
-As a last resort, there is a brute force algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
+As a last resort, there is an almost brute-force iterative algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`

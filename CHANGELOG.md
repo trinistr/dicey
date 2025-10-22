@@ -14,11 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed**
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
-- Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace.
+- Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace and improve naming:
+  - Rename `KroneckerSubstitution` calculator to `PolynomialConvolution`.
+  - Rename `BruteForce` calculator to `Iterative`, as it's no longer quite a brute-force algorithm.
 - Move classes which were intended for use with CLI under `Dicey::CLI` namespace:
-  - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`. Rename `HashFormatter` to `BaseMapFormatter` and `KeyValueFormatter` to `BaseListFormatter`.
-  - Move `Runner`, `TestRunner` and `Roller` to `Dicey::CLI`. Rename `Runner` to `CalculatorRunner` and `TestRunner` to `CalculatorTestRunner`.
-- No longer `require` formatters or runners by default, only for CLI support.
+  - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`.
+  - Rename `HashFormatter` to `BaseMapFormatter` and `KeyValueFormatter` to `BaseListFormatter`.
+  - Move `Runner`, `TestRunner` and `Roller` to `Dicey::CLI`.
+  - Rename `Runner` to `CalculatorRunner` and `TestRunner` to `CalculatorTestRunner`.
+  - No longer `require` formatters or runners by default, only for CLI support.
 
 **Deprecated**
 - "-v" option is deprecated in favor of "-V". "-v" will be changed to "--verbose" in the future.

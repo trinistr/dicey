@@ -10,7 +10,7 @@ module Dicey
     # "Calculator" for a collection of {AbstractDie} using empirically-obtained statistics.
     #
     # @note This calculator is mostly a joke. It can be useful for educational purposes,
-    #   or to verify results of {BruteForce} when in doubt. It is not used automatically.
+    #   or to verify results of {Iterative} when in doubt. It is not used automatically.
     #
     # Does a number of rolls and calculates approximate probabilities from that.
     # Even if weights are requested, results are non-integer.
