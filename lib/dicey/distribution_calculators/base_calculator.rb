@@ -47,9 +47,10 @@ module Dicey
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
         end
+        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
+
         # Short-circuit for a degenerate case.
         return {} if dice.empty?
-        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
 
         distribution = calculate(dice, **options)
         verify_result(distribution, dice)

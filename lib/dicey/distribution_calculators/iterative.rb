@@ -23,7 +23,6 @@ module Dicey
           true
         else
           warn_about_vector_number
-          false
         end
       end
 

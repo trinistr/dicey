@@ -384,19 +384,23 @@ die.roll
 
 ### Distribution calculators
 
-Distribution calculators live in `Dicey::DistributionCalculators` module. There are four calculators currently:
+Distribution calculators live in `Dicey::DistributionCalculators` module. There are three main calculators currently.
 - `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
 - `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
 - `Dicey::DistributionCalculators::Iterative` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+
+Additionally, there are two special calculators.
 - `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
+- `Dicey::DistributionCalculators::Trivial` is an extra-fast calculator for some trivial cases. There isn't much point in using it manually.
+
+When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `.call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 
 Calculators inherit from `Dicey::DistributionCalculators::BaseCalculator` and provide the following public interface:
 - `#call(dice, result_type: {:weights | :probabilities}, **options) : Hash`
 - `#valid_for?(dice) : Boolean`
+- `#heuristic_complexity(dice) : Integer`
 
 See [Diving deeper](#diving-deeper) for more details on limitations and complexity considerations of different algorithms.
-
-When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `.call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 
 ### Distribution properties
 
