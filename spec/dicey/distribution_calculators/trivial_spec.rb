@@ -8,7 +8,7 @@ module Dicey
 
     let(:dice) { [AbstractDie.new([1, 1, 2, "a", "a", "b"])] }
 
-    context "when called with one die" do
+    context "when called with one die in the array" do
       it "tallies its sides using VectorNumber" do
         expect(result).to eq(
           { 1 => 2, 2 => 1, VectorNumber.new(["a"]) => 2, VectorNumber.new(["b"]) => 1 }
@@ -20,6 +20,14 @@ module Dicey
 
         it "tallies its sides anyway" do
           expect(result).to eq({ 1 => 2, 2 => 1, "a" => 2, "b" => 1 })
+        end
+      end
+
+      context "when die is RegularDie" do
+        let(:dice) { [RegularDie.new(6)] }
+
+        it "tallies its sides" do
+          expect(result).to eq({ 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1 })
         end
       end
     end

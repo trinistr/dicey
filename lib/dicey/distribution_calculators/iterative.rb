@@ -31,7 +31,8 @@ module Dicey
       end
 
       def calculate(dice, **nil)
-        dice = vectorize_dice(dice) if defined?(VectorNumber)
+        dice = vectorize_dice(dice)
+
         dice.map(&:sides_list).reduce { |result, die|
           result.flat_map { |roll| die.map { |side| roll + side } }
         }.tally

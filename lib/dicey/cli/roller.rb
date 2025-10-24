@@ -39,7 +39,7 @@ module Dicey
       end
 
       def roll_dice(dice)
-        dice = vectorize_dice(dice) if defined?(VectorNumber)
+        dice = vectorize_dice(dice)
         dice.sum(&:roll)
       end
     end
