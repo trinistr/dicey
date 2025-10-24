@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Dicey::DistributionCalculators::AutoSelector.call` which does not require an instance to be created.
 - CLI is now enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI is called with `Dicey::CLI.call([argv])`. CLI classes are considered private, however.
 - `Trivial` calculator for some simple cases, with significantly better performance.
+- `Binomial` calculator for collections of equal two-sided dice, like coins.
 
 **Changed**
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".

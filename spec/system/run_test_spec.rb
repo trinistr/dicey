@@ -9,6 +9,7 @@ RSpec.describe "Running built-in tests via CLI" do
     expect { test_run }.to output(/\A#{<<~TEXT}.+^\(s,a,4\)\+\(s,a,4\):/m).to_stdout
       D1:
         Dicey::DistributionCalculators::Trivial: ✔
+        Dicey::DistributionCalculators::Binomial: ☂
         Dicey::DistributionCalculators::PolynomialConvolution: ✔
         Dicey::DistributionCalculators::MultinomialCoefficients: ✔
         Dicey::DistributionCalculators::Iterative: ✔

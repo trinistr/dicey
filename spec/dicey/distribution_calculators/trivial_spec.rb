@@ -49,34 +49,6 @@ module Dicey
       end
     end
 
-    describe "equal two-sided dice" do
-      context "when called with RegularDie" do
-        let(:dice) { RegularDie.from_count(5, 2) }
-
-        it "calculates weights correctly" do
-          expect(result).to eq({ 5 => 1, 6 => 5, 7 => 10, 8 => 10, 9 => 5, 10 => 1 })
-        end
-      end
-
-      context "when called with NumericDie" do
-        let(:dice) { NumericDie.from_count(4, [5, 6.5r]) }
-
-        it "calculates weights correctly" do
-          expect(result).to eq({ 20r => 1, 21.5r => 4, 23r => 6, 24.5r => 4, 26r => 1 })
-        end
-      end
-
-      context "when called with AbstractDie" do
-        let(:dice) { AbstractDie.from_count(3, %i[a z]) }
-
-        it "calculates weights correctly" do
-          a = VectorNumber[:a]
-          z = VectorNumber[:z]
-          expect(result).to eq({ a * 3 => 1, (a * 2) + z => 3, a + (z * 2) => 3, z * 3 => 1 })
-        end
-      end
-    end
-
     context "when called with an empty list of dice" do
       let(:dice) { [] }
 

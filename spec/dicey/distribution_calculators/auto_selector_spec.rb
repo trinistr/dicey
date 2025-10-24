@@ -40,6 +40,14 @@ module Dicey
       end
     end
 
+    context "with a large list of two-sided dice" do
+      let(:dice) { RegularDie.from_count(800, 2) }
+
+      it "returns Binomial" do
+        expect(selected_calculator).to be_a DistributionCalculators::Binomial
+      end
+    end
+
     context "with a small list of small irregular dice" do
       let(:dice) { NumericDie.from_list([1, 2, 3], [3, 5, 6]) }
 
@@ -54,6 +62,14 @@ module Dicey
 
       it "returns Iterative" do
         expect(selected_calculator).to be_a DistributionCalculators::Iterative
+      end
+
+      context "if dice are two-sided" do
+        let(:dice) { AbstractDie.from_count(2, [1, "a"]) }
+
+        it "returns Binomial" do
+          expect(selected_calculator).to be_a DistributionCalculators::Binomial
+        end
       end
 
       context "when vector_number is not available" do
