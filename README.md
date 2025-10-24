@@ -389,7 +389,8 @@ Distribution calculators live in `Dicey::DistributionCalculators` module. There 
 - `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
 - `Dicey::DistributionCalculators::Iterative` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 
-Additionally, there are two special calculators.
+Additionally, there are three special calculators.
+- `Dicey::DistributionCalculators::Binomial` is a fast calculator for collections of equal two-sided dice, like coins.
 - `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
 - `Dicey::DistributionCalculators::Trivial` is an extra-fast calculator for some trivial cases. There isn't much point in using it manually.
 

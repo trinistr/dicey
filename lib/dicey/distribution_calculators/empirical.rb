@@ -41,7 +41,8 @@ module Dicey
       end
 
       def calculate(dice, rolls: N)
-        dice = vectorize_dice(dice) if defined?(VectorNumber)
+        dice = vectorize_dice(dice)
+
         statistics = rolls.times.with_object(Hash.new(0)) { |_, hash| hash[dice.sum(&:roll)] += 1 }
         total_results = dice.map(&:sides_num).reduce(:*)
         statistics.transform_values { Rational(_1 * total_results, rolls) }

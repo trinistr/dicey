@@ -8,7 +8,7 @@ module Dicey
 
     let(:dice) { [AbstractDie.new([1, 1, 2, "a", "a", "b"])] }
 
-    context "when called with one die" do
+    describe "one die" do
       it "tallies its sides using VectorNumber" do
         expect(result).to eq(
           { 1 => 2, 2 => 1, VectorNumber.new(["a"]) => 2, VectorNumber.new(["b"]) => 1 }
@@ -22,22 +22,30 @@ module Dicey
           expect(result).to eq({ 1 => 2, 2 => 1, "a" => 2, "b" => 1 })
         end
       end
+
+      context "when die is RegularDie" do
+        let(:dice) { [RegularDie.new(6)] }
+
+        it "tallies its sides" do
+          expect(result).to eq({ 1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1 })
+        end
+      end
     end
 
-    context "when called with two equal regular dice" do
+    describe "two equal regular dice" do
       let(:dice) { RegularDie.from_count(2, 6) }
 
       it "calculates weights correctly" do
         expect(result).to eq({ 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 5, 7 => 6, 8 => 5, 9 => 4,
                                10 => 3, 11 => 2, 12 => 1 })
       end
-    end
 
-    context "when called with three equal regular dice" do
-      let(:dice) { RegularDie.from_count(3, 6) }
+      context "when called with three equal regular dice" do
+        let(:dice) { RegularDie.from_count(3, 6) }
 
-      it "raises DiceyError" do
-        expect { result }.to raise_error(DiceyError)
+        it "raises DiceyError" do
+          expect { result }.to raise_error(DiceyError)
+        end
       end
     end
 

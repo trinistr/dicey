@@ -68,12 +68,12 @@ module Dicey
 
       # Heuristic complexity of the calculator, used to determine best calculator.
       #
-      # Returns 0 for an empty list of dice.
+      # Will always return a value, even if the calculator is not valid for the dice.
       #
       # @see AutoSelector
       #
       # @param dice [Enumerable<AbstractDie>]
-      # @return [Integer]
+      # @return [Integer] 0 if +dice+ is empty
       def heuristic_complexity(dice)
         return 0 if dice.empty?
 

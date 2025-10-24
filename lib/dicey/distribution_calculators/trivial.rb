@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "base_calculator"
+
 require_relative "../mixins/vectorize_dice"
 
 module Dicey
@@ -7,20 +9,21 @@ module Dicey
     # Distribution calculator with fast paths for some trivial cases (very fast).
     #
     # Currently included cases:
-    # - single {AbstractDie} (even without +VectorNumber+),
-    # - two of the same {RegularDie}.
+    # - single {AbstractDie}, even without +VectorNumber+ (categorical distribution),
+    # - two of the same {RegularDie} (simple multinomial distribution).
     #
-    # You probably shouldn't use this one manually, it's only there for {AutoSelector}.
+    # You probably shouldn't use this one manually, it's mostly there for {AutoSelector}.
     class Trivial < BaseCalculator
       include Mixins::VectorizeDice
 
       private
 
       def validate(dice)
-        return true if dice.size == 1
-        return true if dice.size == 2 && RegularDie === dice.first && dice.first == dice.last
+        dice.size == 1 || two_regular_dice?(dice)
+      end
 
-        false
+      def two_regular_dice?(dice)
+        dice.size == 2 && RegularDie === dice.first && dice.first == dice.last
       end
 
       def calculate_heuristic(dice_count, sides_count)
@@ -28,20 +31,24 @@ module Dicey
       end
 
       def calculate(dice, **nil)
+        die = dice.first
         if dice.size == 1
-          # Categorical distribution.
-          dice = vectorize_dice(dice) if defined?(VectorNumber)
-          dice.first.sides_list.tally
+          categorical(die)
         else
-          # Simplest multinomial distribution.
-          bimultinomial(dice.first)
+          bimultinomial(die)
         end
       end
 
+      def categorical(die)
+        die = vectorize_dice(die)
+        die.sides_list.tally
+      end
+
+      # Simplest multinomial distribution: two regular dice.
       def bimultinomial(die)
-        middle = die.sides_num + 1
-        (2..(die.sides_num * 2)).each_with_object({}) do |i, hash|
-          hash[i] = (middle - 1) - (middle - i).abs
+        middle = die.sides_num
+        (1...(die.sides_num * 2)).each_with_object({}) do |i, hash|
+          hash[i + 1] = middle - (middle - i).abs
         end
       end
     end
