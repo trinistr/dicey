@@ -33,7 +33,7 @@ module Dicey
     end
 
     context "with a large list of small regular dice" do
-      let(:dice) { RegularDie.from_count(800, 2) }
+      let(:dice) { RegularDie.from_count(800, 3) }
 
       it "returns MultinomialCoefficients" do
         expect(selected_calculator).to be_a DistributionCalculators::MultinomialCoefficients
