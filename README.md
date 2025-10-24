@@ -391,7 +391,7 @@ Distribution calculators live in `Dicey::DistributionCalculators` module. There 
 
 Additionally, there are two special calculators.
 - `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
-- `Dicey::DistributionCalculators::Trivial` is an extra-fast calculator for some trivial cases. There isn't much point in using it manually.
+- `Dicey::DistributionCalculators::Trivial` is an extra-fast calculator for some trivial cases. There isn't much point in using it manually, except in certain cases where input is constrained.
 
 When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `.call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
 

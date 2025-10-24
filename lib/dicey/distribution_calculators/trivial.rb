@@ -8,11 +8,11 @@ module Dicey
     # Distribution calculator with fast paths for some trivial cases (very fast).
     #
     # Currently included cases:
-    # - single {AbstractDie} (even without +VectorNumber+),
-    # - two of the same {RegularDie},
-    # - any number of same two-sided {AbstractDie} (like coins).
+    # - single {AbstractDie}, even without +VectorNumber+ (categorical distribution),
+    # - two of the same {RegularDie} (simple multinomial distribution),
+    # - any number of same two-sided {AbstractDie}, like coins (binomial distribution).
     #
-    # You probably shouldn't use this one manually, it's only there for {AutoSelector}.
+    # You probably shouldn't use this one manually, it's mostly there for {AutoSelector}.
     class Trivial < BaseCalculator
       include Mixins::MissingMath
       include Mixins::VectorizeDice
@@ -34,7 +34,7 @@ module Dicey
       end
 
       def calculate_heuristic(dice_count, sides_count)
-        sides_count * dice_count
+        sides_count * (dice_count**2)
       end
 
       def calculate(dice, **nil)
@@ -64,12 +64,28 @@ module Dicey
       def binomial(die, dice_count)
         die = vectorize_dice(die)
 
-        coefficients = (0..dice_count).map { combinations(dice_count, _1) }
+        coefficients = recurrent_combinations(dice_count)
         length = coefficients.size - 1
         first, second = die.sides_list
         coefficients.each_with_index.with_object(Hash.new(0)) do |(coefficient, i), hash|
           hash[(first * (length - i)) + (second * i)] += coefficient
         end
+      end
+
+      # Calculating three factorials for each combination is pretty expensive.
+      # As the actual formulas just go through factorials in order,
+      # we can drastically reduce the complexity by reusing previous values.
+      def recurrent_combinations(dice_count)
+        count_factorial = factorial(dice_count)
+        index_factorial = 1
+        reverse_factorial = count_factorial
+        combinations = Array.new(dice_count + 1, 1)
+        (1..dice_count).each do |i|
+          index_factorial *= i
+          reverse_factorial /= (dice_count - i + 1)
+          combinations[i] = count_factorial / (index_factorial * reverse_factorial)
+        end
+        combinations
       end
     end
   end

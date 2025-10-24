@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Key classes and modules now have documentation with important points and links to further reading to reduce friction for API users.
 - `Dicey::DistributionCalculators::AutoSelector.call` which does not require an instance to be created.
 - CLI is now enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI is called with `Dicey::CLI.call([argv])`. CLI classes are considered private, however.
-- `Trivial` calculator for some very simple cases.
+- `Trivial` calculator for some simple cases, with significantly better performance.
 
 **Changed**
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
