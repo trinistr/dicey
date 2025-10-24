@@ -21,7 +21,7 @@ module Dicey
     # @see https://en.wikipedia.org/wiki/Multinomial_distribution
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
-    class RegularMultinomialCoefficients < BaseCalculator
+    class RegularMultinomial < BaseCalculator
       private
 
       def validate(dice)

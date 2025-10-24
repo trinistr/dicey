@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
 - Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace and improve naming:
   - Rename `KroneckerSubstitution` calculator to `PolynomialConvolution`.
+  - Rename `MultinomialCoefficients` calculator to `RegularMultinomial`.
   - Rename `BruteForce` calculator to `Iterative`, as it's no longer quite a brute-force algorithm.
 - Move classes which were intended for use with CLI under `Dicey::CLI` namespace:
   - Move formatters from `Dicey::OutputFormatters` to `Dicey::CLI::Formatters`.

@@ -3,7 +3,7 @@
 require_relative "binomial"
 require_relative "iterative"
 require_relative "polynomial_convolution"
-require_relative "regular_multinomial_coefficients"
+require_relative "regular_multinomial"
 require_relative "trivial"
 
 module Dicey
@@ -36,7 +36,7 @@ module Dicey
       AVAILABLE_CALCULATORS = [
         Trivial.new,
         Binomial.new,
-        RegularMultinomialCoefficients.new,
+        RegularMultinomial.new,
         PolynomialConvolution.new,
         Iterative.new,
       ].freeze

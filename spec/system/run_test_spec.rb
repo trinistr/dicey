@@ -10,7 +10,7 @@ RSpec.describe "Running built-in tests via CLI" do
       D1:
         Dicey::DistributionCalculators::Trivial: ✔
         Dicey::DistributionCalculators::Binomial: ☂
-        Dicey::DistributionCalculators::RegularMultinomialCoefficients: ✔
+        Dicey::DistributionCalculators::RegularMultinomial: ✔
         Dicey::DistributionCalculators::PolynomialConvolution: ✔
         Dicey::DistributionCalculators::Iterative: ✔
     TEXT
