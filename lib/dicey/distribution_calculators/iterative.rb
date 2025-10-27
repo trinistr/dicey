@@ -33,9 +33,19 @@ module Dicey
       def calculate(dice, **nil)
         dice = vectorize_dice(dice)
 
-        dice.map(&:sides_list).reduce { |result, die|
-          result.flat_map { |roll| die.map { |side| roll + side } }
-        }.tally
+        dice[1..].reduce(dice.first.sides_list.tally) do |previous_distribution, die|
+          convolve_with_die(previous_distribution, die.sides_list.tally)
+        end
+      end
+
+      def convolve_with_die(previous_distribution, die_sides)
+        previous_distribution.each_with_object({}) do |(outcome, weight), next_distribution|
+          die_sides.each do |side, side_weight|
+            next_outcome = outcome + side
+            next_distribution[next_outcome] ||= 0
+            next_distribution[next_outcome] += weight * side_weight
+          end
+        end
       end
     end
   end
