@@ -13,8 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CLI is now enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI is called with `Dicey::CLI.call([argv])`. CLI classes are considered private, however.
 - `Trivial` calculator for some simple cases, with significantly better performance.
 - `Binomial` calculator for collections of equal two-sided dice, like coins.
+- "short" format for "--test" option, producing only a summary or fails for each dice combination.
 
 **Changed**
+- `Iterative` (formerly `BruteForce`) calculator has been rewritten for a massive speed-up yet again. It no longer has exponential complexity.
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
 - Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace and improve naming:
   - Rename `KroneckerSubstitution` calculator to `PolynomialConvolution`.

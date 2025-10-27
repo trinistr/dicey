@@ -385,13 +385,13 @@ die.roll
 ### Distribution calculators
 
 Distribution calculators live in `Dicey::DistributionCalculators` module. There are three main calculators currently.
-- `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice. It is very fast, though sometimes slower than the next one.
-- `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice, with performance on par with the previous one, depending on exact parameters. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::DistributionCalculators::Iterative` is the most generic and slowest one, but can work with *any* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice.
+- `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
+- `Dicey::DistributionCalculators::Iterative` is the most generic, able to work with *abstract* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
 
 Additionally, there are three special calculators.
-- `Dicey::DistributionCalculators::Binomial` is a fast calculator for collections of equal two-sided dice, like coins.
-- `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *any* dice.
+- `Dicey::DistributionCalculators::Binomial` is a fast calculator for collections of equal two-sided dice, like coins, including *abstract* dice.
+- `Dicey::DistributionCalculators::Empirical` is more of a tool than a calculator. It "calculates" probabilities by performing a large number of rolls and counting frequency of outcomes. It can be interesting to play around with and see how practical results compare to theoretical ones. Due to its simplicity, it also works with *abstract* dice.
 - `Dicey::DistributionCalculators::Trivial` is an extra-fast calculator for some trivial cases. There isn't much point in using it manually.
 
 When in doubt which calculator to use (and if a given one *can* be used), use `Dicey::DistributionCalculators::AutoSelector`. Its `.call(dice)` method will return a valid calculator for the given dice or `nil` if none are acceptable.
@@ -508,14 +508,16 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 ### Iterative
 
-As a last resort, there is an almost brute-force iterative algorithm which goes through every possible dice roll and adds results together. While quickly growing terrible in performace (and memory usage), it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
+At last, there is an iterative algorithm which goes through every possible dice roll and adds results together. Whil being inefficient, it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
 - Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`
-- Complexity: **O(m<sup>n</sup>)**
+- Complexity: **O(n<sup>2</sup>⋅m<sup>2</sup>)**
 - Running time examples:
-  - 6d10 — 0.25 seconds
-  - 10d6 — 10 seconds
+  - 6d1000 — 2.5 seconds
+  - 1000d6 — 20 seconds
+  - 10d(a,b,c,d,e,f) — 0.5 seconds
+  - 10d(a,b,c,d,e,f,g,h,i,j) — 15 seconds
 
 ## Development
 
