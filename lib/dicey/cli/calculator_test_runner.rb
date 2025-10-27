@@ -75,7 +75,7 @@ module Dicey
       # @return [Boolean] whether there are no failing tests
       def call(*, report_style:, **)
         results = TEST_DATA.to_h { |test| run_test(test) }
-        full_report(results) if report_style == :full
+        output_report(results, report_style)
         results.values.none? do |test_result|
           test_result.values.any? { FAILURE_RESULTS.include?(_1) }
         end
@@ -121,6 +121,15 @@ module Dicey
         :crash
       end
 
+      # Output report based on the results.
+      def output_report(results, report_style)
+        if report_style == :full
+          full_report(results)
+        elsif report_style == :short
+          short_report(results)
+        end
+      end
+
       # Print results of running all tests.
       def full_report(results)
         results.each do |dice, test_result|
@@ -128,6 +137,24 @@ module Dicey
           test_result.each do |calculator, result|
             print "  #{calculator.class}: "
             puts RESULT_TEXT[result]
+          end
+        end
+      end
+
+      # Print only failing results of running tests.
+      def short_report(results)
+        results.each do |dice, test_result|
+          print "#{AbstractDie.describe(dice)}:"
+          if test_result.values.any? { FAILURE_RESULTS.include?(_1) }
+            puts
+            test_result.each do |calculator, result|
+              next unless FAILURE_RESULTS.include?(result)
+
+              print "  #{calculator.class}: "
+              puts RESULT_TEXT[result]
+            end
+          else
+            print " ", RESULT_TEXT[:pass], "\n"
           end
         end
       end

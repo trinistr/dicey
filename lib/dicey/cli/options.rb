@@ -55,7 +55,7 @@ module Dicey
         @parser.banner = <<~TEXT
           Usage: dicey [options] <die> [<die> ...]
                  dicey [options] -- <die> [<die> ...]
-                 dicey --test [full|quiet]
+                 dicey --test [full|short|quiet]
           All option names and arguments can be abbreviated if abbreviation is unambiguous.
           A lone "--" separates options and die definitions, allowing definitions to start with "-".
         TEXT
@@ -70,9 +70,9 @@ module Dicey
 
       def add_test_options
         @parser.on_tail(
-          "--test [REPORT_STYLE]", %w[full quiet],
+          "--test [REPORT_STYLE]", %w[full short quiet],
           "Check predefined calculation cases and exit.",
-          "REPORT_STYLE can be: `full`, `quiet`.", "`full` is default."
+          "REPORT_STYLE can be: `full`, `short`, `quiet`.", "`full` is default."
         ) do |report_style|
           @options[:mode] = :test
           @options[:report_style] = report_style&.to_sym || :full
