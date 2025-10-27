@@ -8,8 +8,7 @@ require_relative "../mixins/warn_about_vector_number"
 module Dicey
   module DistributionCalculators
     # Calculator for a collection of {AbstractDie} which goes through
-    # every possible combination of dice, being almost a brute-force
-    # approach (very slow).
+    # every possible combination of dice (somewhat slow).
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class Iterative < BaseCalculator
@@ -33,9 +32,19 @@ module Dicey
       def calculate(dice, **nil)
         dice = vectorize_dice(dice)
 
-        dice.map(&:sides_list).reduce { |result, die|
-          result.flat_map { |roll| die.map { |side| roll + side } }
-        }.tally
+        dice[1..].reduce(dice.first.sides_list.tally) do |previous_distribution, die|
+          convolve_with_die(previous_distribution, die.sides_list.tally)
+        end
+      end
+
+      def convolve_with_die(previous_distribution, die_sides)
+        previous_distribution.each_with_object({}) do |(outcome, weight), next_distribution|
+          die_sides.each do |side, side_weight|
+            next_outcome = outcome + side
+            next_distribution[next_outcome] ||= 0
+            next_distribution[next_outcome] += weight * side_weight
+          end
+        end
       end
     end
   end
