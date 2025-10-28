@@ -73,7 +73,7 @@ module Dicey
       # @see AutoSelector
       #
       # @param dice [Enumerable<AbstractDie>]
-      # @return [Integer] 0 if +dice+ is empty
+      # @return [Integer] 0 if +dice+ is empty, otherwise can be any value
       def heuristic_complexity(dice)
         return 0 if dice.empty?
 

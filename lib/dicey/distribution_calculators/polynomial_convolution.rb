@@ -28,7 +28,7 @@ module Dicey
       end
 
       def calculate_heuristic(dice_count, sides_count)
-        (dice_count**3.2) * 100 * (sides_count**1.9)
+        (2 * dice_count**3 - 4_250_000) + (26 * sides_count**2 + 230_000)
       end
 
       def calculate(dice, **nil)

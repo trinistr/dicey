@@ -37,7 +37,7 @@ module Dicey
       end
 
       def calculate_heuristic(dice_count, sides_count)
-        N * dice_count * Math.log2(sides_count)
+        (39100 * dice_count + 196_000_000) + (412_000 * sides_count - 9_360_000)
       end
 
       def calculate(dice, rolls: N)

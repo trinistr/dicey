@@ -10,13 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Added**
 - Key classes and modules now have documentation with important points and links to further reading to reduce friction for API users.
 - `Dicey::DistributionCalculators::AutoSelector.call` which does not require an instance to be created.
-- CLI is now enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI is called with `Dicey::CLI.call([argv])`. CLI classes are considered private, however.
+- CLI is now enabled with `require "dicey/cli"` instead of `require "dicey/cli/blender"`. CLI is called with `Dicey::CLI.call([argv])`. This is now the public API for running CLI programmatically.
 - `Trivial` calculator for some simple cases, with significantly better performance.
 - `Binomial` calculator for collections of equal two-sided dice, like coins.
 - "short" format for "--test" option, producing only a summary or fails for each dice combination.
 
 **Changed**
-- `Iterative` (formerly `BruteForce`) calculator has been rewritten for a massive speed-up yet again. It no longer has exponential complexity.
+- `Iterative` (formerly `BruteForce`) calculator has been rewritten for a massive speed-up yet again. It no longer has exponential complexity, being around quadratic for both count of dice and sides.
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
 - Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace and improve naming:
   - Rename `KroneckerSubstitution` calculator to `PolynomialConvolution`.
@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Move `Runner`, `TestRunner` and `Roller` to `Dicey::CLI`.
   - Rename `Runner` to `CalculatorRunner` and `TestRunner` to `CalculatorTestRunner`.
   - No longer `require` formatters or runners by default, only for CLI support.
+  - Mark CLI classes as private API.
+- Change formulas for `#heuristic_complexity` across all calculators based on extensive benchmarking and polynomial fitting.
 
 **Deprecated**
 - "-v" option is deprecated in favor of "-V". "-v" will be changed to "--verbose" in the future.

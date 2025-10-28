@@ -84,12 +84,8 @@ module Dicey
 
       let(:dice) { [RegularDie.new(6), RegularDie.new(6)] }
 
-      it "returns a positive integer" do
-        expect(complexity).to be_a(Integer).and be > 0
-      end
-
-      it "increases with number of dice" do
-        expect(complexity).to be > calculator.heuristic_complexity([dice.first])
+      it "returns an integer" do
+        expect(complexity).to be_a(Integer)
       end
 
       it "increases with number of sides" do

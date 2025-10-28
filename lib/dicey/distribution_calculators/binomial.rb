@@ -21,8 +21,8 @@ module Dicey
         dice.first.sides_num == 2 && dice.all? { _1 == dice.first }
       end
 
-      def calculate_heuristic(dice_count, sides_count)
-        sides_count * (dice_count**2)
+      def calculate_heuristic(dice_count, _sides_count)
+        384 * dice_count**2 + 6_760_000
       end
 
       def calculate(dice, **nil)
