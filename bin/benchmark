@@ -17,7 +17,8 @@ require_relative "../lib/dicey"
 require_relative "../lib/dicey/cli"
 
 # Set up test data
-# ...
+matrix = 10.step(50, by: 10).flat_map { |count| 10.step(50, by: 10).map { |sides| [count, sides] } }
+dice_sets = matrix.map { |count, sides| Dicey::RegularDie.from_count(count, sides) }
 
 # Run benchmark and generate reports
 FileUtils.mkdir_p("tmp")
@@ -26,9 +27,13 @@ report_path = "tmp/benchmark #{Time.now.iso8601} " \
               "(commit #{`git rev-parse HEAD`.chomp[0..7]}).json"
 StackProf.run(mode: :cpu, raw: true, out: "tmp/stackprof.dump") do
   Benchmark.ips do |ips|
-    ips.report("Iterative") { Dicey::DistributionCalculators::Iterative.new.call(Dicey::RegularDie.from_count(6, 6)) }
-    ips.report("Rolling") { Dicey::RegularDie.new(10_000).roll }
-    ips.report("full run") { Dicey::CLI.call(["100d6", "--format", "null"]) }
+    Dicey::DistributionCalculators::AutoSelector::AVAILABLE_CALCULATORS.each do |calc|
+      dice_sets.each do |dice|
+        next unless calc.valid_for?(dice)
+
+        ips.report("#{calc.class} #{dice.size}d#{dice.first.sides_num}") { calc.call(dice) }
+      end
+    end
 
     ips.json!(report_path)
   end
@@ -36,5 +41,5 @@ end
 puts "Report saved to #{report_path}"
 
 # Generate flamegraph to actually understand StackProf's report
-`stackprof tmp/stackprof.dump --d3-flamegraph > tmp/flamegraph.html`
-puts "Flamegraph saved to tmp/flamegraph.html"
+# `stackprof tmp/stackprof.dump --d3-flamegraph > tmp/flamegraph.html`
+# puts "Flamegraph saved to tmp/flamegraph.html"
