@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.17.0...main](https://github.com/trinistr/dicey/compare/v0.17.0...main)
+
+## [v0.17.0] — 2025-10-28
+
 This is a major update focusing on correcting mistakes and preparing for version 1.0.0.
 
 Highlights:
@@ -41,7 +45,7 @@ Highlights:
 **Deprecated**
 - "-v" option is deprecated in favor of "-V". "-v" will be changed to "--verbose" in the future.
 
-[Compare v0.16.2...main](https://github.com/trinistr/dicey/compare/v0.16.2...main)
+[Compare v0.16.2...v0.17.0](https://github.com/trinistr/dicey/compare/v0.16.2...v0.17.0)
 
 ## [v0.16.2] — 2025-10-10
 
@@ -306,6 +310,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.17.0]: https://github.com/trinistr/dicey/tree/v0.17.0
 [v0.16.2]: https://github.com/trinistr/dicey/tree/v0.16.2
 [v0.16.1]: https://github.com/trinistr/dicey/tree/v0.16.1
 [v0.16.0]: https://github.com/trinistr/dicey/tree/v0.16.0
