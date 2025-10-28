@@ -26,8 +26,8 @@ module Dicey
         dice.size == 2 && RegularDie === dice.first && dice.first == dice.last
       end
 
-      def calculate_heuristic(dice_count, sides_count)
-        sides_count * dice_count
+      def calculate_heuristic(_dice_count, sides_count)
+        -5_000_000 + (328 * sides_count - 89800)
       end
 
       def calculate(dice, **nil)

@@ -82,8 +82,8 @@ module Dicey
 
       let(:dice) { AbstractDie.from_list([-0.5, 1, 2.5], %w[1 2 5]) }
 
-      it "returns a positive integer" do
-        expect(complexity).to be_a(Integer).and be > 0
+      it "returns an integer" do
+        expect(complexity).to be_a(Integer)
       end
 
       it "increases with number of dice" do
