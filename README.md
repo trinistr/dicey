@@ -506,6 +506,17 @@ This algorithm is based on raising a univariate polynomial to a power and using 
   - 6d1000 — 1.5 seconds
   - 1000d6 — 10 seconds
 
+### Binomial
+
+This is a specialized alogorithm for coin-like dice of any kind. It is significantly faster than general algorithms.
+
+- Limitations: only *equal* two-sided dice are allowed, **vector_number** allows non-numeric values.
+- Example: `dicey 500d2`
+- Complexity: **O(n<sup>2</sup>)**
+- Running time examples:
+  - 1000d2 — 0.125 seconds
+  - 10000d2 — 3.5 seconds
+
 ### Iterative
 
 At last, there is an iterative algorithm which goes through every possible dice roll and adds results together. Whil being inefficient, it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
