@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+This is a major update focusing on correcting mistakes and preparing for version 1.0.0.
+
+Highlights:
+- Many modules and classes, including calculators, have been renamed.
+- CLI is now private API, except for a single "do everything" method.
+- All three main calculators now have competitive performance.
+- Two new specialized calculators.
+
 **Added**
 - Key classes and modules now have documentation with important points and links to further reading to reduce friction for API users.
 - `Dicey::DistributionCalculators::AutoSelector.call` which does not require an instance to be created.
