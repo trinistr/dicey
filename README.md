@@ -10,7 +10,13 @@
 
 The premier solution in total paradigm shift for resolving dicey problems of tomorrow, today, used by industry-leading professionals around the world!
 
-In seriousness, this program is mainly useful for calculating distributions of weights (or probabilities) of all possible dice rolls for a given set of dice. Dice in such a set can be different, have arbitrary numbers, or even be non-numeric altogether. It can also be used to roll any dice that it supports.
+*\*cough, cough\**
+
+Dicey is a calculator of weight/probability distributions of all possible dice rolls for a given set of dice, with support for pretty much any dice you can imagine. It can also roll those dice, if you just need a roller!
+
+Dicey was created due to frustration with online "calculators" that just calculate a single probability, and not even for interesting combinations of dice. Over time it has grown to support features that I've not seen anywhere else.
+
+Check out Dicey online at [dicey.bulancov.tech](https://dicey.bulancov.tech)!
 
 ## Table of contents
 
@@ -42,7 +48,7 @@ In seriousness, this program is mainly useful for calculating distributions of w
 
 Use online version of **Dicey** on its own website: [dicey.bulancov.tech](https://dicey.bulancov.tech)!
 
-It does not provide quite all features, but it's easy to use and quick to get started.
+It does not provide quite all features, but it's easy to use and quick to get started. And it's installable as a webapp, so it can be used offline too!
 
 ### For those who want the full command line experience
 
