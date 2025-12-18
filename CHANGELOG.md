@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.17.1...main](https://github.com/trinistr/dicey/compare/v0.17.1...main)
+
+## [v0.17.1] — 2025-12-19
+
 **Fixed**
 - It is now possible to use proper fractions (like "3/4") in calls to `DieFoundry`. This was missing ever since the switch to `Rational` in [v0.15.1].
 
-[Compare v0.17.0...main](https://github.com/trinistr/dicey/compare/v0.17.0...main)
+[Compare v0.17.0...v0.17.1](https://github.com/trinistr/dicey/compare/v0.17.0...v0.17.1)
 
 ## [v0.17.0] — 2025-10-28
 
@@ -313,6 +317,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.17.1]: https://github.com/trinistr/dicey/tree/v0.17.1
 [v0.17.0]: https://github.com/trinistr/dicey/tree/v0.17.0
 [v0.16.2]: https://github.com/trinistr/dicey/tree/v0.16.2
 [v0.16.1]: https://github.com/trinistr/dicey/tree/v0.16.1
