@@ -16,7 +16,7 @@ module Dicey
     # Regexp for an integer number.
     INTEGER = /(?:-?\d++)/
     # Regexp for a (possibly) fractional number.
-    DECIMAL = /(?:-?\d++(?:\.\d++)?)/
+    FRACTION = %r{(?:-?\d++(?:/\d++|\.\d++)?)}
     # Regexp for an "arbitrary" string.
     STRING = /(?:(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')/
 
@@ -31,7 +31,7 @@ module Dicey
       [/\A#{PREFIX}\(?(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))\)?\z/,
        :weirdly_shaped_mold].freeze,
       # Non-integers require special handling for precision.
-      [/\A#{PREFIX}\(?(?<sides>#{DECIMAL}(?:(?:,#{DECIMAL})++,?+|,))\)?\z/,
+      [/\A#{PREFIX}\(?(?<sides>#{FRACTION}(?:(?:,#{FRACTION})++,?+|,))\)?\z/,
        :weirdly_precise_mold].freeze,
       # Lists of stuff are broken into AbstractDie.
       [/\A#{PREFIX}\(?(?<sides>#{STRING}(?:(?:,#{STRING})++,?+|,))\)?\z/, :cursed_mold].freeze,
@@ -97,7 +97,7 @@ module Dicey
         case side
         when /\A#{INTEGER}\z/o
           side.to_i
-        when /\A#{DECIMAL}\z/o
+        when /\A#{FRACTION}\z/o
           rational_to_integer(Rational(side))
         else
           side.match(STRING)[:side].to_sym

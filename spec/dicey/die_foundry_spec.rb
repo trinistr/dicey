@@ -111,8 +111,8 @@ module Dicey
       end
     end
 
-    context "when called with a list of decimal numbers" do
-      let(:die) { foundry.call("1.5,-3.5,19.5") }
+    context "when called with a list of fractional numbers" do
+      let(:die) { foundry.call("3/2,-3.5,19.5") }
 
       it "returns a NumericDie with the given sides" do
         expect(die).to be_a NumericDie
@@ -121,7 +121,7 @@ module Dicey
       end
 
       context "if list includes integers" do
-        let(:die) { foundry.call("1.5,-3,19.5") }
+        let(:die) { foundry.call("3/2,-3,19.5") }
 
         it "returns a NumericDie with both Rationals and Integers" do
           expect(die).to be_a NumericDie
@@ -131,7 +131,7 @@ module Dicey
       end
 
       context "if list is surrounded with brackets" do
-        let(:die) { foundry.call("(1.5,-3.5,19.5)") }
+        let(:die) { foundry.call("(1.5,-7/2,19.5)") }
 
         it "strips them before processing" do
           expect(die).to be_a NumericDie
@@ -141,7 +141,7 @@ module Dicey
       end
 
       context "and it's followed by a comma" do
-        let(:die) { foundry.call("1.5,-3.5,19.5,") }
+        let(:die) { foundry.call("1.5,-7/2,19.5,") }
 
         it "returns a NumericDie with the given sides" do
           expect(die).to be_a NumericDie
@@ -152,13 +152,13 @@ module Dicey
 
       context "with shorthand notation" do
         specify "dS produces a single NumericDie" do
-          expect(foundry.call("d3.0,4")).to eq NumericDie.new([3.0, 4])
+          expect(foundry.call("d3/1,4")).to eq NumericDie.new([3.0, 4])
           expect(foundry.call("D4,0.5")).to eq NumericDie.new([4, 0.5])
         end
 
         specify "1dS produces an array of 1 NumericDie" do
           expect(foundry.call("1d(-1.0,0,1)")).to eq [NumericDie.new([-1.0, 0, 1])]
-          expect(foundry.call("1D3,4,-0.5")).to eq [NumericDie.new([3, 4, -0.5])]
+          expect(foundry.call("1D3,4/1,-0.5")).to eq [NumericDie.new([3, 4, -0.5])]
         end
 
         specify "MdS produces an array of NumericDie" do

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Fixed**
+- It is now possible to use proper fractions (like "3/4") in calls to `DieFoundry`. This was missing ever since the switch to `Rational` in [v0.15.1].
+
 [Compare v0.17.0...main](https://github.com/trinistr/dicey/compare/v0.17.0...main)
 
 ## [v0.17.0] — 2025-10-28

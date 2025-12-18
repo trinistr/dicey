@@ -248,7 +248,7 @@ You have a sudden urge to roll dice while only having boring integer dice at hom
 
 Look no further than **roll** mode introduced in **Dicey** 0.12:
 ```sh
-$ dicey 0.5,1.0,1.5,2.0,2.5 4 --mode roll # As always, can be abbreviated to -m r
+$ dicey 1/2,1,1.5,2,2.5 4 --mode roll # As always, can be abbreviated to -m r
 # (1/2,1,3/2,2,5/2)+D4
 roll => 7/2 # You probably will get a different value here.
 ```
@@ -275,8 +275,9 @@ There are four *main* ways to define dice:
 - *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
 - *"3-6", "-5..5", "(0-1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
   - Accepted separators: "-", "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
-- *"1,2,4", "(-1.5,0,1.5)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
+- *"1,2,4", "(-1.5,0,3/2)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
   - Lists can end in a comma, allowing single-number lists.
+  - There is no difference between equal decimal and fractional representations of numbers.
 - *"1,1.5,Two", "(💚,🧡,💙,💜)" or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
   - Lists can end in a comma, allowing single-string lists.
   - Single (') or double (") quotes can be used to include other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
