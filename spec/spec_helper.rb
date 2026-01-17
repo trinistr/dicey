@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
+# Load all support files except coverage_helper first
+Dir["#{__dir__}/support/**/*.rb"].each { require _1 unless _1.end_with?("coverage_helper.rb") }
+
+# We don't want to have coverage for vector_number.
 require "vector_number"
-
-# Require coverage helper first to ensure it's loaded before any other files
+# Require coverage helper before the gem to ensure proper coverage reporting.
 require_relative "support/coverage_helper"
-
-Dir["#{__dir__}/support/**/*.rb"].each { require _1 }
 
 require "dicey"
 
