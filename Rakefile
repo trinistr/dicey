@@ -29,7 +29,7 @@ desc "Validate signatures with RBS"
 task :rbs do
   puts "Checking signatures with RBS..."
   if system "rbs", "-Isig", "validate"
-    puts "Signatures are good!"
+    puts "Signatures are valid"
     puts
   else
     puts "Signatures validation was not successful!"
@@ -76,6 +76,7 @@ namespace :version do
     name = Dir["*.gemspec"].first.then { |f| Gem::Specification.load(f).name }
     new_version = Bump::Bump.current
     Rake::Task["version:_update_changelog"].invoke(name, new_version)
+    Rake::Task["version:_update_next_version"].invoke(new_version)
     Rake::Task["version:_commit_and_tag"].invoke(name, new_version)
   end
 
@@ -100,6 +101,16 @@ namespace :version do
     changelog.delete_if { _1.match?(/^## \[v0\.0\.0\]/) }
 
     File.write("CHANGELOG.md", changelog.join)
+  end
+
+  task :_update_next_version, [:new_version] do |_task, args| # rubocop:disable Rake/Desc
+    new_version = args[:new_version]
+    # Update <<next>> version across code.
+    Dir["lib/**/*.rb"].each do |file|
+      content = File.read(file)
+      content.gsub!("<<next>>", new_version)
+      File.write(file, content)
+    end
   end
 
   task :_commit_and_tag, [:name, :new_version] do |_task, args| # rubocop:disable Rake/Desc
