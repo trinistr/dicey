@@ -110,6 +110,7 @@ namespace :version do
       content = File.read(file)
       content.gsub!("<<next>>", new_version)
       File.write(file, content)
+      system("git", "add", "--update", file)
     end
   end
 
