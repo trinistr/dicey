@@ -24,11 +24,28 @@ module Dicey
     end
 
     context "with -V/--version" do
-      let(:argv) { [%w[-V --version --ver].sample] }
+      let(:argv) { [%w[-V --version --vers].sample] }
 
       it "prints version info and exits" do
         expect { blender_call }
           .to output("Dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
+      end
+    end
+
+    context "with -v/--verbose" do
+      let(:argv) { [%w[-v --verbose --verb].sample, "2d2"] }
+
+      it "prints version info and extra output" do
+        expect { blender_call }
+          .to output(<<~TEXT).to_stdout
+            Dicey #{Dicey::VERSION}
+            Selected mode: distribution
+            Using calculator: Dicey::DistributionCalculators::Trivial
+            # D2+D2
+            2 => 1
+            3 => 2
+            4 => 1
+          TEXT
       end
     end
 
