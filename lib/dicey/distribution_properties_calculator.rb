@@ -3,6 +3,8 @@
 require_relative "mixins/rational_to_integer"
 
 module Dicey
+  # @note This class is considered experimental. It may be changed at any point.
+  #
   # Calculates distribution properties,
   # also known as descriptive statistics when applied to a population sample.
   #
