@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     dicey (0.17.1)
-      vector_number (>= 0.4.3)
+      vector_number (>= 0.4.3, < 2.0.0)
 
 GEM
   remote: https://rubygems.org/
