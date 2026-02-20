@@ -7,6 +7,7 @@ require_relative "options"
 require_relative "calculator_runner"
 require_relative "calculator_test_runner"
 require_relative "roller"
+require_relative "verbose_printer"
 
 Dir["formatters/*.rb", base: __dir__].each { require_relative _1 }
 
@@ -46,7 +47,13 @@ module Dicey
       def call(argv = ARGV)
         options, arguments = get_options_and_arguments(argv)
         require_optional_libraries(options)
-        return_value = RUNNERS[options.delete(:mode)].call(arguments, **options)
+
+        verbose_printer = VerbosePrinter.new(options[:verbosity])
+        verbose_printer.print("Selected mode: #{options[:mode]}")
+
+        return_value =
+          RUNNERS[options.delete(:mode)]
+          .call(arguments, **options, verbose_printer: verbose_printer)
         print return_value if return_value.is_a?(String)
         !!return_value
       end

@@ -72,8 +72,11 @@ module Dicey
       #
       # @param report_style [Symbol] one of: +:full+, +:quiet+;
       #   +:quiet+ style does not output any text
+      # @param verbose_printer [VerbosePrinter]
       # @return [Boolean] whether there are no failing tests
-      def call(*, report_style:, **)
+      def call(*, report_style:, verbose_printer: nil, **)
+        verbose_printer&.print("Available calculators:")
+        verbose_printer&.print(AVAILABLE_CALCULATORS.map { "  - #{_1.class}" }.join("\n"))
         results = TEST_DATA.to_h { |test| run_test(test) }
         output_report(results, report_style)
         results.values.none? do |test_result|

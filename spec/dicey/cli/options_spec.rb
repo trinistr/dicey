@@ -25,17 +25,18 @@ module Dicey
       end
     end
 
-    context "with -v" do
-      let(:argv) { [%w[-v].sample] }
+    context "with -v/--verbose" do
+      let(:argv) { [%w[-v --verbose --verb].sample, "2d2"] }
 
-      it "prints version info and exits" do
+      it "prints version info and enables verbose output" do
         expect { options.read(argv) }
-          .to output("Dicey #{Dicey::VERSION}\n").to_stdout.and raise_error SystemExit
+          .to output("Dicey #{Dicey::VERSION}\n").to_stdout
+        expect(options[:verbosity]).to eq 1
       end
     end
 
     context "with -V/--version" do
-      let(:argv) { [%w[-V --version --ver].sample] }
+      let(:argv) { [%w[-V --version --vers].sample] }
 
       it "prints version info and exits" do
         expect { options.read(argv) }

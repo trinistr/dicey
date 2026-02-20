@@ -88,9 +88,9 @@ module Dicey
           puts @parser.ver
           exit
         end
-        @parser.on_tail("-v", "(Deprecated) Show program version and exit.") do
+        @parser.on_tail("-v", "--verbose", "Enable verbose output.") do
           puts @parser.ver
-          exit
+          @options[:verbosity] = 1
         end
       end
 

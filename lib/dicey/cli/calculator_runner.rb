@@ -13,15 +13,17 @@ module Dicey
       # @param arguments [Array<String>] die definitions
       # @param format [#call] formatter for output
       # @param result [Symbol] result type selector
+      # @param verbose_printer [VerbosePrinter]
       # @return [String]
       # @raise [DiceyError]
-      def call(arguments, format:, result:, **)
+      def call(arguments, format:, result:, verbose_printer: nil, **)
         raise DiceyError, "no dice!" if arguments.empty?
 
         dice = arguments.flat_map { |definition| die_foundry.cast(definition) }
         calculator = DistributionCalculators::AutoSelector.call(dice)
         raise DiceyError, "no calculator could handle these dice!" unless calculator
 
+        verbose_printer&.print("Using calculator: #{calculator.class}")
         distribution = calculator.call(dice, result_type: result)
 
         format.call(distribution, AbstractDie.describe(dice))
