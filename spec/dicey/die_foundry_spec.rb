@@ -238,7 +238,7 @@ module Dicey
 
       it "returns an AbstractDie with the given sides" do
         expect(die).to be_a AbstractDie
-        expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+        expect(die.sides_list).to eq ["asd", 1, 2.5r, "3", "(')"]
       end
 
       context "if list is surrounded with brackets" do
@@ -246,7 +246,7 @@ module Dicey
 
         it "strips them before processing" do
           expect(die).to be_a AbstractDie
-          expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+          expect(die.sides_list).to eq ["asd", 1, 2.5r, "3", "(')"]
         end
       end
 
@@ -255,7 +255,7 @@ module Dicey
 
         it "returns an AbstractDie with the given sides" do
           expect(die).to be_a AbstractDie
-          expect(die.sides_list).to eq [:asd, 1, 2.5r, :"3", :"(')"]
+          expect(die.sides_list).to eq ["asd", 1, 2.5r, "3", "(')"]
         end
       end
 
@@ -269,18 +269,18 @@ module Dicey
 
       context "with shorthand notation" do
         specify "dS produces a single AbstractDie" do
-          expect(foundry.call("d'asd',1,2.5")).to eq AbstractDie.new([:asd, 1, 2.5r])
-          expect(foundry.call("D'asd',1,2.5")).to eq AbstractDie.new([:asd, 1, 2.5r])
+          expect(foundry.call("d'asd',1,2.5")).to eq AbstractDie.new(["asd", 1, 2.5r])
+          expect(foundry.call("D'asd',1,2.5")).to eq AbstractDie.new(["asd", 1, 2.5r])
         end
 
         specify "1dS produces an array of 1 AbstractDie" do
-          expect(foundry.call("1d'asd',1,2.5")).to eq [AbstractDie.new([:asd, 1, 2.5r])]
-          expect(foundry.call("1D'asd',1,2.5")).to eq [AbstractDie.new([:asd, 1, 2.5r])]
+          expect(foundry.call("1d'asd',1,2.5")).to eq [AbstractDie.new(["asd", 1, 2.5r])]
+          expect(foundry.call("1D'asd',1,2.5")).to eq [AbstractDie.new(["asd", 1, 2.5r])]
         end
 
         specify "MdS produces an array of AbstractDie" do
-          expect(foundry.call("2d'asd',1,2.5")).to eq AbstractDie.from_count(2, [:asd, 1, 2.5r])
-          expect(foundry.call("3D'asd',1,2.5")).to eq AbstractDie.from_count(3, [:asd, 1, 2.5r])
+          expect(foundry.call("2d'asd',1,2.5")).to eq AbstractDie.from_count(2, ["asd", 1, 2.5r])
+          expect(foundry.call("3D'asd',1,2.5")).to eq AbstractDie.from_count(3, ["asd", 1, 2.5r])
         end
       end
     end

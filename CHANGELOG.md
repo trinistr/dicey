@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Changed**
+- `DieFoundry` no longer uses Symbol for string sides, they are now Strings.
+  - This coincides with changes in **vector_number** 0.7.0 which removed special treatment for String units and unified behavior.
+
 [Compare v0.17.1...main](https://github.com/trinistr/dicey/compare/v0.17.1...main)
 
 ## [v0.17.1] — 2025-12-19

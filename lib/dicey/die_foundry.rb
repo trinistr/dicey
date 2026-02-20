@@ -100,7 +100,7 @@ module Dicey
         when /\A#{FRACTION}\z/o
           rational_to_integer(Rational(side))
         else
-          side.match(STRING)[:side].to_sym
+          side.match(STRING)[:side]
         end
       end
       build_dice(AbstractDie, definition[:count], sides)
