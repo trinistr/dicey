@@ -4,7 +4,6 @@ require_relative "../die_foundry"
 
 require_relative "../mixins/rational_to_integer"
 require_relative "../mixins/vectorize_dice"
-require_relative "../mixins/warn_about_vector_number"
 
 module Dicey
   module CLI
@@ -14,7 +13,6 @@ module Dicey
     class Roller
       include Mixins::RationalToInteger
       include Mixins::VectorizeDice
-      include Mixins::WarnAboutVectorNumber
 
       # @param arguments [Array<String>] die definitions
       # @param format [#call] formatter for output
@@ -28,7 +26,6 @@ module Dicey
 
         format.call({ "roll" => rational_to_integer(result) }, AbstractDie.describe(dice))
       rescue TypeError
-        warn_about_vector_number
         raise DiceyError, "can not roll dice with non-numeric sides!"
       end
 

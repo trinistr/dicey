@@ -24,9 +24,9 @@ module Dicey
     context "when vector_number is not available" do
       before { hide_const("VectorNumber") }
 
-      it "does not support AbstractDie" do
+      it "does not support AbstractDie, raising an error" do
         dice[0] = "sad,poi"
-        expect { result }.to(output(/"vector_number"/).to_stderr.and(raise_error DiceyError))
+        expect { result }.to raise_error DiceyError
       end
 
       it "supports NumericDie" do

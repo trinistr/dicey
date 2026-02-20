@@ -3,26 +3,20 @@
 require_relative "base_calculator"
 
 require_relative "../mixins/vectorize_dice"
-require_relative "../mixins/warn_about_vector_number"
 
 module Dicey
   module DistributionCalculators
     # Calculator for a collection of {AbstractDie} which goes through
     # every possible combination of dice (somewhat slow).
     #
-    # If dice include non-numeric sides, gem +vector_number+ has to be installed.
+    # If dice include non-numeric sides, gem +vector_number+ has to be available.
     class Iterative < BaseCalculator
       include Mixins::VectorizeDice
-      include Mixins::WarnAboutVectorNumber
 
       private
 
       def validate(dice)
-        if defined?(VectorNumber) || dice.all?(NumericDie)
-          true
-        else
-          warn_about_vector_number
-        end
+        !!defined?(VectorNumber) || dice.all?(NumericDie)
       end
 
       def calculate_heuristic(dice_count, sides_count)

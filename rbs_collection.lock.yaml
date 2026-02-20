@@ -2,15 +2,23 @@
 path: ".gem_rbs_collection"
 gems:
 - name: bigdecimal
-  version: '3.1'
+  version: '4.0'
   source:
     type: git
     name: ruby/gem_rbs_collection
-    revision: 0cb6351d218704700cf4df797ff8966b3a418fcd
+    revision: e3e5d23bcaf3c1a47e178068a3146b6674806cd1
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
+- name: pp
+  version: '0'
+  source:
+    type: stdlib
+- name: prettyprint
+  version: '0'
+  source:
+    type: stdlib
 - name: vector_number
-  version: 0.4.3
+  version: 0.7.0
   source:
     type: rubygems
 gemfile_lock_path: Gemfile.lock

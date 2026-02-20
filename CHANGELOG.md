@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Next]
 
 **Changed**
+- **vector_number** is now a runtime dependency, always installed with Dicey.
+  - Technically, it's still not required, but there will no longer be any warnings if it's not available.
 - `DieFoundry` no longer uses Symbol for string sides, they are now Strings.
   - This coincides with changes in **vector_number** 0.7.0 which removed special treatment for String units and unified behavior.
 

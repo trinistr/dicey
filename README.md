@@ -70,17 +70,7 @@ gem install dicey
 
 Or, if using Bundler, add it to your `Gemfile`:
 ```rb
-gem "dicey", "~> 0.16"
-```
-
-(Optional) If intending to work with non-numeric dice, install **vector_number** too:
-```sh
-gem install vector_number
-```
-
-or add it to your `Gemfile`:
-```rb
-gem "vector_number"
+gem "dicey", "~> 0.17"
 ```
 
 > [!TIP]
@@ -92,10 +82,8 @@ gem "vector_number"
 ### Requirements
 
 **Dicey** is tested to work on CRuby 3.0+, latest JRuby and TruffleRuby. Compatible implementations should work too.
+- `vector_number` is a dependency, used for non-numeric dice, but technically not required.
 - JSON and YAML formatting require `json` and `yaml`.
-- Non-numeric dice require gem `vector_number` to be installed.
-
-Otherwise, there are no direct dependencies.
 
 ## Usage: CLI (command line)
 
@@ -262,12 +250,10 @@ You are a wizard and you have a spellbook with an elemental vortex spell that de
 ```sh
 $ dicey 3d❄️,🔥,⚡️,🌪,🌲 -m r
 # (❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)+(❄️,🔥,⚡️,🌪,🌲)
-roll => 1⋅🌪 + 1⋅🌲 + 1⋅⚡️
+roll => 1⋅"🌪" + 1⋅"🌲" + 1⋅"⚡️"
 ```
 
 Wind, wood and lightning in equal proportion it is! Your enemies will tremble!
-
-Regrettably, it is not possible to use elemental dice without installing **vector_number** gem first.
 
 ### All ways to define dice
 
@@ -334,18 +320,16 @@ It is easy enough to create numeric dice or dice with distinct symbols. However,
 
 For example, a game may have a die which can roll 1-3 💚 or a ♥️. You could just use completely different strings for the different numbers of hearts, but they would not be summable (what if you need to roll two such dice and add them together?). In this case, you can directly use `VectorNumber` to create summable strings:
 ```rb
-# Using Symbols is not required, but they look nicer in output.
-# `DieFoundry` uses Symbols for this reason.
-heal = VectorNumber[:"💚"]
-regen = VectorNumber[:"♥️"]
+heal = VectorNumber["💚"]
+regen = VectorNumber["♥️"]
 die = Dicey::AbstractDie.new([heal, heal * 2, heal * 3, regen])
-  # => #<Dicey::AbstractDie:0x00007f4a7c95efe8 @current_side_index=0, @sides_list=[(1⋅💚), (2⋅💚), (3⋅💚), (1⋅♥️)], @sides_num=4>
+  # => #<Dicey::AbstractDie:0x00007f4a7c95efe8 @current_side_index=0, @sides_list=[(1⋅"💚"), (2⋅"💚"), (3⋅"💚"), (1⋅"♥️")], @sides_num=4>
 ```
 
 Now such dice can easily be rolled together and results summed:
 ```rb
 die.roll + die.roll
-  # => (5⋅💚)
+  # => (5⋅"💚")
 ```
 
 ### Rolling
@@ -394,7 +378,7 @@ die.roll
 Distribution calculators live in `Dicey::DistributionCalculators` module. There are three main calculators currently.
 - `Dicey::DistributionCalculators::PolynomialConvolution` is the recommended calculator, able to handle all `Dicey::RegularDie` and other integer dice.
 - `Dicey::DistributionCalculators::MultinomialCoefficients` is specialized for repeated numeric dice. However, it is currently limited to dice with arithmetic sequences (this includes regular dice, however).
-- `Dicey::DistributionCalculators::Iterative` is the most generic, able to work with *abstract* dice. It needs gem "**vector_number**" to be installed and available to work with non-numeric dice.
+- `Dicey::DistributionCalculators::Iterative` is the most generic, able to work with *abstract* dice.
 
 Additionally, there are three special calculators.
 - `Dicey::DistributionCalculators::Binomial` is a fast calculator for collections of equal two-sided dice, like coins, including *abstract* dice.
@@ -517,7 +501,7 @@ This algorithm is based on raising a univariate polynomial to a power and using 
 
 This is a specialized alogorithm for coin-like dice of any kind. It is significantly faster than general algorithms.
 
-- Limitations: only *equal* two-sided dice are allowed, **vector_number** allows non-numeric values.
+- Limitations: only *equal* two-sided dice are allowed.
 - Example: `dicey 500d2`
 - Complexity: **O(n<sup>2</sup>)**
 - Running time examples:
@@ -528,7 +512,7 @@ This is a specialized alogorithm for coin-like dice of any kind. It is significa
 
 At last, there is an iterative algorithm which goes through every possible dice roll and adds results together. Whil being inefficient, it has the largest input space, allowing to work with completely nonsensical dice, including complex numbers and altogether non-numeric values.
 
-- Limitations: without **vector_number** all values must be numbers, otherwise almost any values are viable.
+- Limitations: practically all values are viable.
 - Example: `dicey 5 1,0.1,2 A,B,C`
 - Complexity: **O(n<sup>2</sup>⋅m<sup>2</sup>)**
 - Running time examples:

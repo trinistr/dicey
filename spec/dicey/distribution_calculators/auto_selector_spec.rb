@@ -75,8 +75,7 @@ module Dicey
       context "when vector_number is not available" do
         before { hide_const("VectorNumber") }
 
-        it "returns nil with a warning" do
-          expect { selected_calculator }.to output.to_stderr
+        it "returns nil" do
           expect(selected_calculator).to be nil
         end
       end

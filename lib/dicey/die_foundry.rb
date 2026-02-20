@@ -47,8 +47,8 @@ module Dicey
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
     #   but uses +Rational+ for values to maintain precise results;
     # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),
-    #   which produces an {AbstractDie} with strings converted to Symbols
-    #   and numbers treated the same as in previous cases.
+    #   which produces an {AbstractDie} with numbers treated the same as in previous cases,
+    #   and other or quoted values treated as Strings.
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d" without an explicit count is ignored instead, creating a single die.
