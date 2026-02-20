@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
+
+## [v0.18.0] — 2026-02-21
+
+This update promotes **vector_number** to a runtime dependency, and accomodates changes in its latest version.
+
 **Changed**
 - **vector_number** is now a runtime dependency, always installed with Dicey.
   - Technically, it's still not required, but there will no longer be any warnings if it's not available.
@@ -14,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This coincides with changes in **vector_number** 0.7.0 which removed special treatment for String units and unified behavior.
 - "-v" option is now used for "--verbose", enabling extra output.
 
-[Compare v0.17.1...main](https://github.com/trinistr/dicey/compare/v0.17.1...main)
+[Compare v0.17.1...v0.18.0](https://github.com/trinistr/dicey/compare/v0.17.1...v0.18.0)
 
 ## [v0.17.1] — 2025-12-19
 
@@ -324,6 +330,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.18.0]: https://github.com/trinistr/dicey/tree/v0.18.0
 [v0.17.1]: https://github.com/trinistr/dicey/tree/v0.17.1
 [v0.17.0]: https://github.com/trinistr/dicey/tree/v0.17.0
 [v0.16.2]: https://github.com/trinistr/dicey/tree/v0.16.2

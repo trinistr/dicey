@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dicey (0.17.1)
+    dicey (0.18.0)
       vector_number (>= 0.4.3, < 2.0.0)
 
 GEM
@@ -240,7 +240,7 @@ CHECKSUMS
   csv (3.3.5) sha256=6e5134ac3383ef728b7f02725d9872934f523cb40b961479f69cf3afa6c8e73f
   date (3.4.1) sha256=bf268e14ef7158009bfeaec40b5fa3c7271906e88b196d958a89d4b408abe64f
   date (3.4.1-java) sha256=74740d914c65a922a15657c25ff0e203c16f1d0f7aa910a9ebed712afe9819c4
-  dicey (0.17.1)
+  dicey (0.18.0)
   diff-lcs (1.6.2) sha256=9ae0d2cba7d4df3075fe8cd8602a8604993efc0dfa934cff568969efb1909962
   docile (1.4.1) sha256=96159be799bfa73cdb721b840e9802126e4e03dfc26863db73647204c727f21e
   drb (2.2.3) sha256=0b00d6fdb50995fe4a45dea13663493c841112e4068656854646f418fda13373
