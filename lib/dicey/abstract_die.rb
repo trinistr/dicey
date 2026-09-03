@@ -49,7 +49,12 @@ module Dicey
     def self.describe(dice)
       return dice.to_s if AbstractDie === dice
 
-      dice.to_a.join("+")
+      dice.map(&:to_s).reduce do |string, die|
+        die_string = die.to_s
+        string << "+" unless die_string.match?(/\A[+-]/)
+        string << die_string
+        string
+      end
     end
 
     # Create a bunch of different dice at once from a list of definitions.
@@ -85,7 +90,7 @@ module Dicey
     # @raise [DiceyError] if +sides_list+ is empty
     def initialize(sides_list)
       @sides_list = sides_list.to_a
-      @sides_list = @sides_list.dup if @sides_list.equal?(sides_list)
+      @sides_list = @sides_list.dup if @sides_list.equal?(sides_list) && !@sides_list.frozen?
       raise DiceyError, "dice must have at least one side!" if @sides_list.empty?
 
       @sides_list.freeze

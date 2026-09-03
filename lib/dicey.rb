@@ -30,6 +30,7 @@ module Dicey
   require_relative "dicey/abstract_die"
   require_relative "dicey/numeric_die"
   require_relative "dicey/regular_die"
+  require_relative "dicey/static_die"
 
   require_relative "dicey/die_foundry"
 

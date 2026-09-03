@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+**Added**
+- `StaticDie` which is an `AbstractDie` with exactly one side. It can be helpful to model and optimize constant variables.
+
+**Changed**
+- `DieFoundry` now recognizes `+V` and `-V` definitions, where `V` is an integer, fraction or string, producing `StaticDie` instances.
+
 [Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
 
 ## [v0.18.0] — 2026-02-21

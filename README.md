@@ -264,14 +264,15 @@ There are four *main* ways to define dice:
 - *"1,2,4", "(-1.5,0,3/2)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
   - Lists can end in a comma, allowing single-number lists.
   - There is no difference between equal decimal and fractional representations of numbers.
-- *"1,1.5,Two", "(💚,🧡,💙,💜)" or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
+- *"1,1.5,Two", "(💚,🧡,💙,💜)", or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
   - Lists can end in a comma, allowing single-string lists.
   - Single (') or double (") quotes can be used to include other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
   - Quotes can also be used to treat numbers as strings.
+- *"+5", "+WIZ", or "-2.5"*: a single value prefixed with a sign makes a die that adds that value to the result.
 
-*"D6", "d(-1,3)", "d2..4", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
+*"D6", "d(-1,3)", "d2..4", "d+5", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
 
-*"2D6", "5d-1,3", "277D(2..4)", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
+*"2D6", "5d-1,3", "277D(2..4)", "3d+5", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
 ## Usage: API
 
@@ -281,10 +282,11 @@ There are four *main* ways to define dice:
 
 ### Dice
 
-There are 3 classes of dice currently:
+There are 4 classes of dice currently:
 - `Dicey::AbstractDie` is the base class for other dice, but can be used on its own. It has no restrictions on values of sides.
 - `Dicey::NumericDie` behaves much the same as `Dicey::AbstractDie` (being its subclass), except for checking that all values are instances of `Numeric`. It can be initialized with an Array or Range.
 - `Dicey::RegularDie` is a specialized subclass of `Dicey::NumericDie`. It is defined by a single integer *N* which is expanded to a range (1..*N*).
+- `Dicey::StaticDie` is a specialized subclass of `Dicey::AbstractDie`. It accepts any single value and always produces that value.
 
 All dice classes have constructor methods aside from `.new`:
 - `.from_list` takes a list of definitions and calls `.new` with each one;
@@ -293,7 +295,7 @@ All dice classes have constructor methods aside from `.new`:
 See [Diving deeper](#diving-deeper) for more theoretical information.
 
 > [!NOTE]
-> 💡 Using `Float` values is liable to cause precision issues. Due to in-built result verification, this **will** raise errors. Use `Rational` or `BigDecimal` instead. 
+> 💡 Using `Float` values is liable to cause precision issues. Due to built-in result verification, this **will** raise errors. Use `Rational` or `BigDecimal` instead. 
 
 #### DieFoundry
 

@@ -91,6 +91,36 @@ module Dicey
           expect(description).to eq "(5,5,0.5)+(1,2,3)"
         end
       end
+
+      context "when some dice produce +/- signs on their own" do
+        let(:dice) do
+          [described_class.new([5, 5, 0.5]), signed_die_class.new([1]), signed_die_class.new([-1])]
+        end
+
+        let(:signed_die_class) do
+          Class.new(described_class) do
+            def to_s = format("%+d", sides_list.first)
+          end
+        end
+
+        it "returns a string description of the dice in the order provided" do
+          expect(description).to eq "(5,5,0.5)+1-1"
+        end
+      end
+
+      context "when some dice contain +/- strings in their descriptions" do
+        let(:dice) { [described_class.new([5, 5, 0.5]), silly_die_class.new([1, 3, -2])] }
+
+        let(:silly_die_class) do
+          Class.new(described_class) do
+            def to_s = sides_list.map(&:to_s).join("++")
+          end
+        end
+
+        it "does not remove extra +s or -s inside die descriptions" do
+          expect(description).to eq "(5,5,0.5)+1++3++-2"
+        end
+      end
     end
 
     describe ".from_list" do
@@ -166,6 +196,14 @@ module Dicey
         it "transforms it into an Array" do
           expect(die.sides_list).to eq %w[a b c]
           expect(die.sides_list).to be_frozen
+        end
+      end
+
+      context "if given a frozen Array" do
+        let(:sides) { %w[a b c].freeze }
+
+        it "does not make a copy of the array" do
+          expect(die.sides_list).to equal sides
         end
       end
 

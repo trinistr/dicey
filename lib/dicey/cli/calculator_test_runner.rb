@@ -24,7 +24,10 @@ module Dicey
         [[2, 2, 2, 2], { 4 => 1, 5 => 4, 6 => 6, 7 => 4, 8 => 1 }],
         [[1, 2, 3], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
         [[3, 2, 1], { 3 => 1, 4 => 2, 5 => 2, 6 => 1 }],
+        [["+5"], { 5 => 1 }],
+        [["+5", "-12.2"], { -7.2r => 1 }],
         [[[0], 1], { 1 => 1 }],
+        [[[2, 3, 4], "-3"], { -1 => 1, 0 => 1, 1 => 1 }],
         [[4, 6], { 2 => 1, 3 => 2, 4 => 3, 5 => 4, 6 => 4, 7 => 4, 8 => 3, 9 => 2, 10 => 1 }],
         [[[3, 17, 21]], { 3 => 1, 17 => 1, 21 => 1 }],
         [[[3, 3, 3, 3, 3, 5, 5, 5]], { 3 => 5, 5 => 3 }],
@@ -58,6 +61,7 @@ module Dicey
                  VectorNumber["s"] * 2 => 1, VectorNumber["a"] * 2 => 1, 8 => 1,
                  VectorNumber["s", "a"] => 2, VectorNumber["s", 4] => 2, VectorNumber["a", 4] => 2,
                }],
+              [[["s", 3], "+d"], { VectorNumber["s", "d"] => 1, VectorNumber[3, "d"] => 1 }],
             ]
           end
         ),
@@ -107,6 +111,8 @@ module Dicey
         definition.map do |die_def|
           if die_def.is_a?(Integer)
             RegularDie.new(die_def)
+          elsif die_def.is_a?(String)
+            DieFoundry.new.cast(die_def)
           elsif die_def.all?(Numeric)
             NumericDie.new(die_def)
           else

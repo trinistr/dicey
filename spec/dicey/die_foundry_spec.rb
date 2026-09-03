@@ -6,6 +6,14 @@ module Dicey
 
     include_examples "has an alias", :cast, :call
 
+    context "when called with a single 0 in a string" do
+      let(:die) { foundry.call("0") }
+
+      it "raises DiceyError" do
+        expect { die }.to raise_error DiceyError
+      end
+    end
+
     context "when called with a single positive integer" do
       let(:die) { foundry.call("6") }
 
@@ -38,30 +46,54 @@ module Dicey
           expect { die }.to raise_error DiceyError
         end
       end
+    end
 
-      context "and it's followed by a comma" do
-        let(:die) { foundry.call("6,") }
+    context "when called with a single signed value" do
+      context "with a plus" do
+        it "creates a StaticDie from an integer" do
+          expect(foundry.call("+5")).to eq StaticDie.new(5)
+        end
 
-        it "returns a NumericDie with one side" do
-          expect(die).to be_a NumericDie
-          expect(die.sides_list).to eq [6]
+        it "creates a StaticDie from a fraction" do
+          expect(foundry.call("+5.5")).to eq StaticDie.new(5.5)
+          expect(foundry.call("+5/2")).to eq StaticDie.new(2.5)
+        end
+
+        it "creates a StaticDie from a string" do
+          expect(foundry.call("+Beak")).to eq StaticDie.new("Beak")
         end
       end
-    end
 
-    context "when called with a single negative integer in a string" do
-      let(:die) { foundry.call("-6") }
+      context "with a minus" do
+        it "creates a StaticDie from an integer" do
+          expect(foundry.call("-5")).to eq StaticDie.new(-5)
+        end
 
-      it "raises DiceyError" do
-        expect { die }.to raise_error DiceyError
+        it "creates a StaticDie from a fraction" do
+          expect(foundry.call("-5.5")).to eq StaticDie.new(-5.5)
+          expect(foundry.call("-5/2")).to eq StaticDie.new(-2.5)
+        end
+
+        it "creates a StaticDie from a vectorized string" do
+          expect(foundry.call("-Beak")).to eq StaticDie.new(-VectorNumber["Beak"])
+        end
       end
-    end
 
-    context "when called with a single 0 in a string" do
-      let(:die) { foundry.call("0") }
+      context "with shorthand notation" do
+        specify "dN produces a single StaticDie" do
+          expect(foundry.call("d+6")).to eq StaticDie.new(6)
+          expect(foundry.call("D-3")).to eq StaticDie.new(-3)
+        end
 
-      it "raises DiceyError" do
-        expect { die }.to raise_error DiceyError
+        specify "1dN produces an array of 1 StaticDie" do
+          expect(foundry.call("1d+9")).to eq [StaticDie.new(9)]
+          expect(foundry.call("1D-2")).to eq [StaticDie.new(-2)]
+        end
+
+        specify "MdN produces an array of StaticDie" do
+          expect(foundry.call("2d+4")).to eq [StaticDie.new(4), StaticDie.new(4)]
+          expect(foundry.call("2D-6")).to eq [StaticDie.new(-6), StaticDie.new(-6)]
+        end
       end
     end
 
@@ -88,6 +120,15 @@ module Dicey
         it "returns a NumericDie with the given sides" do
           expect(die).to be_a NumericDie
           expect(die.sides_list).to eq [1, 3, 19]
+        end
+      end
+
+      context "if list consists of a single number followed by a comma" do
+        let(:die) { foundry.call("6,") }
+
+        it "returns a NumericDie with one side" do
+          expect(die).to be_a NumericDie
+          expect(die.sides_list).to eq [6]
         end
       end
 
@@ -174,6 +215,15 @@ module Dicey
 
         it "raises DiceyError" do
           expect { die }.to raise_error DiceyError
+        end
+      end
+
+      context "when called with a single decimal number followed by a comma" do
+        let(:die) { foundry.call("6.2,") }
+
+        it "returns a NumericDie with one side" do
+          expect(die).to be_a NumericDie
+          expect(die.sides_list).to eq [6.2]
         end
       end
     end

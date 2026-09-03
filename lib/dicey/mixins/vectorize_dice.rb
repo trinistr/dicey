@@ -22,13 +22,18 @@ module Dicey
       end
 
       def vectorize_die_sides(die)
-        return die if NumericDie === die
+        case die
+        when NumericDie
+          die
+        when StaticDie
+          die.class.new(vectorize_one_die_side(die.value))
+        else
+          die.class.new(die.sides_list.map { vectorize_one_die_side(_1) })
+        end
+      end
 
-        die.class.new(
-          die.sides_list.map do |side|
-            (Numeric === side || VectorNumber === side) ? side : VectorNumber.new([side])
-          end
-        )
+      def vectorize_one_die_side(side)
+        (Numeric === side || VectorNumber === side) ? side : VectorNumber.new([side])
       end
     end
   end

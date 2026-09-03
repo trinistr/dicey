@@ -21,6 +21,7 @@ module Dicey
       expect(vectorize_dice(NumericDie.new([1, 2]))).to eq NumericDie.new([1, 2])
       expect(vectorize_dice(AbstractDie.new([1, "a"])))
         .to eq AbstractDie.new([1, VectorNumber.new(["a"])])
+      expect(vectorize_dice(StaticDie.new(23))).to eq StaticDie.new(23)
     end
 
     context "when vector_number is not available" do

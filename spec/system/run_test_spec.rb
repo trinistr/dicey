@@ -19,8 +19,10 @@ RSpec.describe "Running built-in tests via CLI" do
 
   context "if vector_number is not available" do
     before do
+      clean_data = Dicey::CLI::CalculatorTestRunner::TEST_DATA
+                   .reject { |test| test.last.keys.any?(VectorNumber) }
       hide_const("VectorNumber")
-      stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", Dicey::CLI::CalculatorTestRunner::TEST_DATA[...-3])
+      stub_const("Dicey::CLI::CalculatorTestRunner::TEST_DATA", clean_data)
     end
 
     it "completes successfully, skipping non-numeric dice tests" do
