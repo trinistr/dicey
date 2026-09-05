@@ -5,6 +5,11 @@ require_relative "mixins/rational_to_integer"
 module Dicey
   # @note This class is considered experimental. It may be changed at any point.
   #
+  # @note Almost all distribution properties only really make sense
+  #   for ordered values in a single dimension.
+  #   This calculator assumes that only distributions of real numbers
+  #   satisfy these conditions.
+  #
   # Calculates distribution properties,
   # also known as descriptive statistics when applied to a population sample.
   #
@@ -36,7 +41,7 @@ module Dicey
     def call(distribution)
       return {} if distribution.empty?
 
-      calculate_properties(distribution)
+      calculate_properties(distribution).transform_values! { rational_to_integer(_1) }
     end
 
     private
@@ -50,7 +55,7 @@ module Dicey
         modes: modes(distribution),
         **range_characteristics(outcomes),
         **median(outcomes),
-        **means(outcomes, weights),
+        **means(outcomes),
         **moments(distribution),
       }
     end
@@ -89,16 +94,16 @@ module Dicey
         min: min,
         max: max,
         range_length: max - min,
-        mid_range: rational_to_integer(Rational(min + max, 2)),
+        mid_range: Rational(min + max, 2),
       }
     rescue ArgumentError, TypeError, NoMethodError
       # Outcomes are not comparable with each other, so a range can not be determined.
       {}
     end
 
-    def means(outcomes, _weights)
+    def means(outcomes)
       {
-        arithmetic_mean: rational_to_integer(Rational(outcomes.sum, outcomes.size)),
+        arithmetic_mean: Rational(outcomes.sum, outcomes.size),
       }
     rescue ArgumentError, TypeError
       # Outcomes are not summable with each other, means are meaningless.
@@ -121,12 +126,10 @@ module Dicey
 
     def moments(distribution)
       total_weight = distribution.values.sum
-      expected_value = rational_to_integer(moment(distribution, total_weight, 1))
-      variance = rational_to_integer(moment(distribution, total_weight, 2) - (expected_value**2))
-      skewness =
-        rational_to_integer(moment(distribution, total_weight, 3, expected_value, variance))
-      kurtosis =
-        rational_to_integer(moment(distribution, total_weight, 4, expected_value, variance))
+      expected_value = moment(distribution, total_weight, 1)
+      variance = moment(distribution, total_weight, 2) - (expected_value**2)
+      skewness = moment(distribution, total_weight, 3, expected_value, variance)
+      kurtosis = moment(distribution, total_weight, 4, expected_value, variance)
 
       {
         expected_value: expected_value,
@@ -137,7 +140,7 @@ module Dicey
         excess_kurtosis: kurtosis ? kurtosis - 3 : nil,
       }
     rescue ArgumentError, TypeError, NoMethodError
-      # Outcomes are not compatible with each other, moments are fleeing.
+      # Outcomes are not compatible with each other, moments are fleeting.
       {}
     end
 
