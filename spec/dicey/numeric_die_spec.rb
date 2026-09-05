@@ -30,7 +30,7 @@ module Dicey
       end
 
       context "when given a Range" do
-        let(:sides) { (1..5) }
+        let(:sides) { 1..5 }
 
         it "transforms it into an Array" do
           expect(die.sides_list).to eq [1, 2, 3, 4, 5]

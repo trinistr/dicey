@@ -97,8 +97,8 @@ module Dicey
       def run_test(test)
         dice = build_dice(test.first)
         test_result =
-          AVAILABLE_CALCULATORS.each_with_object({}) do |calculator, hash|
-            hash[calculator] = run_test_on_calculator(calculator, dice, test.last)
+          AVAILABLE_CALCULATORS.to_h do |calculator|
+            [calculator, run_test_on_calculator(calculator, dice, test.last)]
           end
         [dice, test_result]
       end

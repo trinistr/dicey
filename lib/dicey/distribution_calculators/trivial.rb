@@ -47,9 +47,7 @@ module Dicey
       # Simplest multinomial distribution: two regular dice.
       def bimultinomial(die)
         middle = die.sides_num
-        (1...(die.sides_num * 2)).each_with_object({}) do |i, hash|
-          hash[i + 1] = middle - (middle - i).abs
-        end
+        (1...(die.sides_num * 2)).to_h { |i| [i + 1, middle - (middle - i).abs] }
       end
     end
   end

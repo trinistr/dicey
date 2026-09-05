@@ -57,14 +57,14 @@ module Dicey
     #   and other or quoted values treated as Strings.
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
-    # A plain "d" without an explicit count is ignored instead, creating a single die.
+    # A plain "d"/"D" without an explicit count is ignored instead, creating a single die.
     #
     # @param definition [String] die shape
     # @return [AbstractDie, Array<AbstractDie>]
     # @raise [DiceyError] if no mold fits the definition
     def call(definition)
       matched, name =
-        MOLDS.reduce(nil) do |_, (shape, mold)|
+        MOLDS.find do |(shape, mold)|
           match = shape.match(definition)
           break [match, mold] if match
         end

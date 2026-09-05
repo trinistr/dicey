@@ -113,7 +113,7 @@ module Dicey
 
         let(:silly_die_class) do
           Class.new(described_class) do
-            def to_s = sides_list.map(&:to_s).join("++")
+            def to_s = sides_list.join("++")
           end
         end
 
@@ -191,7 +191,7 @@ module Dicey
       end
 
       context "if given a Range" do
-        let(:sides) { ("a".."c") }
+        let(:sides) { "a".."c" }
 
         it "transforms it into an Array" do
           expect(die.sides_list).to eq %w[a b c]
