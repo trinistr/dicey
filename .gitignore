@@ -11,3 +11,6 @@
 # remote rubocop configuration
 .rubocop-*
 rubocop-*
+
+# Lockfile, because this is not an application.
+Gemfile.lock
