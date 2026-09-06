@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Dicey
+  # @api private
+  # Various mixins with shared methods.
   module Mixins
     # @api private
     # Some math functions missing from Math, though without argument range checks.

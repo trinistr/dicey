@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed**
 - `DieFoundry` now recognizes `+V` and `-V` definitions, where `V` is an integer, fraction or string, producing `StaticDie` instances.
+- `Iterative` calculator now pre-sorts dice to make performance mostly independent of order. Improvement heavily depends on types of dice and can be an order of magnitude (or unnoticeable).
 
 [Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
 
@@ -54,7 +55,7 @@ Highlights:
 - "short" format for "--test" option, producing only a summary or fails for each dice combination.
 
 **Changed**
-- `Iterative` (formerly `BruteForce`) calculator has been rewritten for a massive speed-up yet again. It no longer has exponential complexity, being around quadratic for both count of dice and sides.
+- `Iterative` (formerly `BruteForce`) calculator has been rewritten for a massive speed-up yet again. It no longer has exponential complexity, being around quadratic for both number of dice and sides.
 - Rename "--mode frequencies" option to "--mode distribution" and "--result frequencies" to "--result weights".
 - Move calculators from `Dicey::SumFrequencyCalculators` to `Dicey::DistributionCalculators` namespace and improve naming:
   - Rename `KroneckerSubstitution` calculator to `PolynomialConvolution`.
