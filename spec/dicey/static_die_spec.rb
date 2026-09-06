@@ -2,10 +2,10 @@
 
 module Dicey
   RSpec.describe StaticDie do
-    describe ".new" do
-      subject(:die) { described_class.new(value) }
-      let(:value) { [5, -3.2, "ABC"].sample }
+    let(:die) { described_class.new(value) }
+    let(:value) { [5, -3.2, "ABC"].sample }
 
+    describe ".new" do
       it "makes a die with single value" do
         expect(die.sides_list).to be_frozen
         expect(die.sides_list).to eq [value]
@@ -17,22 +17,35 @@ module Dicey
     end
 
     describe "#value" do
-      subject(:value) { die.value }
-
-      let(:die) { described_class.new(init_value) }
-      let(:init_value) { [5, -3.2, "ABC"].sample }
-
       it "returns the value" do
-        expect(value).to eq init_value
+        expect(die.value).to eq value
       end
     end
 
-    include_examples "has an alias", :current, :value
-    include_examples "has an alias", :next, :value
-    include_examples "has an alias", :roll, :value
+    describe "#current" do
+      it "always returns #value" do
+        expect(die.current).to eq value
+        die.next
+        expect(die.current).to eq value
+      end
+    end
+
+    describe "#next" do
+      it "always returns #value" do
+        expect(die.next).to eq value
+        expect(die.next).to eq value
+      end
+    end
+
+    describe "#roll" do
+      it "always returns #value" do
+        expect(die.roll).to eq value
+        expect(die.roll).to eq value
+      end
+    end
 
     describe "#to_s" do
-      subject(:text) { described_class.new(value).to_s }
+      subject(:text) { die.to_s }
 
       context "with a positive value" do
         let(:value) { [5, VectorNumber["A"], "ABC"].sample }
