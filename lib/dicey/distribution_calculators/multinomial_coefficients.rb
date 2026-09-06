@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "base_calculator"
+
 require_relative "../mixins/numeric_die_p"
 
 module Dicey
