@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "base_calculator"
+require_relative "../mixins/numeric_die_p"
 
 module Dicey
   module DistributionCalculators
@@ -24,11 +25,13 @@ module Dicey
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
     class MultinomialCoefficients < BaseCalculator
+      include Mixins::NumericDieP
+
       private
 
       def validate(dice)
         first_die = dice.first
-        return false unless first_die.is_a?(NumericDie)
+        return false unless numeric_die?(first_die)
         return false unless dice.all? { _1 == first_die }
         return true if first_die.sides_num == 1
 

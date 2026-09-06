@@ -12,6 +12,14 @@ module Dicey
       it "calculates weights correctly" do
         expect(result).to eq({ -1.0 => 1, 0.5 => 2, 2.0 => 3, 3.5 => 2, 5.0 => 1 })
       end
+
+      context "when some or all of the dice are not NumericDie" do
+        before { dice[-1] = AbstractDie.new([-0.5, 1, 2.5]) }
+
+        it "calculates weights correctly" do
+          expect(result).to eq({ -1.0 => 1, 0.5 => 2, 2.0 => 3, 3.5 => 2, 5.0 => 1 })
+        end
+      end
     end
 
     context "when called with an empty list of dice" do
