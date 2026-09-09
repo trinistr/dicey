@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Added**
 - `StaticDie` which is an `AbstractDie` with exactly one side. It can be helpful to model and optimize constant variables.
+- `AbstractDie#numeric?` which returns `true` if the die is numeric (i.e. all sides are numbers), overriden in `NumericDie` to always return `true`.
 
 **Changed**
 - `DieFoundry` now recognizes `+V` and `-V` definitions, where `V` is an integer, fraction or string, producing `StaticDie` instances.
 - `Iterative` calculator now pre-sorts dice to make performance mostly independent of order. Improvement heavily depends on types of dice and can be an order of magnitude (or unnoticeable).
+- Distribution calculators that previously checked for `NumericDie` now check `#numeric?` instead. This is a significant semantic change — previous contract that only `NumericDie` is considered numeric no longer holds, but it's still recommended to use `NumericDie` for numeric dice.
 
 [Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
 

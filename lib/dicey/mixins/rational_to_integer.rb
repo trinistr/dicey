@@ -11,7 +11,7 @@ module Dicey
       # Otherwise, return +value+ as-is.
       #
       # @param value [Numeric, Any]
-      # @return [Numeric, Integer, Any]
+      # @return [Rational, Integer, Any]
       def rational_to_integer(value)
         (Rational === value && value.denominator == 1) ? value.numerator : value
       end

@@ -2,7 +2,6 @@
 
 require_relative "base_calculator"
 
-require_relative "../mixins/numeric_die_p"
 require_relative "../mixins/vectorize_dice"
 
 module Dicey
@@ -12,13 +11,12 @@ module Dicey
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be available.
     class Iterative < BaseCalculator
-      include Mixins::NumericDieP
       include Mixins::VectorizeDice
 
       private
 
       def validate(dice)
-        !!defined?(VectorNumber) || dice.all?(NumericDie)
+        !!defined?(VectorNumber) || dice.all?(&:numeric?)
       end
 
       def calculate_heuristic(dice_count, sides_count)
@@ -26,7 +24,7 @@ module Dicey
       end
 
       def calculate(dice, **nil)
-        dice = vectorize_dice(dice).sort_by! { numeric_die?(_1) ? 0 : _1.sides_num }
+        dice = vectorize_dice(dice).sort_by! { _1.numeric? ? 0 : _1.sides_num }
 
         dice[1..].reduce(dice.first.sides_list.tally) do |previous_distribution, die|
           convolve_with_die(previous_distribution, die.sides_list.tally)

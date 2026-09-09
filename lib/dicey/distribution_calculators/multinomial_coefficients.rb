@@ -2,8 +2,6 @@
 
 require_relative "base_calculator"
 
-require_relative "../mixins/numeric_die_p"
-
 module Dicey
   module DistributionCalculators
     # Calculator for multiple equal dice with sides forming an arithmetic sequence,
@@ -26,13 +24,11 @@ module Dicey
     # @see https://en.wikipedia.org/wiki/Pascal's_triangle
     # @see https://en.wikipedia.org/wiki/Trinomial_triangle
     class MultinomialCoefficients < BaseCalculator
-      include Mixins::NumericDieP
-
       private
 
       def validate(dice)
         first_die = dice.first
-        return false unless numeric_die?(first_die)
+        return false unless first_die.numeric?
         return false unless dice.all? { _1 == first_die }
         return true if first_die.sides_num == 1
 
@@ -40,7 +36,7 @@ module Dicey
       end
 
       # @param sides_list [Array<Numeric>]
-      # @return [false, Array<Numeric>]
+      # @return [Boolean]
       def arithmetic_sequence?(sides_list)
         increment = sides_list[1] - sides_list[0]
         return false if increment.zero?

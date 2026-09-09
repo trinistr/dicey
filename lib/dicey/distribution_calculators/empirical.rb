@@ -27,7 +27,7 @@ module Dicey
       private
 
       def validate(dice)
-        !!defined?(VectorNumber) || dice.all?(NumericDie)
+        !!defined?(VectorNumber) || dice.all?(&:numeric?)
       end
 
       def calculate_heuristic(dice_count, sides_count)

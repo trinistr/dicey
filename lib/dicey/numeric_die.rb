@@ -24,5 +24,12 @@ module Dicey
 
       super
     end
+
+    # Whether all sides of this die are +Numeric+.
+    #
+    # @return [true]
+    def numeric?
+      true
+    end
   end
 end

@@ -12,7 +12,8 @@ end
 # Includes several classes of dice:
 # - {AbstractDie}, the base and most generic class;
 # - {NumericDie}, a subclass for strictly numeric dice;
-# - {RegularDie}, for the most common dice.
+# - {RegularDie}, for the most common dice;
+# - {StaticDie}, a constant offset pseudo-die.
 #
 # See {AbstractDie} for API and more information.
 #

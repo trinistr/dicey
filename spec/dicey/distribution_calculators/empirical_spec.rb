@@ -59,12 +59,12 @@ module Dicey
     context "when vector_number is not available" do
       before { hide_const("VectorNumber") }
 
-      it "does not support AbstractDie, raising an error" do
+      it "does not support non-numeric dice, raising an error" do
+        dice[1] = AbstractDie.new(%w[n o])
         expect { result }.to raise_error DiceyError
       end
 
-      it "supports NumericDie" do
-        dice[1] = NumericDie.new([-1, 5])
+      it "supports numeric dice" do
         expect { result }.not_to output.to_stderr
         expect(result).to be_a Hash
       end

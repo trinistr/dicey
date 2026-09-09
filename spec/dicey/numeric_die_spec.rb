@@ -51,5 +51,11 @@ module Dicey
         end
       end
     end
+
+    describe "#numeric?" do
+      it "always returns true" do
+        expect(described_class.new([1, 2.1, 3.2r]).numeric?).to be true
+      end
+    end
   end
 end

@@ -318,5 +318,15 @@ module Dicey
         expect(die.hash).not_to eq described_class.new(sides + [1]).hash
       end
     end
+
+    describe "#numeric?" do
+      it "returns true for a die with all numeric sides" do
+        expect(described_class.new([1, 2.1, 3.2r]).numeric?).to be true
+      end
+
+      it "returns false for a die with non-numeric sides" do
+        expect(described_class.new([1, "b", 3.2r]).numeric?).to be false
+      end
+    end
   end
 end

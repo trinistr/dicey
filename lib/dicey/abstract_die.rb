@@ -164,6 +164,15 @@ module Dicey
       [self.class, @sides_list].hash
     end
 
+    # Whether all sides of this die are +Numeric+.
+    #
+    # @return [Boolean]
+    def numeric?
+      return @numeric if defined?(@numeric)
+
+      @numeric = @sides_list.all?(Numeric)
+    end
+
     private
 
     # @param other [AbstractDie]
