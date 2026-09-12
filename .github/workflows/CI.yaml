@@ -36,7 +36,7 @@ jobs:
     env:
       BUNDLE_ONLY: "default:linting"
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
       with:
         persist-credentials: false
     - name: Set up Ruby
@@ -51,7 +51,7 @@ jobs:
     env:
       BUNDLE_ONLY: "default:linting"
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
       with:
         persist-credentials: false
     - name: Set up Ruby
@@ -70,7 +70,7 @@ jobs:
     env:
       BUNDLE_ONLY: "default:test"
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
       with:
         fetch-depth: 0
         persist-credentials: false
