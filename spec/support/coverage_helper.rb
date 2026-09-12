@@ -10,10 +10,10 @@ end
 
 SimpleCov.start do
   enable_coverage :branch
-  enable_coverage_for_eval
+  enable_coverage :eval
 
-  add_group "Lib", "lib"
-  add_group "Tests", "spec"
+  group "Lib", "lib"
+  group "Tests", "spec"
 
   SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
   SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, SimpleCov::Formatter::LcovFormatter]
