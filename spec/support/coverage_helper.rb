@@ -2,7 +2,6 @@
 
 begin
   require "simplecov"
-  require "simplecov_lcov_formatter"
 rescue LoadError
   warn "simplecov is not available, coverage report will not be generated!"
   return
@@ -15,9 +14,6 @@ SimpleCov.start do
   group "Lib", "lib"
   group "Tests", "spec"
   remove_filter %r{\A(test|features|spec|autotest)/}
-
-  SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
-  SimpleCov.formatters = [SimpleCov::Formatter::HTMLFormatter, SimpleCov::Formatter::LcovFormatter]
 rescue RuntimeError => e
   raise unless e.message.start_with?("Unsupported coverage criterion eval")
 

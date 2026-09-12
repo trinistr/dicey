@@ -17,7 +17,6 @@ group :test do
 
   # Code coverage report
   gem "simplecov", require: false
-  gem "simplecov_lcov_formatter", require: false
 end
 
 group :linting do

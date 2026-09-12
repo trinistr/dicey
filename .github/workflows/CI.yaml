@@ -69,11 +69,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUNDLE_ONLY: "default:test"
-    permissions:
-      pull-requests: write
     steps:
     - uses: actions/checkout@v5
       with:
+        fetch-depth: 0
         persist-credentials: false
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
@@ -81,8 +80,5 @@ jobs:
         bundler-cache: true
     - name: Run RSpec
       run: bundle exec rake spec
-    - name: Add code coverage comment
-      uses: romeovs/lcov-reporter-action@87a815f34ec27a5826abba44ce09bbc688da58fd
-      with:
-        lcov-file: ./coverage/lcov/dicey.lcov
-        delete-old-comments: true
+    - name: Run SimpleCov's patch report
+      run: bundle exec simplecov patch --annotate github --minimum 100 --base "origin/$GITHUB_BASE_REF"
