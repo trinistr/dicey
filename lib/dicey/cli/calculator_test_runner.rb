@@ -46,9 +46,7 @@ module Dicey
            Complex(1, 2) => 1, Complex(2, 2) => 1, Complex(3, 2) => 1,
            Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1 }],
         *(
-          # simplecov:disable
-          if defined?(VectorNumber)
-            # simplecov:enable
+          if defined?(VectorNumber) # simplecov:disable
             [
               [[["s", "a", "d", 33]],
                { VectorNumber["s"] => 1, VectorNumber["a"] => 1, VectorNumber["d"] => 1, 33 => 1 }],
