@@ -328,5 +328,40 @@ module Dicey
         expect(described_class.new([1, "b", 3.2r]).numeric?).to be false
       end
     end
+
+    describe "#freeze" do
+      it "freezes the die, returning self" do
+        expect(die.freeze).to be die
+        expect(die).to be_frozen
+      end
+
+      it "returns self on second attempt too" do
+        die.freeze
+        expect(die.freeze).to be die
+      end
+    end
+
+    describe "behavior when frozen" do
+      let(:frozen_die) { die.freeze }
+
+      it "allows to get die's parameters" do
+        expect(frozen_die.sides_list).to eq sides
+        expect(frozen_die.sides_num).to eq sides.size
+      end
+
+      it "allows to check die's properties" do
+        expect(frozen_die.hash).to be_an Integer
+        expect(frozen_die.numeric?).to be true
+      end
+
+      it "allows to check current value" do
+        expect(frozen_die.current).to be sides.first
+      end
+
+      it "raises FrozenError if trying to change current side" do
+        expect { frozen_die.next }.to raise_error FrozenError
+        expect { frozen_die.roll }.to raise_error FrozenError
+      end
+    end
   end
 end
