@@ -173,6 +173,14 @@ module Dicey
       @numeric = @sides_list.all?(Numeric)
     end
 
+    # Freezes +self+ (if not already frozen); returns +self+.
+    #
+    # Performs computations that memoize results before freezing.
+    def freeze
+      numeric? unless frozen?
+      super
+    end
+
     private
 
     # @param other [AbstractDie]
