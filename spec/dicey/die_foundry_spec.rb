@@ -335,6 +335,41 @@ module Dicey
       end
     end
 
+    context "when called with a string containing constant factor suffix" do
+      it "parses the constant factor for regular definitions" do
+        expect(foundry.call("2d6+1")).to eq [RegularDie.new(6), RegularDie.new(6), StaticDie.new(1)]
+        expect(foundry.call("2d6+A")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new("A"),
+        ]
+        expect(foundry.call("2d6-1")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-1),
+        ]
+        expect(foundry.call("2d6-A")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-VectorNumber["A"]),
+        ]
+      end
+
+      it "parses the constant factor for range definitions" do
+        expect(foundry.call("-1..2−3")).to eq [NumericDie.new([-1, 0, 1, 2]), StaticDie.new(-3)]
+        expect(foundry.call("-2—-1+A")).to eq [NumericDie.new([-2, -1]), StaticDie.new("A")]
+      end
+
+      it "parses the constant factor for list definitions" do
+        expect(foundry.call("1,3,5+1")).to eq [NumericDie.new([1, 3, 5]), StaticDie.new(1)]
+        expect(foundry.call("1,A,-5.2-A")).to eq [
+          AbstractDie.new([1, "A", -5.2r]), StaticDie.new(-VectorNumber["A"]),
+        ]
+        expect(foundry.call("2D1,A,-5.2-A")).to eq [
+          AbstractDie.new([1, "A", -5.2r]), AbstractDie.new([1, "A", -5.2r]),
+          StaticDie.new(-VectorNumber["A"]),
+        ]
+      end
+
+      it "rejects constant factor for static die definition" do
+        expect { foundry.call("+5+5") }.to raise_error DiceyError
+      end
+    end
+
     context "when called with a single non-number" do
       let(:die) { foundry.call("a") }
 
