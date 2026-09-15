@@ -45,6 +45,7 @@ module Dicey
          { Complex(1, 1) => 1, Complex(2, 1) => 1, Complex(3, 1) => 1,
            Complex(1, 2) => 1, Complex(2, 2) => 1, Complex(3, 2) => 1,
            Complex(1, 3) => 1, Complex(2, 3) => 1, Complex(3, 3) => 1 }],
+        [[2, 2, "+2"], { 4 => 1, 5 => 2, 6 => 1 }],
         *(
           if defined?(VectorNumber) # simplecov:disable
             [
@@ -59,7 +60,10 @@ module Dicey
                  VectorNumber["s"] * 2 => 1, VectorNumber["a"] * 2 => 1, 8 => 1,
                  VectorNumber["s", "a"] => 2, VectorNumber["s", 4] => 2, VectorNumber["a", 4] => 2,
                }],
-              [[["s", 3], "+d"], { VectorNumber["s", "d"] => 1, VectorNumber[3, "d"] => 1 }],
+              [[[1, 3], "+d"], { VectorNumber[1, "d"] => 1, VectorNumber[3, "d"] => 1 }],
+              [[%w[A B], %w[A B], "+A"],
+               { VectorNumber["A"] * 3 => 1, VectorNumber["A", "B", "A"] => 2,
+                 VectorNumber["B", "B", "A"] => 1 }],
             ]
           end
         ),
@@ -106,7 +110,7 @@ module Dicey
       # @param definition [Array<Integer, Array<Integer>>]
       # @return [Array<AbstractDie>]
       def build_dice(definition)
-        definition.map do |die_def|
+        definition.flat_map do |die_def|
           if die_def.is_a?(Integer)
             RegularDie.new(die_def)
           elsif die_def.is_a?(String)
