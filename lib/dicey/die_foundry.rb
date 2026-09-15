@@ -20,7 +20,7 @@ module Dicey
     # Pattern for an "arbitrary" string or number.
     STRING = %{(?:(?<string>[^"',()+−-]++)|"(?<string>[^",]++)"|'(?<string>[^',]++)')}
     # Pattern for a number or string (allowing negative numbers).
-    VALUE = "(?:#{NUMBER}|#{STRING})".freeze
+    VALUE = "(?:#{NUMBER}(?=[,)+−-]|\\z)|#{STRING})".freeze
 
     # Pattern for matching a possible count.
     COUNT = "(?:(?<count>[1-9]\\d*+)?+[Dd])?+"

@@ -363,6 +363,7 @@ module Dicey
           AbstractDie.new([1, "A", -5.2r]), AbstractDie.new([1, "A", -5.2r]),
           StaticDie.new(-VectorNumber["A"]),
         ]
+        expect(foundry.call("2,2b+1")).to eq [AbstractDie.new([2, "2b"]), StaticDie.new(1)]
       end
 
       it "rejects constant factor for static die definition" do
