@@ -51,16 +51,19 @@ module Dicey
     # Following definitions are recognized:
     # - positive integer (like "6" or "20"), which produces a {RegularDie};
     # - integer range (like "3—6" or "(-5..5)"), which produces a {NumericDie};
-    # - signed valie (like "+3" or "(-ABC)"), which produces a {StaticDie};
     # - list of integers (like "(3,4,5)", "-1,0,1", or "2,"), which produces a {NumericDie};
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
     #   but uses +Rational+ for values to maintain precise results;
     # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),
     #   which produces an {AbstractDie} with numbers treated the same as in previous cases,
     #   and other or quoted values treated as Strings.
+    # - signed value (like "+3" or "(-ABC)"), which produces a {StaticDie};
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d"/"D" without an explicit count is ignored instead, creating a single die.
+    #
+    # All die definitions (aside from plain signed value) can be suffixed with a signed value
+    # to add or subtract from the result, like "2D6+3" or "5dA,B,C-C".
     #
     # @param definition [String] die shape
     # @return [AbstractDie, Array<AbstractDie>]
