@@ -13,51 +13,57 @@ module Dicey
   class DieFoundry
     include Mixins::RationalToInteger
 
-    # Regexp for matching a possible count.
-    PREFIX = '(?:(?<count>[1-9]\d*+)?+[Dd])?+'
+    # Pattern for an integer number.
+    INTEGER = "(?:-?\\d++)"
+    # Pattern for a possibly fractional number.
+    NUMBER = "(?:-?\\d++(?:/\\d++|\\.\\d++)?)"
+    # Pattern for an "arbitrary" string or number.
+    STRING = %{(?:(?<string>[^"',()+−-]++)|"(?<string>[^",]++)"|'(?<string>[^',]++)')}
+    # Pattern for a number or string (allowing negative numbers).
+    VALUE = "(?:#{NUMBER}(?=[,)+−-]|\\z)|#{STRING})".freeze
 
-    # Regexp for an integer number.
-    INTEGER = /(?:-?\d++)/
-    # Regexp for a (possibly) fractional number.
-    FRACTION = %r{(?:-?\d++(?:/\d++|\.\d++)?)}
-    # Regexp for an "arbitrary" string.
-    STRING = /(?:(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')/
+    # Pattern for matching a possible count.
+    COUNT = "(?:(?<count>[1-9]\\d*+)?+[Dd])?+"
+    # Pattern for matching an optional constant factor.
+    CONSTANT = "(?<constant>(?<sign>[+−-])(?<constant_value>#{STRING}))".freeze
+
+    molder = ->(pattern) { /\A#{COUNT}(?:#{pattern}|\(#{pattern}\))#{CONSTANT}?\z/ }
 
     # Possible molds for the dice. They are matched in the order as written.
     MOLDS = [
       # Positive integer goes into the RegularDie mold.
-      [/\A#{PREFIX}(?<sides>[1-9]\d*+)\z/, :regular_mold].freeze,
+      [/\A#{COUNT}(?<sides>[1-9]\d*+)#{CONSTANT}?\z/, :regular_mold],
       # Integer range goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<begin>#{INTEGER})(?:[-–—…]|\.{2,3})(?<end>#{INTEGER})\)?\z/,
-       :range_mold].freeze,
-      # Sign-prefixed value goes into the StaticDie mold.
-      [/\A#{PREFIX}\(?(?<sign>\+|-)(?<value>#{STRING})\)?\z/, :static_mold].freeze,
+      [molder.("(?<begin>#{INTEGER})(?:[–—…]|\\.{2,3})(?<end>#{INTEGER})"), :range_mold],
       # List of numbers goes into the NumericDie mold.
-      [/\A#{PREFIX}\(?(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))\)?\z/,
-       :weirdly_shaped_mold].freeze,
+      [molder.("(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))"), :weirdly_shaped_mold],
       # Non-integers require special handling for precision.
-      [/\A#{PREFIX}\(?(?<sides>#{FRACTION}(?:(?:,#{FRACTION})++,?+|,))\)?\z/,
-       :weirdly_precise_mold].freeze,
+      [molder.("(?<sides>#{NUMBER}(?:(?:,#{NUMBER})++,?+|,))"), :weirdly_precise_mold],
       # Lists of stuff are broken into AbstractDie.
-      [/\A#{PREFIX}\(?(?<sides>#{STRING}(?:(?:,#{STRING})++,?+|,))\)?\z/, :cursed_mold].freeze,
+      [molder.("(?<sides>#{VALUE}(?:(?:,#{VALUE})++,?+|,))"), :cursed_mold],
+      # Sign-prefixed value goes into the StaticDie mold.
+      [/\A#{COUNT}(?:#{CONSTANT}|\(#{CONSTANT}\))\z/, :static_mold],
       # Anything else is spilled on the floor.
-    ].freeze
+    ].each(&:freeze).freeze
 
     # Cast a die definition into a mold to make a die.
     #
     # Following definitions are recognized:
     # - positive integer (like "6" or "20"), which produces a {RegularDie};
-    # - integer range (like "3-6" or "(-5..5)"), which produces a {NumericDie};
-    # - signed valie (like "+3" or "(-ABC)"), which produces a {StaticDie};
+    # - integer range (like "3—6" or "(-5..5)"), which produces a {NumericDie};
     # - list of integers (like "(3,4,5)", "-1,0,1", or "2,"), which produces a {NumericDie};
     # - list of decimal numbers (like "0.5,0.2,0.8" or "(2.0,)"), which produces a {NumericDie},
     #   but uses +Rational+ for values to maintain precise results;
     # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),
     #   which produces an {AbstractDie} with numbers treated the same as in previous cases,
     #   and other or quoted values treated as Strings.
+    # - signed value (like "+3" or "(-ABC)"), which produces a {StaticDie};
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d"/"D" without an explicit count is ignored instead, creating a single die.
+    #
+    # All die definitions (aside from plain signed value) can be suffixed with a signed value
+    # to add or subtract from the result, like "2D6+3" or "5dA,B,C-C".
     #
     # @param definition [String] die shape
     # @return [AbstractDie, Array<AbstractDie>]
@@ -70,7 +76,11 @@ module Dicey
         end
       raise DiceyError, "can not cast die from `#{definition}`!" unless name
 
-      __send__(name, matched)
+      if matched[:constant] && name != :static_mold
+        [__send__(name, matched), static_mold(matched, ignore_count: true)].flatten
+      else
+        __send__(name, matched)
+      end
     end
 
     alias cast call
@@ -88,15 +98,6 @@ module Dicey
       build_dice(NumericDie, definition[:count], first..last)
     end
 
-    def static_mold(definition)
-      value = parse_value(definition[:value])
-      if definition[:sign] != "+"
-        value = (Numeric === value) ? -value : -VectorNumber.new([value])
-      end
-
-      build_dice(StaticDie, definition[:count], value)
-    end
-
     def weirdly_shaped_mold(definition)
       build_dice(NumericDie, definition[:count], definition[:sides].split(",").map(&:to_i))
     end
@@ -112,14 +113,23 @@ module Dicey
       build_dice(AbstractDie, definition[:count], sides)
     end
 
+    def static_mold(definition, ignore_count: false)
+      value = parse_value(definition[:constant_value])
+      if definition[:sign] != "+"
+        value = (Numeric === value) ? -value : -VectorNumber.new([value])
+      end
+
+      build_dice(StaticDie, ignore_count ? nil : definition[:count], value)
+    end
+
     def parse_value(side)
       case side
       when /\A#{INTEGER}\z/o
         side.to_i
-      when /\A#{FRACTION}\z/o
+      when /\A#{NUMBER}\z/o
         rational_to_integer(Rational(side))
       else
-        side.match(STRING)[:side]
+        side.match(STRING)[:string]
       end
     end
 

@@ -229,16 +229,16 @@ module Dicey
     end
 
     context "when called with a range" do
-      let(:die) { foundry.call("5-15") }
+      let(:die) { foundry.call("5—15") }
 
       it "returns a NumericDie with the given sides" do
         expect(die).to be_a NumericDie
         expect(die.sides_list).to eq (5..15).to_a
       end
 
-      context "when is separator is not '-'" do
+      context "when is separator is not '—'" do
         let(:die) { foundry.call("5#{sep}7") }
-        let(:sep) { %w[– — .. ... …].sample }
+        let(:sep) { %w[– .. ... …].sample }
 
         it "returns a NumericDie with the given sides" do
           expect(die).to be_a NumericDie
@@ -247,7 +247,7 @@ module Dicey
       end
 
       context "if ends are reversed" do
-        let(:die) { foundry.call("15-5") }
+        let(:die) { foundry.call("15—5") }
 
         it "returns a NumericDie with the given sides in ascending order" do
           expect(die).to be_a NumericDie
@@ -256,7 +256,7 @@ module Dicey
       end
 
       context "if either end is non-integer" do
-        let(:die) { foundry.call(["5.5-15", "5-15.0"].sample) }
+        let(:die) { foundry.call(["5.5..15", "5…15.0"].sample) }
 
         it "raises DiceyError" do
           expect { die }.to raise_error DiceyError
@@ -265,17 +265,17 @@ module Dicey
 
       context "with shorthand notation" do
         specify "dS produces a single NumericDie" do
-          expect(foundry.call("d3-5")).to eq NumericDie.new([3, 4, 5])
+          expect(foundry.call("d3...5")).to eq NumericDie.new([3, 4, 5])
           expect(foundry.call("D4..6")).to eq NumericDie.new([4, 5, 6])
         end
 
         specify "1dS produces an array of 1 NumericDie" do
           expect(foundry.call("1d(-1—1)")).to eq [NumericDie.new([-1, 0, 1])]
-          expect(foundry.call("1D3-5")).to eq [NumericDie.new([3, 4, 5])]
+          expect(foundry.call("1D3–5")).to eq [NumericDie.new([3, 4, 5])]
         end
 
         specify "MdS produces an array of NumericDie" do
-          expect(foundry.call("2d1-1")).to eq [NumericDie.new([1]), NumericDie.new([1])]
+          expect(foundry.call("2d1–1")).to eq [NumericDie.new([1]), NumericDie.new([1])]
           expect(foundry.call("3D0…0")).to eq(
             [NumericDie.new([0]), NumericDie.new([0]), NumericDie.new([0])]
           )
@@ -332,6 +332,42 @@ module Dicey
           expect(foundry.call("2d'asd',1,2.5")).to eq AbstractDie.from_count(2, ["asd", 1, 2.5r])
           expect(foundry.call("3D'asd',1,2.5")).to eq AbstractDie.from_count(3, ["asd", 1, 2.5r])
         end
+      end
+    end
+
+    context "when called with a string containing constant factor suffix" do
+      it "parses the constant factor for regular definitions" do
+        expect(foundry.call("2d6+1")).to eq [RegularDie.new(6), RegularDie.new(6), StaticDie.new(1)]
+        expect(foundry.call("2d6+A")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new("A"),
+        ]
+        expect(foundry.call("2d6-1")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-1),
+        ]
+        expect(foundry.call("2d6-A")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-VectorNumber["A"]),
+        ]
+      end
+
+      it "parses the constant factor for range definitions" do
+        expect(foundry.call("-1..2−3")).to eq [NumericDie.new([-1, 0, 1, 2]), StaticDie.new(-3)]
+        expect(foundry.call("-2—-1+A")).to eq [NumericDie.new([-2, -1]), StaticDie.new("A")]
+      end
+
+      it "parses the constant factor for list definitions" do
+        expect(foundry.call("1,3,5+1")).to eq [NumericDie.new([1, 3, 5]), StaticDie.new(1)]
+        expect(foundry.call("1,A,-5.2-A")).to eq [
+          AbstractDie.new([1, "A", -5.2r]), StaticDie.new(-VectorNumber["A"]),
+        ]
+        expect(foundry.call("2D1,A,-5.2-A")).to eq [
+          AbstractDie.new([1, "A", -5.2r]), AbstractDie.new([1, "A", -5.2r]),
+          StaticDie.new(-VectorNumber["A"]),
+        ]
+        expect(foundry.call("2,2b+1")).to eq [AbstractDie.new([2, "2b"]), StaticDie.new(1)]
+      end
+
+      it "rejects constant factor for static die definition" do
+        expect { foundry.call("+5+5") }.to raise_error DiceyError
       end
     end
 

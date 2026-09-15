@@ -259,20 +259,24 @@ Wind, wood and lightning in equal proportion it is! Your enemies will tremble!
 
 There are four *main* ways to define dice:
 - *"5", "25", or "525"*: a single positive integer makes a regular die (like a D20).
-- *"3-6", "-5..5", "(0-1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
-  - Accepted separators: "-", "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
+- *"3..6", "-5...5", "(0—1)"*: a pair of integers with a separator, possibly in round brackets, makes a numeric die with integers in the range.
+  - Accepted separators: "..", "...", "–" (en dash), "—" (em dash), "…" (ellipsis).
 - *"1,2,4", "(-1.5,0,3/2)", or "2,"*: a list of any numbers separated by commas, possibly in round brackets, makes a custom numeric die.
   - Lists can end in a comma, allowing single-number lists.
   - There is no difference between equal decimal and fractional representations of numbers.
 - *"1,1.5,Two", "(💚,🧡,💙,💜)", or "('1','(bracket)')"*: a list of strings and numbers separated by commas, possibly in round brackets, makes an arbitrary die.
   - Lists can end in a comma, allowing single-string lists.
-  - Single (') or double (") quotes can be used to include other quotes and round brackets in the string. Otherwise, they are prohibited. Commas are always prohibited.
+  - Single (') or double (") quotes can be used to include other quotes, round brackets and ambigious characters in a string. Otherwise, they are prohibited. Commas are always prohibited.
   - Quotes can also be used to treat numbers as strings.
-- *"+5", "+WIZ", or "-2.5"*: a single value prefixed with a sign makes a die that adds that value to the result.
+- *"+5", "+WIZ", or "-2.5"*: a single value prefixed with a sign makes a die with exactly that value.
+  - Accepted signs: "+", "-", "−" (minus).
+  - Single (') or double (") quotes can be used to include other quotes, round brackets and ambigious characters in a string. Otherwise, they are prohibited. Commas are always prohibited.
 
 *"D6", "d(-1,3)", "d2..4", "d+5", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
 
 *"2D6", "5d-1,3", "277D(2..4)", "3d+5", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
+
+*"5+3", "2d6+4", "2D3—5-1", or "d(💚,🧡)+♥️"*: any definitions can be suffixed with a single signed value (see above), except for a single signed value itself. This adds the constant factor to result once.
 
 ## Usage: API
 
@@ -374,6 +378,9 @@ die.roll
 
 > [!NOTE]
 > 💡 Randomness source is *global*, shared between all dice and probably not thread-safe.
+
+> [!NOTE]
+> 💡 `Dicey::StaticDie` has no impact on roll randomness, unlike other single-sided dice.
 
 ### Distribution calculators
 
