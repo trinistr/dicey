@@ -15,34 +15,36 @@ module Dicey
 
     # Pattern for an integer number.
     INTEGER = "(?:-?\\d++)"
-    # Pattern for a (possibly) fractional number.
-    FRACTION = "(?:-?\\d++(?:/\\d++|\\.\\d++)?)"
-    # Pattern for an "arbitrary" string.
-    STRING = %{(?:(?<side>[^"',()]++)|"(?<side>[^",]++)"|'(?<side>[^',]++)')}
+    # Pattern for a possibly fractional number.
+    NUMBER = "(?:-?\\d++(?:/\\d++|\\.\\d++)?)"
+    # Pattern for an "arbitrary" string or number.
+    STRING = %{(?:(?<string>[^"',()+−-]++)|"(?<string>[^",]++)"|'(?<string>[^',]++)')}
+    # Pattern for a number or string (allowing negative numbers).
+    VALUE = "(?:#{NUMBER}|#{STRING})".freeze
 
     # Pattern for matching a possible count.
     COUNT = "(?:(?<count>[1-9]\\d*+)?+[Dd])?+"
     # Pattern for matching an optional constant factor.
-    CONSTANT = "(?<constant>(?<sign>\\+|-|−)(?<constant_value>#{STRING}))".freeze
+    CONSTANT = "(?<constant>(?<sign>[+−-])(?<constant_value>#{STRING}))".freeze
 
     molder = ->(pattern) { /\A#{COUNT}(?:#{pattern}|\(#{pattern}\))#{CONSTANT}?\z/ }
 
     # Possible molds for the dice. They are matched in the order as written.
     MOLDS = [
       # Positive integer goes into the RegularDie mold.
-      [/\A#{COUNT}(?<sides>[1-9]\d*+)#{CONSTANT}?\z/, :regular_mold].freeze,
+      [/\A#{COUNT}(?<sides>[1-9]\d*+)#{CONSTANT}?\z/, :regular_mold],
       # Integer range goes into the NumericDie mold.
-      [molder.("(?<begin>#{INTEGER})(?:[–—…]|\\.{2,3})(?<end>#{INTEGER})"), :range_mold].freeze,
+      [molder.("(?<begin>#{INTEGER})(?:[–—…]|\\.{2,3})(?<end>#{INTEGER})"), :range_mold],
       # List of numbers goes into the NumericDie mold.
-      [molder.("(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))"), :weirdly_shaped_mold].freeze,
+      [molder.("(?<sides>#{INTEGER}(?:(?:,#{INTEGER})++,?+|,))"), :weirdly_shaped_mold],
       # Non-integers require special handling for precision.
-      [molder.("(?<sides>#{FRACTION}(?:(?:,#{FRACTION})++,?+|,))"), :weirdly_precise_mold].freeze,
+      [molder.("(?<sides>#{NUMBER}(?:(?:,#{NUMBER})++,?+|,))"), :weirdly_precise_mold],
       # Lists of stuff are broken into AbstractDie.
-      [molder.("(?<sides>#{STRING}(?:(?:,#{STRING})++,?+|,))"), :cursed_mold].freeze,
+      [molder.("(?<sides>#{VALUE}(?:(?:,#{VALUE})++,?+|,))"), :cursed_mold],
       # Sign-prefixed value goes into the StaticDie mold.
-      [/\A#{COUNT}(?:#{CONSTANT}|\(#{CONSTANT}\))\z/, :static_mold].freeze,
+      [/\A#{COUNT}(?:#{CONSTANT}|\(#{CONSTANT}\))\z/, :static_mold],
       # Anything else is spilled on the floor.
-    ].freeze
+    ].each(&:freeze).freeze
 
     # Cast a die definition into a mold to make a die.
     #
@@ -121,10 +123,10 @@ module Dicey
       case side
       when /\A#{INTEGER}\z/o
         side.to_i
-      when /\A#{FRACTION}\z/o
+      when /\A#{NUMBER}\z/o
         rational_to_integer(Rational(side))
       else
-        side.match(STRING)[:side]
+        side.match(STRING)[:string]
       end
     end
 
