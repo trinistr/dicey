@@ -6,7 +6,7 @@ module Dicey
   # Static die has only one side and always returns the same value.
   # Useful to model constants in dice expressions.
   #
-  # @note Unlike other dice, +roll+ing a static die does not advance
+  # @note Unlike other dice, rolling a static die does not advance
   #   shared randomness generator, thus it does not have any impact on
   #   rolling other dice.
   class StaticDie < AbstractDie
