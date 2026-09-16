@@ -46,6 +46,8 @@ module Dicey
       subject(:validity) { calculator.valid_for?(dice) }
 
       context "when called with one die" do
+        let(:dice) { [AbstractDie.new(%i[a z])] }
+
         it { is_expected.to be true }
 
         context "when vector_number is not available" do

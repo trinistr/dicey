@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../mixins/vectorize_dice"
+
 module Dicey
   module DistributionCalculators
     # Base class for implementing distribution calculators.
@@ -26,12 +28,18 @@ module Dicey
     #
     # @abstract
     class BaseCalculator
+      include Mixins::VectorizeDice
+
       # Possible values for +result_type+ argument in {#call}.
       RESULT_TYPES = %i[weights probabilities].freeze
 
       # Calculate distribution (probability mass function) for the list of dice.
       #
       # Returns empty hash for an empty list of dice.
+      #
+      # @note Calculation is supposed to return exact results.
+      #   Using dice with +Float+ values can break this promise and raise errors.
+      #   Please use +Integer+, +Rational+ or +BigDecimal+ instead.
       #
       # @param dice [Enumerable<AbstractDie>]
       # @param result_type [Symbol] one of {RESULT_TYPES}
@@ -47,23 +55,31 @@ module Dicey
         unless RESULT_TYPES.include?(result_type)
           raise DiceyError, "#{result_type} is not a valid result type!"
         end
-        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(dice)
-
+        raise DiceyError, "dice must be an Enumerable!" unless Enumerable === dice
         # Short-circuit for a degenerate case.
         return {} if dice.empty?
 
-        distribution = calculate(dice, **options)
+        static_dice, normal_dice = dice.partition { StaticDie === _1 }
+        raise DiceyError, "#{self.class} can not handle these dice!" unless valid_for?(normal_dice)
+
+        distribution = prepare_distribution(normal_dice, static_dice, options)
         verify_result(distribution, dice)
-        distribution = sort_result(distribution)
         transform_result(distribution, result_type)
       end
 
       # Whether this calculator can be used for the list of dice.
       #
+      # {StaticDie} instances are always ignored.
+      #
       # @param dice [Enumerable<AbstractDie>]
       # @return [Boolean]
       def valid_for?(dice)
-        dice.is_a?(Enumerable) && (dice.empty? || (dice.all?(AbstractDie) && validate(dice)))
+        return false if !(Enumerable === dice) || !dice.all?(AbstractDie)
+
+        normal_dice = dice.grep_v(StaticDie)
+        return true if normal_dice.none?
+
+        validate(normal_dice)
       end
 
       # Heuristic complexity of the calculator, used to determine best calculator.
@@ -77,7 +93,7 @@ module Dicey
       def heuristic_complexity(dice)
         return 0 if dice.empty?
 
-        calculate_heuristic(dice.length, dice.map(&:sides_num).max).to_i
+        calculate_heuristic(dice.grep_v(StaticDie).length, dice.map(&:sides_num).max).to_i
       end
 
       private
@@ -103,9 +119,34 @@ module Dicey
         raise NotImplementedError
       end
 
+      # Prepare distribution by calculating it for normal dice and adding static dice to it.
+      #
+      # @param normal_dice [Enumerable<AbstractDie>]
+      # @param static_dice [Enumerable<StaticDie>]
+      # @param options [Hash]
+      # @return [Hash{Any => Integer}]
+      def prepare_distribution(normal_dice, static_dice, options)
+        if normal_dice.any?
+          distribution = calculate(normal_dice, **options)
+          distribution = sort_result(distribution)
+        else
+          # We can't get to this point if there are no dice at all,
+          # so prepare a "nothing" distribution to add static dice to it.
+          distribution = { 0 => 1 }
+        end
+
+        if static_dice.any?
+          c = vectorize_dice(static_dice).sum(&:value)
+          # This is done via `+=` because different `k + c` can produce the same key.
+          distribution = distribution.each_with_object(Hash.new(0)) { |(k, v), h| h[k + c] += v }
+        end
+
+        distribution
+      end
+
       # Check that resulting weights actually add up to what they are supposed to be.
       #
-      # @param distribution [Hash{Numeric => Integer}]
+      # @param distribution [Hash{Any => Integer}]
       # @param dice [Enumerable<AbstractDie>]
       # @return [void]
       # @raise [DiceyError] if result is wrong
@@ -125,9 +166,9 @@ module Dicey
 
       # Transform calculated weights to requested result type, if needed.
       #
-      # @param distribution [Hash{Numeric => Integer}]
+      # @param distribution [Hash{Any => Integer}]
       # @param result_type [Symbol] one of {RESULT_TYPES}
-      # @return [Hash{Numeric => Numeric}]
+      # @return [Hash{Any => Numeric}]
       def transform_result(distribution, result_type)
         if result_type == :weights
           distribution

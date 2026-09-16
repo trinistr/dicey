@@ -103,6 +103,48 @@ module Dicey
       end
     end
 
+    context "if given static and non-static dice" do
+      let(:dice) { [AbstractDie.new([1, 2, 3]), AbstractDie.new([4, 5, 6]), StaticDie.new("smh")] }
+
+      let(:implementation) do
+        Class.new(described_class) do
+          def calculate(dice)
+            dice.first.sides_list.tally.transform_values { _1 * dice.first.sides_list.last }
+          end
+        end
+      end
+
+      it "adds constant factor on its own" do
+        expect(result).to eq(
+          { VectorNumber[1, "smh"] => 3, VectorNumber[2, "smh"] => 3, VectorNumber[3, "smh"] => 3 }
+        )
+      end
+
+      context "if normal dice distribution contains distinct but equal outcomes" do
+        let(:dice) { [NumericDie.new([1, 1/1r]), StaticDie.new(1/1r)] }
+
+        it "preserves total weight instead of overwriting on value collisions" do
+          expect(result).to eq({ 2/1r => 2 })
+        end
+      end
+    end
+
+    context "if given only static dice" do
+      let(:dice) { [StaticDie.new(1), StaticDie.new("1"), StaticDie.new([])] }
+
+      let(:implementation) do
+        Class.new(described_class) do
+          def calculate(*)
+            { 0 => 1 } # simplecov:disable
+          end
+        end
+      end
+
+      it "skips actual implementation, directly calculating result" do
+        expect(result).to eq({ VectorNumber[1, "1", []] => 1 })
+      end
+    end
+
     describe "#valid_for?" do
       subject(:validity) { calculator.valid_for?(dice) }
 
@@ -144,6 +186,12 @@ module Dicey
 
           it { is_expected.to be false }
         end
+
+        context "and given only static dice" do
+          let(:dice) { StaticDie.from_count(45, "heh") }
+
+          it { is_expected.to be true }
+        end
       end
     end
 
@@ -156,6 +204,15 @@ module Dicey
         let(:dice) { [] }
 
         it { is_expected.to be 0 }
+      end
+
+      context "when called with static dice in the list" do
+        let(:dice) { [StaticDie.new(3), RegularDie.new(6)] }
+        let(:other_dice) { [RegularDie.new(6)] }
+
+        it "does not depend on static dice" do
+          expect(complexity).to eq(calculator.heuristic_complexity(other_dice))
+        end
       end
 
       context "when called on its own, not an implementation" do

@@ -3,7 +3,6 @@
 require_relative "base_calculator"
 
 require_relative "../mixins/missing_math"
-require_relative "../mixins/vectorize_dice"
 
 module Dicey
   module DistributionCalculators
@@ -13,12 +12,12 @@ module Dicey
     # If dice include non-numeric sides, gem +vector_number+ has to be installed.
     class Binomial < BaseCalculator
       include Mixins::MissingMath
-      include Mixins::VectorizeDice
 
       private
 
       def validate(dice)
-        dice.first.sides_num == 2 && dice.all? { _1 == dice.first }
+        die = dice.first
+        die.sides_num == 2 && dice.all? { _1 == die }
       end
 
       def calculate_heuristic(dice_count, _sides_count)

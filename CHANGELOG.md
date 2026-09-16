@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [BREAKING] `DieFoundry` no longer accepts "-" in range die definitions. It's recommended to use "..". Other possible separator characters remain as before.
 - `DieFoundry` no longer accepts "+", "-", "−" in unquoted strings to prevent ambiguity.
 - Distribution calculators that previously checked for `NumericDie` now check `#numeric?` instead. This is a significant semantic change — previous contract that only `NumericDie` is considered numeric no longer holds, but it's still recommended to use `NumericDie` for numeric dice.
+- All distribution calculators can handle `StaticDie` instances included in dice list transparently, including cases where equal dice of a different class would not be allowed.
 - `Iterative` calculator now pre-sorts dice to make performance mostly independent of order. Improvement heavily depends on types of dice and can be an order of magnitude (or unnoticeable).
 
 [Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
