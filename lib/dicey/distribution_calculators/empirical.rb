@@ -2,8 +2,6 @@
 
 require_relative "base_calculator"
 
-require_relative "../mixins/vectorize_dice"
-
 module Dicey
   module DistributionCalculators
     # "Calculator" for a collection of {AbstractDie} using empirically-obtained statistics.
@@ -19,8 +17,6 @@ module Dicey
     # *Options:*
     # - *rolls* (Integer) (_defaults_ _to:_ _N_) — number of rolls to perform
     class Empirical < BaseCalculator
-      include Mixins::VectorizeDice
-
       # Default number of rolls to perform.
       N = 10_000
 

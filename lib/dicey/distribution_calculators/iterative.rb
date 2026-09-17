@@ -2,8 +2,6 @@
 
 require_relative "base_calculator"
 
-require_relative "../mixins/vectorize_dice"
-
 module Dicey
   module DistributionCalculators
     # Calculator for a collection of {AbstractDie} which goes through
@@ -11,8 +9,6 @@ module Dicey
     #
     # If dice include non-numeric sides, gem +vector_number+ has to be available.
     class Iterative < BaseCalculator
-      include Mixins::VectorizeDice
-
       private
 
       def validate(dice)
