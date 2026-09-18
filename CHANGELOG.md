@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Added**
 - `StaticDie` which is an `AbstractDie` with exactly one side. It can be helpful to model and optimize constant variables.
 - `AbstractDie#numeric?` which returns `true` if the die is numeric (i.e. all sides are numbers), overriden in `NumericDie` to always return `true`.
-- `DieFoundry` now recognizes `+V` and `-V` suffixes for any die definition, where `V` is an integer, fraction or string, producing an extra `StaticDie` in addition to main dice set.
+- `DieFoundry` now recognizes `+V` and `-V` suffixes for any die definition, where `V` is an integer, fraction or string, producing an extra `StaticDie` in addition to main dice set. Only numbers can be negative, strings can only be positive.
 - `DieFoundry` now recognizes pure `+V` and `-V` definitions, producing standalone `StaticDie` instances. This form does not accept an extra suffix.
 
 **Changed**

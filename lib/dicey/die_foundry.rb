@@ -25,7 +25,8 @@ module Dicey
     # Pattern for matching a possible count.
     COUNT = "(?:(?<count>[1-9]\\d*+)?+[Dd])?+"
     # Pattern for matching an optional constant factor.
-    CONSTANT = "(?<constant>(?<sign>[+−-])(?<constant_value>#{STRING}))".freeze
+    CONSTANT = "(?<constant>(?<sign>[+−-])(?<constant_value>#{NUMBER})|" \
+               "(?<sign>\\+)(?<constant_value>#{STRING}))".freeze
 
     molder = ->(pattern) { /\A#{COUNT}(?:#{pattern}|\(#{pattern}\))#{CONSTANT}?\z/ }
 
@@ -57,7 +58,8 @@ module Dicey
     # - list of strings, possibly mixed with numbers (like "0.5,asdf" or "(👑,♠️,♥️,♣️,♦️,⚓️)"),
     #   which produces an {AbstractDie} with numbers treated the same as in previous cases,
     #   and other or quoted values treated as Strings.
-    # - signed value (like "+3" or "(-ABC)"), which produces a {StaticDie};
+    # - signed value (like "+3", "-3.6" or "(+ABC)"), which produces a {StaticDie},
+    #   non-numeric values are only allowed as positive values;
     #
     # Any die definition can be prefixed with a count, like "2D6" or "1d1,3,5" to create an array.
     # A plain "d"/"D" without an explicit count is ignored instead, creating a single die.
@@ -115,9 +117,7 @@ module Dicey
 
     def static_mold(definition, ignore_count: false)
       value = parse_value(definition[:constant_value])
-      if definition[:sign] != "+"
-        value = (Numeric === value) ? -value : -VectorNumber.new([value])
-      end
+      value = -value if definition[:sign] != "+"
 
       build_dice(StaticDie, ignore_count ? nil : definition[:count], value)
     end

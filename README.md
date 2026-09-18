@@ -87,7 +87,7 @@ gem "dicey", "~> 0.17"
 
 ## Usage: CLI (command line)
 
-Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`.
+Following examples assume that `dicey` (or `dicey-to-gnuplot`) is executable and is in `$PATH`. This should be the case if installed through RubyGems or Bundler.
 
 > [!NOTE]
 > 💡 Run `dicey --help` to get a list of all possible options.
@@ -271,12 +271,16 @@ There are four *main* ways to define dice:
 - *"+5", "+WIZ", or "-2.5"*: a single value prefixed with a sign makes a die with exactly that value.
   - Accepted signs: "+", "-", "−" (minus).
   - Single (') or double (") quotes can be used to include other quotes, round brackets and ambigious characters in a string. Otherwise, they are prohibited. Commas are always prohibited.
+  - Non-numeric values are only accepted with a "+".
 
 *"D6", "d(-1,3)", "d2..4", "d+5", or "d💚,🧡"*: any definitions can be prefixed with "d" or "D". While this doesn't do anything on its own, it can be useful to not start a definition with "-".
 
 *"2D6", "5d-1,3", "277D(2..4)", "3d+5", or "3d👑,♠️,♥️,♣️,♦️,⚓️"*: any definitions can be prefixed with "*N*d" or "*N*D", where *N* is a positive integer. This creates *N* copies of the die.
 
 *"5+3", "2d6+4", "2D3—5-1", or "d(💚,🧡)+♥️"*: any definitions can be suffixed with a single signed value (see above), except for a single signed value itself. This adds the constant factor to result once.
+
+> [!NOTE]
+> 💡 If your die definition starts with a negative number, it can be bracketed, prefixed with "d", or put after "--" pseudo-argument to avoid being processed as an option.
 
 ## Usage: API
 
@@ -475,9 +479,6 @@ For a further discussion of calculations, it is important to understand which cl
 - **Arithmetic** die's sides form an arithmetic sequence. For example, (1,2,3,4,5,6), (1,0,-1), (2.6,2.1,1.6,1.1).
 - **Numeric** die is limited by having sides confined to ℝ (or ℂ if you are feeling particularly adventurous).
 - **Abstract** die is unlimited!
-
-> [!NOTE]
-> 💡 If your die definition starts with a negative number, it can be bracketed, prefixed with "d", or put after "--" pseudo-argument to avoid processing as an option.
 
 Currently, three algorithms for calculating distributions are implemented, with different possibilities and trade-offs.
 

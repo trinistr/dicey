@@ -74,8 +74,8 @@ module Dicey
           expect(foundry.call("-5/2")).to eq StaticDie.new(-2.5)
         end
 
-        it "creates a StaticDie from a vectorized string" do
-          expect(foundry.call("-Beak")).to eq StaticDie.new(-VectorNumber["Beak"])
+        it "raises if given a non-number" do
+          expect { foundry.call("-Beak") }.to raise_error DiceyError
         end
       end
 
@@ -344,26 +344,29 @@ module Dicey
         expect(foundry.call("2d6-1")).to eq [
           RegularDie.new(6), RegularDie.new(6), StaticDie.new(-1),
         ]
-        expect(foundry.call("2d6-A")).to eq [
-          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-VectorNumber["A"]),
+        expect(foundry.call("2d6-1.2")).to eq [
+          RegularDie.new(6), RegularDie.new(6), StaticDie.new(-1.2r),
         ]
+        expect { foundry.call("2d6-A") }.to raise_error DiceyError
       end
 
       it "parses the constant factor for range definitions" do
         expect(foundry.call("-1..2−3")).to eq [NumericDie.new([-1, 0, 1, 2]), StaticDie.new(-3)]
         expect(foundry.call("-2—-1+A")).to eq [NumericDie.new([-2, -1]), StaticDie.new("A")]
+        expect { foundry.call("-2—-1-A") }.to raise_error DiceyError
       end
 
       it "parses the constant factor for list definitions" do
         expect(foundry.call("1,3,5+1")).to eq [NumericDie.new([1, 3, 5]), StaticDie.new(1)]
-        expect(foundry.call("1,A,-5.2-A")).to eq [
-          AbstractDie.new([1, "A", -5.2r]), StaticDie.new(-VectorNumber["A"]),
+        expect(foundry.call("1,A,-5.2-34.5")).to eq [
+          AbstractDie.new([1, "A", -5.2r]), StaticDie.new(-34.5r),
         ]
-        expect(foundry.call("2D1,A,-5.2-A")).to eq [
+        expect(foundry.call("2D1,A,-5.2+A")).to eq [
           AbstractDie.new([1, "A", -5.2r]), AbstractDie.new([1, "A", -5.2r]),
-          StaticDie.new(-VectorNumber["A"]),
+          StaticDie.new("A"),
         ]
         expect(foundry.call("2,2b+1")).to eq [AbstractDie.new([2, "2b"]), StaticDie.new(1)]
+        expect { foundry.call("2,2b-A") }.to raise_error DiceyError
       end
 
       it "rejects constant factor for static die definition" do
