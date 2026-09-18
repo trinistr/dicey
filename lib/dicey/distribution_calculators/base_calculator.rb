@@ -139,6 +139,7 @@ module Dicey
           c = vectorize_dice(static_dice).sum(&:value)
           # This is done via `+=` because different `k + c` can produce the same key.
           distribution = distribution.each_with_object(Hash.new(0)) { |(k, v), h| h[k + c] += v }
+          distribution.default = nil
         end
 
         distribution
