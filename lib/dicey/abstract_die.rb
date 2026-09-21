@@ -49,12 +49,12 @@ module Dicey
     def self.describe(dice)
       return dice.to_s if AbstractDie === dice
 
-      dice.map(&:to_s).reduce do |string, die|
+      dice.map(&:to_s).reduce { |string, die|
         die_string = die.to_s
         string << "+" unless die_string.match?(/\A[+-]/)
         string << die_string
         string
-      end
+      }.to_s
     end
 
     # Create a bunch of different dice at once from a list of definitions.

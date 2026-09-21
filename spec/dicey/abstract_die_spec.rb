@@ -50,6 +50,14 @@ module Dicey
         end
       end
 
+      context "when called with zero dice in a list" do
+        let(:dice) { [] }
+
+        it "returns an empty string" do
+          expect(description).to eq ""
+        end
+      end
+
       context "when called with one die in a list" do
         let(:dice) { [described_class.new([-1, -0.9, 0.1])] }
 
