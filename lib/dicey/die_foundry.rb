@@ -65,7 +65,8 @@ module Dicey
     # A plain "d"/"D" without an explicit count is ignored instead, creating a single die.
     #
     # All die definitions (aside from plain signed value) can be suffixed with a signed value
-    # to add or subtract from the result, like "2D6+3" or "5dA,B,C-C".
+    # to add or subtract from the result, like "2D6+3" or "5dA,B,C+C".
+    # Only numbers can be subtracted.
     #
     # @param definition [String] die shape
     # @return [AbstractDie, Array<AbstractDie>]

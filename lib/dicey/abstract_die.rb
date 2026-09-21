@@ -126,10 +126,12 @@ module Dicey
     # Return a string representing the die.
     #
     # Default representation is a list of sides in round brackets.
+    # Strings are quoted.
     #
     # @return [String]
     def to_s
-      (@sides_list.size > 1) ? "(#{@sides_list.join(",")})" : "(#{@sides_list.first},)"
+      sides = @sides_list.map { |side| side_to_s(side) }
+      (@sides_list.size > 1) ? "(#{sides.join(",")})" : "(#{sides.first},)"
     end
 
     # Determine if this die and the other one have the same list of sides.
@@ -182,6 +184,16 @@ module Dicey
     end
 
     private
+
+    # @param side [#to_s]
+    # @return [String]
+    def side_to_s(side)
+      if String === side
+        side.include?('"') ? "'#{side}'" : "\"#{side}\""
+      else
+        side.to_s
+      end
+    end
 
     # @param other [AbstractDie]
     # @return [Boolean]

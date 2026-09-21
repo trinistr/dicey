@@ -28,11 +28,15 @@ module Dicey
     # Return a string representing the die.
     #
     # Static dice are represented with a "+" or "-" followed by the absolute value
-    # (except 0 which doesn't have a sign).
+    # (0 is represented as +0). Strings are quoted.
     #
     # @return [String]
     def to_s
-      (!@value.respond_to?(:positive?) || @value.positive?) ? "+#{@value}" : @value.to_s
+      if @value.respond_to?(:negative?) && @value.negative?
+        side_to_s(@value)
+      else
+        "+#{side_to_s(@value)}"
+      end
     end
   end
 end

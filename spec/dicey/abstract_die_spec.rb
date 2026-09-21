@@ -287,6 +287,30 @@ module Dicey
           expect(die.to_s).to eq "(1,)"
         end
       end
+
+      context "when the die has duplicate sides" do
+        let(:sides) { [1, 2, 2, 3] }
+
+        it "returns a bracketed list of die's sides" do
+          expect(die.to_s).to eq "(1,2,2,3)"
+        end
+      end
+
+      context "when the die has fractional sides" do
+        let(:sides) { [1.2, 3.5r, -2.2] }
+
+        it "returns a list with numbers properly stringified" do
+          expect(die.to_s).to eq "(1.2,7/2,-2.2)"
+        end
+      end
+
+      context "when the die has string sides" do
+        let(:sides) { ["a", "'b", '"c'] }
+
+        it "returns a list with strings in appropiate quotes" do
+          expect(die.to_s).to eq %{("a","'b",'"c')}
+        end
+      end
     end
 
     describe "#==" do

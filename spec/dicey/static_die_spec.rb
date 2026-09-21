@@ -42,6 +42,21 @@ module Dicey
         expect(die.roll).to eq value
         expect(die.roll).to eq value
       end
+
+      it "does not advance RNG" do
+        seed = Random.new_seed
+        other_die = AbstractDie.new([1, 2, 3])
+
+        AbstractDie.srand(seed)
+        first_roll = other_die.roll
+        second_roll = other_die.roll
+
+        AbstractDie.srand(seed)
+        die.roll
+        expect(other_die.roll).to eq first_roll
+        die.roll
+        expect(other_die.roll).to eq second_roll
+      end
     end
 
     describe "#to_s" do
@@ -66,8 +81,16 @@ module Dicey
       context "with 0" do
         let(:value) { 0 }
 
-        it "returns '0'" do
-          expect(text).to eq "0"
+        it "returns '+0'" do
+          expect(text).to eq "+0"
+        end
+      end
+
+      context "with a string" do
+        let(:value) { "A'BC" }
+
+        it "returns the value in quotes prefixed by +" do
+          expect(text).to eq %(+"A'BC")
         end
       end
     end
