@@ -62,16 +62,16 @@ module Dicey
     describe "#to_s" do
       subject(:text) { die.to_s }
 
-      context "with a positive value" do
-        let(:value) { [5, VectorNumber["A"], "ABC"].sample }
+      context "with a positive numeric-like value" do
+        let(:value) { [5, VectorNumber["A"], 5.5].sample }
 
         it "returns the value prefixed with '+'" do
           expect(text).to eq "+#{value}"
         end
       end
 
-      context "with a negative value" do
-        let(:value) { [-3.2, -VectorNumber["A"]].sample }
+      context "with a negative numric-like value" do
+        let(:value) { [-3.2, -VectorNumber["A"], -1].sample }
 
         it "returns the value as string (prefixed with '-' by default)" do
           expect(text).to eq value.to_s
@@ -89,8 +89,16 @@ module Dicey
       context "with a string" do
         let(:value) { "A'BC" }
 
-        it "returns the value in quotes prefixed by +" do
+        it "returns the value in quotes prefixed with +" do
           expect(text).to eq %(+"A'BC")
+        end
+      end
+
+      context "with other values" do
+        let(:value) { [[1], { a: 1 }, Object.new, :"123"].sample }
+
+        it "returns the value prefixed with +" do
+          expect(text).to eq "+#{value}"
         end
       end
     end
