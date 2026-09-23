@@ -3,6 +3,7 @@
 module Dicey
   RSpec.describe AbstractDie do
     subject(:die) { described_class.new(sides) }
+
     let(:sides) { Array.new(rand(3..12)) { rand } }
 
     let(:custom_die_class) do

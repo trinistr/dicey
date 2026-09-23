@@ -3,6 +3,7 @@
 module Dicey
   RSpec.describe StaticDie do
     let(:die) { described_class.new(value) }
+
     let(:value) { [5, -3.2, "ABC"].sample }
 
     describe ".new" do

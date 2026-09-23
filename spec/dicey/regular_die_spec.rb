@@ -4,6 +4,7 @@ module Dicey
   RSpec.describe RegularDie do
     describe ".new" do
       subject(:die) { described_class.new(max) }
+
       let(:max) { rand(3..12) }
 
       it "makes a die with sides from 1 to max" do

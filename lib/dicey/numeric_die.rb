@@ -16,6 +16,8 @@ module Dicey
         unless Integer === sides_list.begin && Integer === sides_list.end
           raise DiceyError, "`#{sides_list.inspect}` is not a valid range!"
         end
+
+        @range = sides_list
       else
         sides_list.each do |value|
           raise DiceyError, "`#{value.inspect}` is not a number!" unless Numeric === value
@@ -30,6 +32,18 @@ module Dicey
     # @return [true]
     def numeric?
       true
+    end
+
+    # Return a string representing the die.
+    #
+    # Default representation is a list of sides in round brackets.
+    # If the die was initialized with a +Range+, string will be in the form of +begin..end+.
+    #
+    # @return [String]
+    def to_s
+      return "#{@range.begin}..#{@range.end}" if @range
+
+      super
     end
   end
 end

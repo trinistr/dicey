@@ -4,6 +4,7 @@ module Dicey
   RSpec.describe NumericDie do
     describe ".new" do
       subject(:die) { described_class.new(sides) }
+
       let(:sides) { Array.new(rand(3..12)) { rand } }
 
       context "when given an Array" do
@@ -55,6 +56,29 @@ module Dicey
     describe "#numeric?" do
       it "always returns true" do
         expect(described_class.new([1, 2.1, 3.2r]).numeric?).to be true
+      end
+    end
+
+    describe "#to_s" do
+      subject(:string) { die.to_s }
+
+      context "if the die was initialized with a list" do
+        let(:die) { described_class.new(sides) }
+        let(:sides) { (-5..5).to_a }
+
+        it "returns a list, same as AbstractDie" do
+          expect(string).to eq AbstractDie.new(sides).to_s
+        end
+      end
+
+      context "if the die was initialized with a range" do
+        let(:die) { described_class.new(first..last) }
+        let(:first) { rand(-10..-1) }
+        let(:last) { rand(1..10) }
+
+        it "returns a string with a range" do
+          expect(string).to eq "#{first}..#{last}"
+        end
       end
     end
   end
