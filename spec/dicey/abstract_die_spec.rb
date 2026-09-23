@@ -305,10 +305,10 @@ module Dicey
       end
 
       context "when the die has string sides" do
-        let(:sides) { ["a", "'b", '"c'] }
+        let(:sides) { ["a", "'b", '"c', "d+e"] }
 
-        it "returns a list with strings in appropiate quotes" do
-          expect(die.to_s).to eq %{("a","'b",'"c')}
+        it "returns a list with strings in appropriate quotes" do
+          expect(die.to_s).to eq %{(a,"'b",'"c',"d+e")}
         end
       end
     end

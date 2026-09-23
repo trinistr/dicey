@@ -16,6 +16,10 @@ module Dicey
   # {.srand} can be used to (re)set the internal randomizer's state for all dice,
   # allowing to reproduce the same sequence of rolls (if it was done with a known state).
   class AbstractDie
+    # Matcher to check whether string needs quoting.
+    # @see DieFoundry::SPECIAL
+    STRING_TO_QUOTE = /["',()+−-]/
+
     # Yes, class variable is actually useful here.
     # TODO: Allow supplying a custom Random.
     # rubocop:disable Style/ClassVars
@@ -188,7 +192,7 @@ module Dicey
     # @param side [#to_s]
     # @return [String]
     def side_to_s(side)
-      if String === side
+      if String === side && side.match?(STRING_TO_QUOTE)
         side.include?('"') ? "'#{side}'" : "\"#{side}\""
       else
         side.to_s

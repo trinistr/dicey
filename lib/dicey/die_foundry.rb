@@ -13,12 +13,16 @@ module Dicey
   class DieFoundry
     include Mixins::RationalToInteger
 
+    # Special characters disallowed in unquoted strings.
+    # @see AbstractDie::STRING_TO_QUOTE
+    SPECIAL = %{"',()+−-}
+
     # Pattern for an integer number.
     INTEGER = "(?:-?\\d++)"
     # Pattern for a possibly fractional number.
     NUMBER = "(?:-?\\d++(?:/\\d++|\\.\\d++)?)"
     # Pattern for an "arbitrary" string or number.
-    STRING = %{(?:(?<string>[^"',()+−-]++)|"(?<string>[^",]++)"|'(?<string>[^',]++)')}
+    STRING = %{(?:(?<string>[^#{SPECIAL}]++)|"(?<string>[^",]++)"|'(?<string>[^',]++)')}.freeze
     # Pattern for a number or string (allowing negative numbers).
     VALUE = "(?:#{NUMBER}(?=[,)+−-]|\\z)|#{STRING})".freeze
 
