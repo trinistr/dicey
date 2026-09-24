@@ -70,7 +70,7 @@ gem install dicey
 
 Or, if using Bundler, add it to your `Gemfile`:
 ```rb
-gem "dicey", "~> 0.17"
+gem "dicey", "~> 0.19"
 ```
 
 > [!TIP]

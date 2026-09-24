@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Next]
 
+[Compare v0.19.0...main](https://github.com/trinistr/dicey/compare/v0.19.0...main)
+
+## [v0.19.0] — 2026-09-24
+
+This release brings a few quality-of-life improvements, mainly when using string interface (CLI/`DieFoundry`):
+- `StaticDie` to add constant factors in a way that doesn't impact calculations.
+- Changes to dice stringification that improve round-tripping.
+
 **Added**
 - `StaticDie` which is an `AbstractDie` with exactly one side. It can be helpful to model and optimize constant variables.
 - `AbstractDie#numeric?` which returns `true` if the die is numeric (i.e. all sides are numbers), overriden in `NumericDie` to always return `true`.
@@ -22,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All distribution calculators can handle `StaticDie` instances included in dice list transparently, including cases where equal dice of a different class would not be allowed.
 - `Iterative` calculator now pre-sorts dice to make performance mostly independent of order. Improvement heavily depends on types of dice and can be an order of magnitude (or unnoticeable).
 
-[Compare v0.18.0...main](https://github.com/trinistr/dicey/compare/v0.18.0...main)
+[Compare v0.18.0...v0.19.0](https://github.com/trinistr/dicey/compare/v0.18.0...v0.19.0)
 
 ## [v0.18.0] — 2026-02-21
 
@@ -345,6 +353,7 @@ First tagged version.
 - `--format` and `--test` options.
 
 [Next]: https://github.com/trinistr/dicey/tree/main
+[v0.19.0]: https://github.com/trinistr/dicey/tree/v0.19.0
 [v0.18.0]: https://github.com/trinistr/dicey/tree/v0.18.0
 [v0.17.1]: https://github.com/trinistr/dicey/tree/v0.17.1
 [v0.17.0]: https://github.com/trinistr/dicey/tree/v0.17.0
